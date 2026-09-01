@@ -90,7 +90,20 @@
 
       <!-- Action Buttons -->
       <div class="flex items-center space-x-2">
-        <button id="sound-toggle-btn" onclick="toggleMute()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center shadow-inner" title="開啟/關閉音效">
+        <!-- BGM Controller -->
+        <div class="flex items-center gap-1.5 bg-emerald-50/90 border border-emerald-200 px-2.5 py-1.5 rounded-xl shadow-sm">
+          <button id="bgm-toggle-btn" onclick="toggleBgm()" class="p-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center justify-center text-xs font-bold" title="播放/暫停 花園馬林巴背景音樂">
+            <span id="bgm-btn-icon" class="text-xs">🎵</span>
+            <span id="bgm-status-text" class="hidden md:inline ml-1 text-[11px]">花園BGM</span>
+          </button>
+          <div class="flex items-center gap-1">
+            <i data-lucide="music-2" class="w-3.5 h-3.5 text-emerald-700 hidden sm:inline"></i>
+            <input type="range" id="bgm-volume-slider" min="0" max="100" value="35" oninput="setBgmVolume(this.value)" class="w-14 sm:w-20 h-1.5 bg-emerald-200 rounded-lg appearance-none cursor-pointer accent-emerald-600" title="調整背景音樂音量">
+            <span id="bgm-vol-label" class="text-[10px] font-black text-emerald-800 w-6 text-right">35%</span>
+          </div>
+        </div>
+
+        <button id="sound-toggle-btn" onclick="toggleMute()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center shadow-inner" title="開啟/關閉操作音效">
           <i data-lucide="volume-2" id="sound-icon" class="w-5 h-5 text-emerald-600"></i>
         </button>
         <button onclick="switchTab('history')" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm" title="查看成長歷程">
@@ -101,7 +114,7 @@
         <button onclick="switchTab('badges')" class="px-3.5 py-2 bg-amber-400/90 hover:bg-amber-400 text-amber-950 font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm">
           <i data-lucide="award" class="w-4 h-4 text-amber-800"></i>
           <span class="hidden sm:inline">榮譽勳章</span>
-          <span id="badge-count" class="bg-amber-100 text-amber-900 text-xs px-2 py-0.5 rounded-full font-black">0/5</span>
+          <span id="badge-count" class="bg-amber-100 text-amber-900 text-xs px-2 py-0.5 rounded-full font-black">0/6</span>
         </button>
       </div>
     </div>
@@ -169,7 +182,7 @@
           </div>
         </div>
 
-        <!-- Mission 3: 社會知覺 (同理心雷達站) NEW -->
+        <!-- Mission 3: 社會知覺 (同理心雷達站) -->
         <div onclick="switchTab('empathy')" class="game-card cursor-pointer bg-white rounded-2xl p-5 border-2 border-teal-100 shadow-md hover:shadow-xl hover:border-teal-300 relative overflow-hidden flex flex-col justify-between group">
           <div class="absolute top-0 right-0 w-24 h-24 bg-teal-50 rounded-bl-full -z-0 group-hover:scale-110 transition duration-300"></div>
           <div class="z-10 space-y-3">
@@ -179,7 +192,7 @@
             <div>
               <span class="text-xs font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-md">SEL 3 · 社會知覺</span>
               <h3 class="text-base font-bold text-slate-800 mt-1">同理心夥伴雷達</h3>
-              <p class="text-xs text-slate-500 mt-1">觀察受挫或害怕的同伴，換位思考感受並提供溫暖支持！</p>
+              <p class="text-xs text-slate-500 mt-1">觀察 9 大皮克敏同伴的挫折與感受，換位思考並提供溫暖支援！</p>
             </div>
           </div>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-teal-600">
@@ -197,12 +210,12 @@
             </div>
             <div>
               <span class="text-xs font-bold text-purple-500 bg-purple-50 px-2 py-0.5 rounded-md">SEL 4 · 人際合作</span>
-              <h3 class="text-base font-bold text-slate-800 mt-1">合力搬運大作戰</h3>
-              <p class="text-xs text-slate-500 mt-1">一顆大草莓需 10 力量！調配紫皮克敏與同伴協作，體驗群策群力。</p>
+              <h3 class="text-base font-bold text-slate-800 mt-1">校園合力搬運與分工</h3>
+              <p class="text-xs text-slate-500 mt-1">搬餐桶、搬新書、擦高窗、送作業！調配皮克敏力量，體會互助合作價值。</p>
             </div>
           </div>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-600">
-            <span>組隊搬運</span>
+            <span>開始 8 大合作任務</span>
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </div>
         </div>
@@ -235,7 +248,7 @@
             <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
               <span class="text-xl">📖</span> 9 種皮克敏夥伴屬性圖鑑
             </h3>
-            <p class="text-xs text-slate-500">點擊卡片聆聽皮克敏的專屬呼喚與特質介紹</p>
+            <p class="text-xs text-slate-500">點擊卡片聆聽皮克敏的專屬特質介紹</p>
           </div>
           <span class="text-xs bg-emerald-50 text-emerald-700 font-bold px-3 py-1 rounded-full">探索專區</span>
         </div>
@@ -342,7 +355,10 @@
           <!-- Step 4: Superpowers (Strengths) -->
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">4. 挑選 1~3 項你的優勢超能力（共 15 項）</label>
+              <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                4. 挑選 1~3 項你的優勢超能力（共 15 項）
+                <span class="text-[10px] text-emerald-600 font-normal ml-1">💡 點 1 下聽念讀 🔊，連點 2 下選取！</span>
+              </label>
               <span class="text-[11px] text-emerald-600 font-bold" id="strength-select-count">已選 1 項</span>
             </div>
             <div class="flex flex-wrap gap-2" id="strength-tags">
@@ -353,7 +369,10 @@
           <!-- Step 5: Support Needs (Weakness/Help) -->
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">5. 誠實勾選：我需要隊友協助的挑戰（共 15 項）</label>
+              <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                5. 誠實勾選：我需要隊友協助的挑戰（共 15 項）
+                <span class="text-[10px] text-amber-600 font-normal ml-1">💡 點 1 下聽念讀 🔊，連點 2 下選取！</span>
+              </label>
               <span class="text-[11px] text-amber-600 font-bold" id="weakness-select-count">已選 1 項</span>
             </div>
             <div class="flex flex-wrap gap-2" id="weakness-tags">
@@ -361,11 +380,22 @@
             </div>
           </div>
 
-          <!-- Step 6: Daily Reflection Note (NEW) -->
+          <!-- Step 6: Daily Reflection Note (Voice Input Supported) -->
           <div class="space-y-2">
-            <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">6. 今日成長反思筆記 / 心情悄悄話（選填）</label>
-            <textarea id="custom-note" rows="2" placeholder="例如：今天我主動幫忙同學整理考卷，感覺自己很有紫皮克敏的靠山精神！"
-                      class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none text-xs font-medium text-slate-700" oninput="updateCardPreview()"></textarea>
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">6. 今日成長反思筆記 / 心情悄悄話（選填）</label>
+              <button type="button" id="voice-input-btn" onclick="toggleVoiceInput()" class="px-3 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-full font-bold text-xs flex items-center gap-1.5 transition border border-emerald-300 shadow-sm">
+                <i data-lucide="mic" id="voice-mic-icon" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span id="voice-btn-text">語音輸入（按一下說話）</span>
+              </button>
+            </div>
+            <div class="relative">
+              <textarea id="custom-note" rows="2" placeholder="例如：今天我主動幫忙同學整理考卷，感覺自己很有紫皮克敏的靠山精神！（也可點擊上方麥克風直接用說的喔！）"
+                        class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none text-xs font-medium text-slate-700" oninput="updateCardPreview()"></textarea>
+              <div id="voice-status-indicator" class="hidden absolute right-3 bottom-2.5 text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold flex items-center gap-1 animate-pulse">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping"></span> 正在聆聽中...請說話
+              </div>
+            </div>
           </div>
 
           <div class="pt-2 flex flex-col sm:flex-row gap-3">
@@ -382,7 +412,7 @@
         <div class="lg:col-span-5 flex flex-col items-center justify-start space-y-4">
           <div class="w-full flex items-center justify-between px-1">
             <span class="text-xs font-bold text-slate-400">即時卡牌預覽</span>
-            <span id="preview-date-label" class="text-[10px] font-bold text-slate-400">2026/08/31 紀錄</span>
+            <span id="preview-date-label" class="text-[10px] font-bold text-slate-400">2026/09/01 紀錄</span>
           </div>
 
           <!-- The Physical-looking Card -->
@@ -450,7 +480,7 @@
       </div>
     </section>
 
-    <!-- TAB 7: HISTORY & GROWTH JOURNEY (心靈成長歷程手帳) NEW -->
+    <!-- TAB 7: HISTORY & GROWTH JOURNEY (心靈成長歷程手帳) -->
     <section id="tab-history" class="tab-content hidden space-y-6">
       <div class="flex items-center justify-between">
         <button onclick="switchTab('home')" class="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-emerald-600 transition">
@@ -585,133 +615,152 @@
         <div class="flex items-center justify-between border-b pb-4">
           <div>
             <span class="text-xs font-bold text-teal-600 bg-teal-50 px-2.5 py-0.5 rounded-md">
-              同理心偵測任務 第 <span id="empathy-idx-num">1</span> / 4 關
+              同理心偵測任務 第 <span id="empathy-idx-num">1</span> / <span id="empathy-total-num">9</span> 關
             </span>
-            <h3 id="empathy-scenario-title" class="text-xl font-black text-slate-900 mt-1">🔴 紅皮克敏遇到了小水坑！</h3>
+            <h3 id="empathy-scenario-title" class="text-xl font-black text-slate-900 mt-1 cursor-pointer flex items-center gap-2 hover:text-teal-700" onclick="speakEmpathyScenario()">
+              <span id="empathy-title-text">🔴 紅皮克敏遇到了小水坑！</span>
+              <i data-lucide="volume-2" class="w-4 h-4 text-teal-600"></i>
+            </h3>
           </div>
           <div class="w-14 h-16 pikmin-shadow flex items-center justify-center" id="empathy-pikmin-visual">
             <!-- Dynamic SVG -->
           </div>
         </div>
 
-        <div class="bg-teal-50/70 rounded-2xl p-4 border border-teal-200 text-sm space-y-2">
+        <div class="bg-teal-50/70 rounded-2xl p-4 border border-teal-200 text-sm space-y-2 cursor-pointer" onclick="speakEmpathyScenario()">
           <div class="font-bold text-slate-800 flex items-start gap-2">
             <span class="text-xl">📡</span>
             <span id="empathy-situation-desc">紅皮克敏正站在水坑邊全身發抖，因為牠完全不怕火，但一碰到水就會溺水...</span>
           </div>
-          <p class="text-xs text-teal-900 font-medium">身為同隊探險夥伴，怎樣的「同理感受」與「支援行動」最棒？</p>
+          <p class="text-xs text-teal-900 font-medium">💡 身為同隊探險夥伴，怎樣的「同理感受」與「支援行動」最棒？（點 1 下朗讀 🔊，連點 2 下選定 🎯）</p>
         </div>
 
         <div class="space-y-3" id="empathy-options-container">
           <!-- Dynamically populated options -->
         </div>
 
+        <!-- Feedback Result Box -->
         <div id="empathy-feedback-box" class="hidden p-4 rounded-2xl border text-sm space-y-2">
           <div id="empathy-feedback-title" class="font-black flex items-center gap-2"></div>
           <p id="empathy-feedback-text" class="text-slate-600 text-xs leading-relaxed"></p>
           <div class="pt-2 flex justify-end">
-            <button onclick="nextEmpathyScenario()" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-black text-xs rounded-xl shadow transition">
-              下一組夥伴情境 ➔
+            <button id="empathy-next-btn" onclick="nextEmpathyScenario()" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-black text-xs rounded-xl shadow transition">
+              下一項同理任務 ➔
             </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- TAB 4: TEAMWORK (人際技巧：合力搬運水果挑戰) -->
+    <!-- TAB 4: TEAMWORK (人際技巧：校園合力搬運與分工挑戰) -->
     <section id="tab-teamwork" class="tab-content hidden space-y-6">
       <div class="flex items-center justify-between">
         <button onclick="switchTab('home')" class="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-emerald-600 transition">
           <i data-lucide="chevron-left" class="w-4 h-4"></i> 回基地總部
         </button>
-        <span class="text-xs font-black bg-purple-100 text-purple-800 px-3 py-1 rounded-full">SEL 模組 4 · 人際合作與協作搬運</span>
+        <div class="flex items-center gap-2">
+          <button onclick="speakTeamworkMission()" class="p-1.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 text-xs font-bold transition flex items-center gap-1 border border-purple-200 shadow-sm" title="朗讀任務說明">
+            <i data-lucide="volume-2" class="w-4 h-4 text-purple-600"></i>
+            <span>朗讀任務</span>
+          </button>
+          <span class="text-xs font-black bg-purple-100 text-purple-800 px-3 py-1 rounded-full">SEL 模組 4 · 人際合作 (Relationship Skills)</span>
+        </div>
       </div>
 
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-purple-100 space-y-6">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-purple-100 space-y-5">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div>
-            <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
-              <span>🍓</span> 巨大寶物搬運挑戰（關卡 <span id="fruit-level-num">1</span>/3）
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-md">
+                校園任務 第 <span id="fruit-level-num">1</span> / <span id="fruit-total-num">8</span> 關
+              </span>
+              <span id="mission-category-tag" class="text-[10px] font-black bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">日常生活勞動</span>
+            </div>
+            <h3 class="text-xl font-black text-slate-900 mt-1 flex items-center gap-2">
+              <span id="task-icon-header">🍱</span> <span id="task-title-header">午餐時間：抬熱騰騰的營養午餐湯桶</span>
             </h3>
-            <p class="text-xs text-slate-500 mt-0.5">一人力量有限，但組合不同皮克敏就能合力抬起大寶藏！</p>
+            <p id="task-desc-header" class="text-xs text-slate-500 mt-0.5">湯桶又熱又重，需要大家步調一致、合力平衡才能安全抬到班級盛飯區！</p>
           </div>
-          <div class="bg-purple-50 text-purple-700 px-3.5 py-1.5 rounded-xl font-black text-sm border border-purple-200 flex items-center gap-2">
-            <span>目標總力量：</span>
-            <span id="target-power-display" class="text-lg text-purple-900">10</span>
+          
+          <!-- Level Quick Jump Selector -->
+          <div class="flex items-center gap-2 self-end md:self-auto">
+            <select id="teamwork-level-select" onchange="jumpToTeamworkLevel(this.value)" class="text-xs bg-slate-50 border border-purple-200 rounded-xl px-3 py-2 font-bold text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-400">
+              <!-- Rendered via JS -->
+            </select>
           </div>
         </div>
 
         <!-- Game Canvas / Realistic Carrying Stage -->
-        <div class="bg-gradient-to-b from-amber-50/50 via-emerald-50/60 to-teal-100/70 rounded-3xl p-5 border-2 border-dashed border-emerald-300 min-h-[340px] flex flex-col items-center justify-between relative overflow-hidden shadow-inner">
+        <div class="bg-gradient-to-b from-amber-50/50 via-purple-50/40 to-emerald-50/60 rounded-3xl p-5 border-2 border-dashed border-purple-200 min-h-[350px] flex flex-col items-center justify-between relative overflow-hidden shadow-inner">
           
           <!-- Progress Bar & Status -->
-          <div class="w-full max-w-md space-y-1.5 z-20">
+          <div class="w-full max-w-lg space-y-1.5 z-20">
             <div class="flex justify-between text-xs font-black text-slate-700">
-              <span class="flex items-center gap-1">
-                <i data-lucide="dumbbell" class="w-3.5 h-3.5 text-purple-600"></i>
-                當前小隊力量：<span id="current-power-display" class="text-emerald-700 text-base font-black">0</span>
+              <span class="flex items-center gap-1.5">
+                <i data-lucide="dumbbell" class="w-4 h-4 text-purple-600"></i>
+                目前小隊總力量：<span id="current-power-display" class="text-purple-900 text-lg font-black">0</span>
+                <span class="text-slate-400 font-normal">/ 目標 <span id="target-power-display" class="font-bold text-slate-700">12</span></span>
               </span>
-              <span id="power-status-msg" class="text-amber-700 font-bold bg-white/80 px-2.5 py-0.5 rounded-full border">還搬不動，需要更多夥伴！</span>
+              <span id="power-status-msg" class="text-amber-700 font-bold bg-white/90 px-3 py-1 rounded-full border shadow-sm text-xs">力量不足，還搬不動喔！</span>
             </div>
-            <div class="w-full bg-white/90 rounded-full h-3.5 p-0.5 overflow-hidden border border-emerald-200 shadow-inner">
-              <div id="power-progress-bar" class="bg-gradient-to-r from-purple-500 via-emerald-500 to-amber-400 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+            <div class="w-full bg-white/90 rounded-full h-4 p-0.5 overflow-hidden border border-purple-200 shadow-inner">
+              <div id="power-progress-bar" class="bg-gradient-to-r from-purple-500 via-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
             </div>
           </div>
 
           <!-- Central Realistic Carrying Visualization Scene -->
           <div class="my-auto w-full flex flex-col items-center justify-center relative py-4 z-10">
             
-            <!-- The Giant Fruit with Floating Animation when lifted -->
+            <!-- The Task Object (Carried Item) -->
             <div id="fruit-stage-wrapper" class="relative transition-all duration-500 transform text-center">
-              <!-- Fruit Indicator Weight -->
-              <div id="fruit-name-label" class="mb-1 text-xs font-black bg-white/95 px-3 py-1 rounded-full shadow-md text-slate-700 border border-amber-200/80 inline-flex items-center gap-1.5">
-                <span>香甜大草莓</span>
-                <span class="text-purple-600 font-black">（需 10 力）</span>
+              <div id="fruit-name-label" class="mb-2 text-xs font-black bg-white/95 px-3.5 py-1 rounded-full shadow-md text-slate-800 border border-purple-200 inline-flex items-center gap-1.5">
+                <span id="item-badge-name">營養午餐大湯桶</span>
+                <span id="item-badge-target" class="text-purple-600 font-black">（需 12 力）</span>
               </div>
 
-              <!-- Fruit Emoji / Visual -->
-              <div id="fruit-emoji" class="text-8xl sm:text-9xl filter drop-shadow-xl select-none transition-transform duration-300">
-                🍓
+              <!-- Object Visual Emoji / Illustration -->
+              <div id="fruit-emoji" class="text-8xl sm:text-9xl filter drop-shadow-2xl select-none transition-transform duration-300">
+                🍲
               </div>
             </div>
 
-            <!-- Realistic Pikmin Carrying Pod (Underneath & Around the Fruit) -->
-            <div id="carrying-squad-display" class="w-full max-w-xl min-h-[90px] -mt-6 flex flex-wrap items-end justify-center gap-2 sm:gap-3 px-4 z-20">
-              <!-- Dynamically rendered carrying Pikmins with hands raised -->
+            <!-- Realistic Pikmin Carrying Squad (Underneath the object) -->
+            <div id="carrying-squad-display" class="w-full max-w-2xl min-h-[95px] -mt-6 flex flex-wrap items-end justify-center gap-2 sm:gap-3 px-4 z-20">
               <div id="empty-squad-hint" class="text-xs text-slate-400 font-bold bg-white/80 px-4 py-2 rounded-2xl border border-dashed border-slate-300 mt-6 animate-pulse">
-                👇 點擊下方按鈕派遣皮克敏，牠們會跑過來合力頂起水果！
+                👇 點擊下方夥伴派遣皮克敏，牠們會跑過來合力頂起物品！
               </div>
             </div>
 
           </div>
 
           <!-- Assigned Pikmin Token List Summary -->
-          <div class="w-full bg-white/80 backdrop-blur-sm rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2 border border-emerald-100 z-20">
-            <div class="flex items-center gap-2">
+          <div class="w-full bg-white/90 backdrop-blur-sm rounded-2xl p-3 flex flex-wrap items-center justify-between gap-2 border border-purple-100 z-20">
+            <div class="flex items-center gap-2 flex-wrap">
               <span class="text-xs text-slate-500 font-bold">已就位隊員：</span>
               <div id="assigned-pikmin-tokens" class="flex flex-wrap gap-1.5">
                 <span class="text-xs text-slate-400 italic">尚無隊員</span>
               </div>
             </div>
-            <button onclick="resetTeamworkLevel()" class="text-slate-400 hover:text-red-500 text-xs font-bold px-2 py-1 rounded-lg hover:bg-red-50 transition flex items-center gap-1">
-              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重新指派
-            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="resetTeamworkLevel()" class="text-slate-500 hover:text-red-500 text-xs font-bold px-2.5 py-1.5 rounded-xl hover:bg-red-50 transition flex items-center gap-1 border border-slate-200">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置本關
+              </button>
+            </div>
           </div>
 
         </div>
 
-        <!-- Pikmin Dispatch Controller -->
+        <!-- Pikmin Dispatch Controller (With Audio & Power Badges) -->
         <div class="space-y-2">
-          <div class="flex items-center justify-between text-xs font-black text-slate-600">
-            <span>選擇派遣的皮克敏夥伴加入搬運：</span>
-            <span class="text-purple-600 font-bold">每種皮克敏力量不同，靈活搭配！</span>
+          <div class="flex items-center justify-between text-xs font-black text-slate-700">
+            <span>選擇派遣的皮克敏夥伴加入合作搬運：</span>
+            <span class="text-purple-600 font-bold">💡 試試不同組合：大力量靠紫皮克敏、靈活調度靠紅黃皮克敏！</span>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <button onclick="addPikminToTeam('red')" class="game-card p-3 bg-red-50 hover:bg-red-100 border-2 border-red-200 rounded-2xl flex items-center justify-between transition active:scale-95 text-left shadow-sm">
               <div class="flex items-center gap-2">
                 <div class="w-9 h-11 flex-shrink-0 pikmin-shadow">
-                  <!-- Red Pikmin Mini -->
                   <svg viewBox="0 0 100 120" class="w-full h-full">
                     <path d="M50 48 Q46 22 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
                     <circle cx="50" cy="10" r="7" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#eab308"/>
@@ -723,7 +772,7 @@
                 </div>
                 <div>
                   <div class="font-black text-xs text-red-900">紅皮克敏</div>
-                  <div class="text-[10px] text-red-600 font-medium">一般力量</div>
+                  <div class="text-[10px] text-red-600 font-medium">一般力量・耐勞</div>
                 </div>
               </div>
               <span class="text-xs font-black text-red-700 bg-white px-2.5 py-1 rounded-xl shadow-sm border border-red-100">+1 力</span>
@@ -732,7 +781,6 @@
             <button onclick="addPikminToTeam('purple')" class="game-card p-3 bg-purple-50 hover:bg-purple-100 border-2 border-purple-200 rounded-2xl flex items-center justify-between transition active:scale-95 text-left shadow-sm">
               <div class="flex items-center gap-2">
                 <div class="w-9 h-11 flex-shrink-0 pikmin-shadow">
-                  <!-- Purple Pikmin Mini -->
                   <svg viewBox="0 0 100 120" class="w-full h-full">
                     <path d="M50 42 Q46 22 50 12" stroke="#22c55e" stroke-width="4.5" stroke-linecap="round" fill="none"/>
                     <circle cx="50" cy="10" r="7.5" fill="#e879f9" stroke="#c084fc" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#fae8ff"/>
@@ -744,7 +792,7 @@
                 </div>
                 <div>
                   <div class="font-black text-xs text-purple-900">紫皮克敏</div>
-                  <div class="text-[10px] text-purple-600 font-medium">大力士巨無霸</div>
+                  <div class="text-[10px] text-purple-600 font-medium">大力士・神靠山</div>
                 </div>
               </div>
               <span class="text-xs font-black text-purple-700 bg-white px-2.5 py-1 rounded-xl shadow-sm border border-purple-100">+10 力</span>
@@ -753,7 +801,6 @@
             <button onclick="addPikminToTeam('yellow')" class="game-card p-3 bg-amber-50 hover:bg-amber-100 border-2 border-amber-200 rounded-2xl flex items-center justify-between transition active:scale-95 text-left shadow-sm">
               <div class="flex items-center gap-2">
                 <div class="w-9 h-11 flex-shrink-0 pikmin-shadow">
-                  <!-- Yellow Pikmin Mini -->
                   <svg viewBox="0 0 100 120" class="w-full h-full">
                     <path d="M50 48 Q44 24 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
                     <circle cx="50" cy="10" r="7" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#f59e0b"/>
@@ -765,7 +812,7 @@
                 </div>
                 <div>
                   <div class="font-black text-xs text-amber-900">黃皮克敏</div>
-                  <div class="text-[10px] text-amber-600 font-medium">敏捷搭檔</div>
+                  <div class="text-[10px] text-amber-600 font-medium">敏捷・高處作業</div>
                 </div>
               </div>
               <span class="text-xs font-black text-amber-700 bg-white px-2.5 py-1 rounded-xl shadow-sm border border-amber-100">+1 力</span>
@@ -774,7 +821,6 @@
             <button onclick="addPikminToTeam('rock')" class="game-card p-3 bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 rounded-2xl flex items-center justify-between transition active:scale-95 text-left shadow-sm">
               <div class="flex items-center gap-2">
                 <div class="w-9 h-11 flex-shrink-0 pikmin-shadow">
-                  <!-- Rock Pikmin Mini -->
                   <svg viewBox="0 0 100 120" class="w-full h-full">
                     <path d="M50 44 Q56 22 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
                     <circle cx="50" cy="10" r="7" fill="#c084fc" stroke="#ddd6fe" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#ffffff"/>
@@ -786,7 +832,7 @@
                 </div>
                 <div>
                   <div class="font-black text-xs text-slate-800">岩石皮克敏</div>
-                  <div class="text-[10px] text-slate-600 font-medium">穩重強韌</div>
+                  <div class="text-[10px] text-slate-600 font-medium">沉穩・重物支撐</div>
                 </div>
               </div>
               <span class="text-xs font-black text-slate-700 bg-white px-2.5 py-1 rounded-xl shadow-sm border border-slate-200">+3 力</span>
@@ -794,13 +840,13 @@
           </div>
         </div>
 
-        <!-- Reflection Callout -->
-        <div class="bg-purple-50/60 rounded-2xl p-4 border border-purple-100 text-xs text-slate-600 space-y-1">
-          <span class="font-black text-purple-900 flex items-center gap-1">
-            💡 SEL 合作啟發：
+        <!-- Dynamic SEL Reflection Callout -->
+        <div class="bg-purple-50/70 rounded-2xl p-4 border border-purple-100 text-xs text-slate-700 space-y-1">
+          <span class="font-black text-purple-900 flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4 text-purple-600"></i> 本關 SEL 合作啟發：
           </span>
-          <p>
-            就像紫皮克敏一次可以抵 10 隻一般皮克敏，但如果需要穿過窄縫或高處，就需要其他夥伴。每個人在團隊都有無可替代的價值！
+          <p id="task-sel-insight">
+            午餐湯桶非常沉重，一個人容易傾倒燙傷；但只要找 2 位同學一人抬一邊，再搭配一位同學開門帶路，就能安全迅速完成任務！
           </p>
         </div>
       </div>
@@ -823,7 +869,10 @@
             <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md">
               校園收納圖鑑第 <span id="quiz-index-num">1</span> 題 / 共 10 題
             </span>
-            <h3 id="quiz-item-title" class="text-xl font-black text-slate-900 mt-1">📝 散落抽屜的小考考卷與評量單</h3>
+            <h3 id="quiz-item-title" class="text-xl font-black text-slate-900 mt-1 cursor-pointer flex items-center gap-2 hover:text-blue-700" onclick="speakQuizItem()">
+              <span id="quiz-title-text">📝 散落抽屜的小考考卷與評量單</span>
+              <i data-lucide="volume-2" class="w-4 h-4 text-blue-600"></i>
+            </h3>
           </div>
           <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-3xl shadow-sm" id="quiz-item-icon">
             📄
@@ -831,13 +880,13 @@
         </div>
 
         <!-- Problem Description -->
-        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-sm space-y-2">
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-sm space-y-2 cursor-pointer" onclick="speakQuizItem()">
           <div class="font-bold text-slate-700 flex items-center gap-1.5">
             <span class="text-red-500">❓ 遭遇困境：</span>
             <span id="quiz-problem-desc">考完的考卷塞滿抽屜，有些考 100 分捨不得丟，但有些寫錯的堆在一起很難複習...</span>
           </div>
           <div class="text-xs text-slate-500">
-            請為皮克敏小隊做出最棒的<strong>「整理技巧」</strong>或<strong>「個資安全防範」</strong>決策：
+            請為皮克敏小隊做出最棒的<strong>「整理技巧」</strong>或<strong>「個資安全防範」</strong>決策：（點 1 下朗讀 🔊，連點 2 下選定 🎯）
           </div>
         </div>
 
@@ -909,12 +958,224 @@
     let audioCtx = null;
     let isMuted = false;
 
+    // Dual Audio Pipeline: BGM and SFX are independently routed
+    let bgmGainNode = null;
+    let sfxGainNode = null;
+    let bgmVolume = 0.35;
+    let isBgmPlaying = false;
+    let bgmTimer = null;
+    let bgmCurrentStep = 0;
+    let birdChirpTimer = null;
+
     function initAudio() {
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // SFX Master Gain
+        sfxGainNode = audioCtx.createGain();
+        sfxGainNode.gain.setValueAtTime(isMuted ? 0 : 1.0, audioCtx.currentTime);
+        sfxGainNode.connect(audioCtx.destination);
+
+        // BGM Master Gain (Independent)
+        bgmGainNode = audioCtx.createGain();
+        bgmGainNode.gain.setValueAtTime(bgmVolume, audioCtx.currentTime);
+        bgmGainNode.connect(audioCtx.destination);
       }
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
+      }
+    }
+
+    // Synthesize warm Kalimba / Marimba wooden tines with harmonic overtone
+    function triggerKalimba(freq, time, vel = 0.25) {
+      if (!audioCtx || !bgmGainNode) return;
+
+      // Fundamental tone (Sine)
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(freq, time);
+
+      // Wooden mallet transient click / overtone (Triangle / higher harmonic)
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(freq * 2.756, time); // Inharmonic kalimba overtone
+
+      const noteGain = audioCtx.createGain();
+
+      gain1.gain.setValueAtTime(vel, time);
+      gain1.gain.exponentialRampToValueAtTime(0.001, time + 0.9);
+
+      gain2.gain.setValueAtTime(vel * 0.4, time);
+      gain2.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+
+      osc1.connect(gain1);
+      osc2.connect(gain2);
+      gain1.connect(noteGain);
+      gain2.connect(noteGain);
+      noteGain.connect(bgmGainNode);
+
+      osc1.start(time);
+      osc2.start(time);
+      osc1.stop(time + 0.95);
+      osc2.stop(time + 0.15);
+    }
+
+    // Warm Pizzicato Bass Note
+    function triggerBassPluck(freq, time, vel = 0.3) {
+      if (!audioCtx || !bgmGainNode) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, time);
+
+      gain.gain.setValueAtTime(vel, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.8);
+
+      osc.connect(gain);
+      gain.connect(bgmGainNode);
+      osc.start(time);
+      osc.stop(time + 0.85);
+    }
+
+    // Procedural Garden Bird Chirping (adds pastoral Pikmin ambiance)
+    function triggerGardenBird() {
+      if (!isBgmPlaying || !audioCtx || !bgmGainNode) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        
+        const baseFreq = 2200 + Math.random() * 600;
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq + 700, now + 0.06);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq - 200, now + 0.14);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq + 500, now + 0.2);
+
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+        osc.connect(gain);
+        gain.connect(bgmGainNode);
+        osc.start(now);
+        osc.stop(now + 0.26);
+      } catch (e) {
+        // audio context safety
+      }
+    }
+
+    // Whimsical, relaxing Pikmin Garden Kalimba loop in F Major / Lydian
+    const NOTE_FREQS = {
+      C3: 130.81, F3: 174.61, G3: 196.00, A3: 220.00, Bb3: 233.08, C4: 261.63,
+      D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, Bb4: 466.16,
+      C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00
+    };
+
+    const MELODY_SEQUENCE = [
+      // Bar 1 - F Major (Playful pastoral)
+      { kalimba: ['F4', 'A4'], bass: 'F3', vel: 0.22 },
+      { kalimba: ['C5'], vel: 0.16 },
+      { kalimba: ['E5'], vel: 0.2 },
+      { kalimba: ['D5', 'A4'], vel: 0.18 },
+      // Bar 2 - G Minor 7
+      { kalimba: ['G4', 'Bb4'], bass: 'G3', vel: 0.22 },
+      { kalimba: ['D5'], vel: 0.16 },
+      { kalimba: ['F5'], vel: 0.2 },
+      { kalimba: ['E5', 'C5'], vel: 0.18 },
+      // Bar 3 - A Minor
+      { kalimba: ['A4', 'C5'], bass: 'A3', vel: 0.22 },
+      { kalimba: ['E5'], vel: 0.17 },
+      { kalimba: ['G5'], vel: 0.2 },
+      { kalimba: ['F5', 'D5'], vel: 0.18 },
+      // Bar 4 - Bb Major & Resolving Chime
+      { kalimba: ['Bb4', 'D5'], bass: 'Bb3', vel: 0.22 },
+      { kalimba: ['F5'], vel: 0.16 },
+      { kalimba: ['A5', 'C5'], vel: 0.22 },
+      { kalimba: ['G5', 'E5'], bass: 'C4', vel: 0.19 }
+    ];
+
+    function stepBgmEngine() {
+      if (!isBgmPlaying || !audioCtx) return;
+      const step = MELODY_SEQUENCE[bgmCurrentStep];
+      const now = audioCtx.currentTime;
+
+      if (step) {
+        if (step.bass) {
+          triggerBassPluck(NOTE_FREQS[step.bass], now, step.vel * 0.9);
+        }
+        if (step.kalimba) {
+          step.kalimba.forEach((noteName, idx) => {
+            triggerKalimba(NOTE_FREQS[noteName], now + idx * 0.02, step.vel);
+          });
+        }
+      }
+
+      bgmCurrentStep = (bgmCurrentStep + 1) % MELODY_SEQUENCE.length;
+
+      // Occasional peaceful garden bird sound
+      if (Math.random() < 0.18) {
+        setTimeout(triggerGardenBird, 350 + Math.random() * 400);
+      }
+    }
+
+    function startBgm() {
+      initAudio();
+      if (isBgmPlaying) return;
+      isBgmPlaying = true;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      if (bgmTimer) clearInterval(bgmTimer);
+      // 108 BPM -> Eighth note ~277ms per step
+      bgmTimer = setInterval(stepBgmEngine, 280);
+      updateBgmUI();
+    }
+
+    function stopBgm() {
+      isBgmPlaying = false;
+      if (bgmTimer) {
+        clearInterval(bgmTimer);
+        bgmTimer = null;
+      }
+      updateBgmUI();
+    }
+
+    function toggleBgm() {
+      initAudio();
+      if (isBgmPlaying) {
+        stopBgm();
+      } else {
+        startBgm();
+      }
+    }
+
+    function setBgmVolume(val) {
+      bgmVolume = Math.max(0, Math.min(100, parseInt(val, 10))) / 100;
+      const lbl = document.getElementById('bgm-vol-label');
+      if (lbl) lbl.textContent = `${Math.round(bgmVolume * 100)}%`;
+
+      if (bgmGainNode && audioCtx) {
+        bgmGainNode.gain.setValueAtTime(bgmVolume, audioCtx.currentTime);
+      }
+    }
+
+    function updateBgmUI() {
+      const btn = document.getElementById('bgm-toggle-btn');
+      const icon = document.getElementById('bgm-btn-icon');
+      const status = document.getElementById('bgm-status-text');
+
+      if (!btn) return;
+      if (isBgmPlaying) {
+        btn.className = 'p-1 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-emerald-300 animate-pulse';
+        if (icon) icon.textContent = '⏸️';
+        if (status) status.textContent = '音樂中';
+      } else {
+        btn.className = 'p-1 px-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 transition flex items-center justify-center text-xs font-bold';
+        if (icon) icon.textContent = '🎵';
+        if (status) status.textContent = 'BGM開';
       }
     }
 
@@ -926,7 +1187,7 @@
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
-        gain.connect(audioCtx.destination);
+        gain.connect(sfxGainNode || audioCtx.destination);
 
         if (type === 'whistle') {
           osc.type = 'sine';
@@ -952,7 +1213,7 @@
             const noteOsc = audioCtx.createOscillator();
             const noteGain = audioCtx.createGain();
             noteOsc.connect(noteGain);
-            noteGain.connect(audioCtx.destination);
+            noteGain.connect(sfxGainNode || audioCtx.destination);
             noteOsc.type = 'triangle';
             noteOsc.frequency.setValueAtTime(freq, now + i * 0.09);
             noteGain.gain.setValueAtTime(0.2, now + i * 0.09);
@@ -976,6 +1237,9 @@
 
     function toggleMute() {
       isMuted = !isMuted;
+      if (sfxGainNode && audioCtx) {
+        sfxGainNode.gain.setValueAtTime(isMuted ? 0 : 1.0, audioCtx.currentTime);
+      }
       const icon = document.getElementById('sound-icon');
       if (isMuted) {
         icon.setAttribute('data-lucide', 'volume-x');
@@ -990,300 +1254,182 @@
       lucide.createIcons();
     }
 
-    /* =========================================================
-       2. Data Sets: 9 Pikmin with Custom Transparent SVG Art
-       ========================================================= */
     const PIKMIN_SVGS = {
       red: `<svg viewBox="0 0 100 120" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 48 Q46 22 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <circle cx="50" cy="10" r="7" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/>
-        <circle cx="50" cy="10" r="3" fill="#eab308"/>
-        <!-- Body -->
-        <ellipse cx="50" cy="78" rx="19" ry="24" fill="#ef4444"/>
-        <circle cx="50" cy="52" r="15" fill="#ef4444"/>
-        <!-- Pointed Nose -->
+        <circle cx="50" cy="10" r="7" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#eab308"/>
+        <ellipse cx="50" cy="78" rx="19" ry="24" fill="#ef4444"/><circle cx="50" cy="52" r="15" fill="#ef4444"/>
         <polygon points="50,51 68,54 50,57" fill="#dc2626"/>
-        <!-- Eyes -->
-        <ellipse cx="44" cy="46" rx="4" ry="5.5" fill="#ffffff"/>
-        <ellipse cx="56" cy="46" rx="4" ry="5.5" fill="#ffffff"/>
-        <circle cx="44" cy="46" r="2.2" fill="#0f172a"/>
-        <circle cx="56" cy="46" r="2.2" fill="#0f172a"/>
-        <circle cx="45" cy="44.5" r="0.8" fill="#ffffff"/>
-        <circle cx="57" cy="44.5" r="0.8" fill="#ffffff"/>
-        <!-- Limbs -->
+        <ellipse cx="44" cy="46" rx="4" ry="5.5" fill="#ffffff"/><ellipse cx="56" cy="46" rx="4" ry="5.5" fill="#ffffff"/>
+        <circle cx="44" cy="46" r="2.2" fill="#0f172a"/><circle cx="56" cy="46" r="2.2" fill="#0f172a"/>
+        <circle cx="45" cy="44.5" r="0.8" fill="#ffffff"/><circle cx="57" cy="44.5" r="0.8" fill="#ffffff"/>
         <path d="M40 98 L37 114 M60 98 L63 114" stroke="#dc2626" stroke-width="4" stroke-linecap="round"/>
-        <ellipse cx="35" cy="114" rx="4.5" ry="2.5" fill="#dc2626"/>
-        <ellipse cx="65" cy="114" rx="4.5" ry="2.5" fill="#dc2626"/>
+        <ellipse cx="35" cy="114" rx="4.5" ry="2.5" fill="#dc2626"/><ellipse cx="65" cy="114" rx="4.5" ry="2.5" fill="#dc2626"/>
         <path d="M34 72 Q25 78 30 88 M66 72 Q75 78 70 88" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round" fill="none"/>
       </svg>`,
 
       yellow: `<svg viewBox="0 0 100 120" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 48 Q44 24 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <circle cx="50" cy="10" r="7" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/>
-        <circle cx="50" cy="10" r="3" fill="#f59e0b"/>
-        <!-- Big Pointy Ears -->
-        <polygon points="36,46 16,36 33,56" fill="#eab308"/>
-        <polygon points="64,46 84,36 67,56" fill="#eab308"/>
-        <!-- Body -->
-        <ellipse cx="50" cy="78" rx="18" ry="23" fill="#facc15"/>
-        <circle cx="50" cy="52" r="15" fill="#facc15"/>
-        <!-- Eyes -->
-        <ellipse cx="44" cy="48" rx="4" ry="5.5" fill="#ffffff"/>
-        <ellipse cx="56" cy="48" rx="4" ry="5.5" fill="#ffffff"/>
-        <circle cx="44" cy="48" r="2.2" fill="#0f172a"/>
-        <circle cx="56" cy="48" r="2.2" fill="#0f172a"/>
-        <circle cx="45" cy="46.5" r="0.8" fill="#ffffff"/>
-        <circle cx="57" cy="46.5" r="0.8" fill="#ffffff"/>
-        <!-- Limbs -->
+        <circle cx="50" cy="10" r="7" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#f59e0b"/>
+        <polygon points="36,46 16,36 33,56" fill="#eab308"/><polygon points="64,46 84,36 67,56" fill="#eab308"/>
+        <ellipse cx="50" cy="78" rx="18" ry="23" fill="#facc15"/><circle cx="50" cy="52" r="15" fill="#facc15"/>
+        <ellipse cx="44" cy="48" rx="4" ry="5.5" fill="#ffffff"/><ellipse cx="56" cy="48" rx="4" ry="5.5" fill="#ffffff"/>
+        <circle cx="44" cy="48" r="2.2" fill="#0f172a"/><circle cx="56" cy="48" r="2.2" fill="#0f172a"/>
+        <circle cx="45" cy="46.5" r="0.8" fill="#ffffff"/><circle cx="57" cy="46.5" r="0.8" fill="#ffffff"/>
         <path d="M40 98 L37 114 M60 98 L63 114" stroke="#ca8a04" stroke-width="3.8" stroke-linecap="round"/>
-        <ellipse cx="35" cy="114" rx="4.5" ry="2.5" fill="#ca8a04"/>
-        <ellipse cx="65" cy="114" rx="4.5" ry="2.5" fill="#ca8a04"/>
+        <ellipse cx="35" cy="114" rx="4.5" ry="2.5" fill="#ca8a04"/><ellipse cx="65" cy="114" rx="4.5" ry="2.5" fill="#ca8a04"/>
         <path d="M34 72 Q24 78 28 88 M66 72 Q76 78 72 88" stroke="#ca8a04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
       </svg>`,
 
       blue: `<svg viewBox="0 0 100 120" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 48 Q54 22 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <circle cx="50" cy="10" r="7" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/>
-        <circle cx="50" cy="10" r="3" fill="#38bdf8"/>
-        <!-- Body -->
-        <ellipse cx="50" cy="78" rx="19" ry="24" fill="#3b82f6"/>
-        <circle cx="50" cy="52" r="15" fill="#3b82f6"/>
-        <!-- Mouth / Gill -->
+        <circle cx="50" cy="10" r="7" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#38bdf8"/>
+        <ellipse cx="50" cy="78" rx="19" ry="24" fill="#3b82f6"/><circle cx="50" cy="52" r="15" fill="#3b82f6"/>
         <ellipse cx="50" cy="56" rx="5" ry="3.5" fill="#1e40af" stroke="#60a5fa" stroke-width="1.5"/>
         <ellipse cx="50" cy="56" rx="3" ry="2" fill="#93c5fd"/>
-        <!-- Eyes -->
-        <ellipse cx="43" cy="44" rx="4" ry="5.5" fill="#ffffff"/>
-        <ellipse cx="57" cy="44" rx="4" ry="5.5" fill="#ffffff"/>
-        <circle cx="43" cy="44" r="2.2" fill="#0f172a"/>
-        <circle cx="57" cy="44" r="2.2" fill="#0f172a"/>
-        <circle cx="44" cy="42.5" r="0.8" fill="#ffffff"/>
-        <circle cx="58" cy="42.5" r="0.8" fill="#ffffff"/>
-        <!-- Limbs -->
+        <ellipse cx="43" cy="44" rx="4" ry="5.5" fill="#ffffff"/><ellipse cx="57" cy="44" rx="4" ry="5.5" fill="#ffffff"/>
+        <circle cx="43" cy="44" r="2.2" fill="#0f172a"/><circle cx="57" cy="44" r="2.2" fill="#0f172a"/>
+        <circle cx="44" cy="42.5" r="0.8" fill="#ffffff"/><circle cx="58" cy="42.5" r="0.8" fill="#ffffff"/>
         <path d="M40 98 L37 114 M60 98 L63 114" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
-        <ellipse cx="35" cy="114" rx="4.5" ry="2.5" fill="#2563eb"/>
-        <ellipse cx="65" cy="114" rx="4.5" ry="2.5" fill="#2563eb"/>
+        <ellipse cx="35" cy="114" rx="4.5" ry="2.5" fill="#2563eb"/><ellipse cx="65" cy="114" rx="4.5" ry="2.5" fill="#2563eb"/>
         <path d="M34 72 Q25 78 30 88 M66 72 Q75 78 70 88" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" fill="none"/>
       </svg>`,
 
       purple: `<svg viewBox="0 0 100 120" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 42 Q46 22 50 12" stroke="#22c55e" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-        <circle cx="50" cy="10" r="7.5" fill="#e879f9" stroke="#c084fc" stroke-width="1.5"/>
-        <circle cx="50" cy="10" r="3" fill="#fae8ff"/>
-        <!-- Head Hairs / Whiskers -->
+        <circle cx="50" cy="10" r="7.5" fill="#e879f9" stroke="#c084fc" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#fae8ff"/>
         <path d="M38 38 L30 30 M62 38 L70 30 M50 36 L50 26" stroke="#4c1d95" stroke-width="2.5" stroke-linecap="round"/>
-        <!-- Chunky Heavy Body -->
-        <ellipse cx="50" cy="74" rx="27" ry="26" fill="#8b5cf6"/>
-        <ellipse cx="50" cy="48" r="18" fill="#7c3aed"/>
-        <!-- Eyes -->
-        <ellipse cx="42" cy="45" rx="4.5" ry="5.5" fill="#ffffff"/>
-        <ellipse cx="58" cy="45" rx="4.5" ry="5.5" fill="#ffffff"/>
-        <circle cx="42" cy="45" r="2.5" fill="#3b0764"/>
-        <circle cx="58" cy="45" r="2.5" fill="#3b0764"/>
-        <!-- Strong Thick Limbs -->
+        <ellipse cx="50" cy="74" rx="27" ry="26" fill="#8b5cf6"/><ellipse cx="50" cy="48" r="18" fill="#7c3aed"/>
+        <ellipse cx="42" cy="45" rx="4.5" ry="5.5" fill="#ffffff"/><ellipse cx="58" cy="45" rx="4.5" ry="5.5" fill="#ffffff"/>
+        <circle cx="42" cy="45" r="2.5" fill="#3b0764"/><circle cx="58" cy="45" r="2.5" fill="#3b0764"/>
         <path d="M38 96 L34 114 M62 96 L66 114" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
-        <ellipse cx="32" cy="114" rx="6" ry="3.5" fill="#5b21b6"/>
-        <ellipse cx="68" cy="114" rx="6" ry="3.5" fill="#5b21b6"/>
+        <ellipse cx="32" cy="114" rx="6" ry="3.5" fill="#5b21b6"/><ellipse cx="68" cy="114" rx="6" ry="3.5" fill="#5b21b6"/>
         <path d="M28 68 Q18 78 24 90 M72 68 Q82 78 76 90" stroke="#6d28d9" stroke-width="5" stroke-linecap="round" fill="none"/>
       </svg>`,
 
       white: `<svg viewBox="0 0 100 120" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 52 Q46 25 50 14" stroke="#22c55e" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-        <circle cx="50" cy="12" r="6.5" fill="#f472b6" stroke="#fbcfe8" stroke-width="1.5"/>
-        <circle cx="50" cy="12" r="2.5" fill="#fdf2f8"/>
-        <!-- Small Body -->
-        <ellipse cx="50" cy="80" rx="14" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-        <circle cx="50" cy="56" r="13" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-        <!-- Big Red Compound Eyes -->
-        <ellipse cx="43" cy="53" rx="5.5" ry="6.5" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2"/>
-        <ellipse cx="57" cy="53" rx="5.5" ry="6.5" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2"/>
-        <circle cx="44" cy="51" r="1.5" fill="#fee2e2"/>
-        <circle cx="58" cy="51" r="1.5" fill="#fee2e2"/>
-        <!-- Limbs -->
+        <circle cx="50" cy="12" r="6.5" fill="#f472b6" stroke="#fbcfe8" stroke-width="1.5"/><circle cx="50" cy="12" r="2.5" fill="#fdf2f8"/>
+        <ellipse cx="50" cy="80" rx="14" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/><circle cx="50" cy="56" r="13" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+        <ellipse cx="43" cy="53" rx="5.5" ry="6.5" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2"/><ellipse cx="57" cy="53" rx="5.5" ry="6.5" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2"/>
+        <circle cx="44" cy="51" r="1.5" fill="#fee2e2"/><circle cx="58" cy="51" r="1.5" fill="#fee2e2"/>
         <path d="M42 96 L39 114 M58 96 L61 114" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
-        <ellipse cx="37" cy="114" rx="4" ry="2" fill="#94a3b8"/>
-        <ellipse cx="63" cy="114" rx="4" ry="2" fill="#94a3b8"/>
+        <ellipse cx="37" cy="114" rx="4" ry="2" fill="#94a3b8"/><ellipse cx="63" cy="114" rx="4" ry="2" fill="#94a3b8"/>
         <path d="M37 76 Q28 82 32 90 M63 76 Q72 82 68 90" stroke="#94a3b8" stroke-width="2.8" stroke-linecap="round" fill="none"/>
       </svg>`,
 
       rock: `<svg viewBox="0 0 100 120" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 44 Q56 22 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <circle cx="50" cy="10" r="7" fill="#c084fc" stroke="#ddd6fe" stroke-width="1.5"/>
-        <circle cx="50" cy="10" r="3" fill="#ffffff"/>
-        <!-- Faceted Rock Body -->
+        <circle cx="50" cy="10" r="7" fill="#c084fc" stroke="#ddd6fe" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#ffffff"/>
         <polygon points="50,38 72,50 80,78 62,98 38,98 20,78 28,50" fill="#475569" stroke="#334155" stroke-width="2"/>
         <polygon points="50,38 72,50 64,72 50,66 36,72 28,50" fill="#64748b"/>
         <polygon points="36,72 50,66 64,72 62,98 38,98" fill="#334155"/>
-        <!-- Eyes placed on rock facet -->
-        <ellipse cx="42" cy="54" rx="4" ry="5.5" fill="#ffffff"/>
-        <ellipse cx="58" cy="54" rx="4" ry="5.5" fill="#ffffff"/>
-        <circle cx="42" cy="54" r="2.2" fill="#0f172a"/>
-        <circle cx="58" cy="54" r="2.2" fill="#0f172a"/>
-        <circle cx="43" cy="52.5" r="0.8" fill="#ffffff"/>
-        <circle cx="59" cy="52.5" r="0.8" fill="#ffffff"/>
-        <!-- Limbs -->
+        <ellipse cx="42" cy="54" rx="4" ry="5.5" fill="#ffffff"/><ellipse cx="58" cy="54" rx="4" ry="5.5" fill="#ffffff"/>
+        <circle cx="42" cy="54" r="2.2" fill="#0f172a"/><circle cx="58" cy="54" r="2.2" fill="#0f172a"/>
+        <circle cx="43" cy="52.5" r="0.8" fill="#ffffff"/><circle cx="59" cy="52.5" r="0.8" fill="#ffffff"/>
         <path d="M38 98 L34 114 M62 98 L66 114" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>
-        <ellipse cx="32" cy="114" rx="5" ry="2.5" fill="#1e293b"/>
-        <ellipse cx="68" cy="114" rx="5" ry="2.5" fill="#1e293b"/>
+        <ellipse cx="32" cy="114" rx="5" ry="2.5" fill="#1e293b"/><ellipse cx="68" cy="114" rx="5" ry="2.5" fill="#1e293b"/>
         <path d="M22 68 Q14 76 18 86 M78 68 Q86 76 82 86" stroke="#334155" stroke-width="3.8" stroke-linecap="round" fill="none"/>
       </svg>`,
 
       wing: `<svg viewBox="0 0 100 120" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <!-- Translucent Wings -->
         <ellipse cx="28" cy="50" rx="16" ry="8" transform="rotate(-30 28 50)" fill="#bae6fd" fill-opacity="0.85" stroke="#38bdf8" stroke-width="1.2"/>
         <ellipse cx="72" cy="50" rx="16" ry="8" transform="rotate(30 72 50)" fill="#bae6fd" fill-opacity="0.85" stroke="#38bdf8" stroke-width="1.2"/>
-        <!-- Stem & Lavender Flower -->
         <path d="M50 48 Q44 24 50 12" stroke="#22c55e" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-        <circle cx="50" cy="10" r="7" fill="#e879f9" stroke="#f5d0fe" stroke-width="1.5"/>
-        <circle cx="50" cy="10" r="3" fill="#ffffff"/>
-        <!-- Pink Cute Body -->
-        <ellipse cx="50" cy="76" rx="16" ry="18" fill="#f472b6"/>
-        <circle cx="50" cy="52" r="14" fill="#f472b6"/>
-        <!-- Big Round Blue Compound Eyes -->
-        <ellipse cx="42" cy="48" rx="6" ry="7" fill="#0284c7" stroke="#0369a1" stroke-width="1.2"/>
-        <ellipse cx="58" cy="48" rx="6" ry="7" fill="#0284c7" stroke="#0369a1" stroke-width="1.2"/>
-        <ellipse cx="41" cy="46" rx="2" ry="3" fill="#e0f2fe"/>
-        <ellipse cx="57" cy="46" rx="2" ry="3" fill="#e0f2fe"/>
-        <!-- Dainty Tiny Limbs -->
+        <circle cx="50" cy="10" r="7" fill="#e879f9" stroke="#f5d0fe" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#ffffff"/>
+        <ellipse cx="50" cy="76" rx="16" ry="18" fill="#f472b6"/><circle cx="50" cy="52" r="14" fill="#f472b6"/>
+        <ellipse cx="42" cy="48" rx="6" ry="7" fill="#0284c7" stroke="#0369a1" stroke-width="1.2"/><ellipse cx="58" cy="48" rx="6" ry="7" fill="#0284c7" stroke="#0369a1" stroke-width="1.2"/>
+        <ellipse cx="41" cy="46" rx="2" ry="3" fill="#e0f2fe"/><ellipse cx="57" cy="46" rx="2" ry="3" fill="#e0f2fe"/>
         <path d="M42 94 L40 110 M58 94 L60 110" stroke="#db2777" stroke-width="2.8" stroke-linecap="round"/>
-        <ellipse cx="39" cy="110" rx="3.5" ry="1.8" fill="#db2777"/>
-        <ellipse cx="61" cy="110" rx="3.5" ry="1.8" fill="#db2777"/>
+        <ellipse cx="39" cy="110" rx="3.5" ry="1.8" fill="#db2777"/><ellipse cx="61" cy="110" rx="3.5" ry="1.8" fill="#db2777"/>
       </svg>`,
 
       ice: `<svg viewBox="0 0 100 120" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Yellow Flower -->
         <path d="M50 44 Q54 22 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <circle cx="50" cy="10" r="7" fill="#fde047" stroke="#fef08a" stroke-width="1.5"/>
-        <circle cx="50" cy="10" r="3" fill="#ea580c"/>
-        <!-- Crystalline Ice Body -->
+        <circle cx="50" cy="10" r="7" fill="#fde047" stroke="#fef08a" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#ea580c"/>
         <polygon points="50,38 72,48 78,76 64,96 36,96 22,76 28,48" fill="#a5f3fc" stroke="#0891b2" stroke-width="1.8"/>
         <polygon points="50,38 72,48 62,68 50,62 38,68 28,48" fill="#cffafe"/>
         <polygon points="38,68 50,62 62,68 64,96 36,96" fill="#67e8f9"/>
-        <!-- Ice Shimmer details -->
         <line x1="32" y1="52" x2="44" y2="60" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
         <line x1="68" y1="52" x2="56" y2="60" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-        <!-- Eyes -->
-        <ellipse cx="43" cy="52" rx="4" ry="5.5" fill="#ffffff"/>
-        <ellipse cx="57" cy="52" rx="4" ry="5.5" fill="#ffffff"/>
-        <circle cx="43" cy="52" r="2.2" fill="#083344"/>
-        <circle cx="57" cy="52" r="2.2" fill="#083344"/>
-        <circle cx="44" cy="50.5" r="0.8" fill="#ffffff"/>
-        <circle cx="58" cy="50.5" r="0.8" fill="#ffffff"/>
-        <!-- Limbs -->
+        <ellipse cx="43" cy="52" rx="4" ry="5.5" fill="#ffffff"/><ellipse cx="57" cy="52" rx="4" ry="5.5" fill="#ffffff"/>
+        <circle cx="43" cy="52" r="2.2" fill="#083344"/><circle cx="57" cy="52" r="2.2" fill="#083344"/>
+        <circle cx="44" cy="50.5" r="0.8" fill="#ffffff"/><circle cx="58" cy="50.5" r="0.8" fill="#ffffff"/>
         <path d="M40 96 L37 112 M60 96 L63 112" stroke="#0891b2" stroke-width="4" stroke-linecap="round"/>
-        <ellipse cx="35" cy="112" rx="4.5" ry="2.2" fill="#0e7490"/>
-        <ellipse cx="65" cy="112" rx="4.5" ry="2.2" fill="#0e7490"/>
+        <ellipse cx="35" cy="112" rx="4.5" ry="2.2" fill="#0e7490"/><ellipse cx="65" cy="112" rx="4.5" ry="2.2" fill="#0e7490"/>
       </svg>`,
 
       glow: `<svg viewBox="0 0 100 120" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="glowEffect" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-          </filter>
-        </defs>
-        <!-- Glow Aura -->
-        <circle cx="50" cy="55" r="32" fill="#bef264" opacity="0.35" filter="url(#glowEffect)"/>
-        <!-- Head Star / Leaf -->
+        <circle cx="50" cy="55" r="32" fill="#bef264" opacity="0.35"/>
         <path d="M50 38 L50 14" stroke="#65a30d" stroke-width="3" stroke-linecap="round"/>
         <polygon points="50,6 53,12 59,13 54,18 56,24 50,20 44,24 46,18 41,13 47,12" fill="#facc15" stroke="#eab308" stroke-width="1"/>
-        <!-- Ghostly Glowing Body -->
         <path d="M34 50 C34 36 66 36 66 50 C66 65 60 76 56 86 C54 92 56 100 50 106 C44 100 46 92 44 86 C40 76 34 65 34 50 Z" fill="#84cc16" stroke="#4d7c0f" stroke-width="1.5"/>
-        <!-- Inner glow highlight -->
         <ellipse cx="50" cy="56" rx="9" ry="14" fill="#d9f99d" opacity="0.8"/>
-        <!-- Bright glowing eyes -->
-        <ellipse cx="44" cy="48" rx="4.5" ry="5.5" fill="#fef08a"/>
-        <ellipse cx="56" cy="48" rx="4.5" ry="5.5" fill="#fef08a"/>
-        <circle cx="44" cy="48" r="2.2" fill="#14532d"/>
-        <circle cx="56" cy="48" r="2.2" fill="#14532d"/>
-        <circle cx="45" cy="46.5" r="0.8" fill="#ffffff"/>
-        <circle cx="57" cy="46.5" r="0.8" fill="#ffffff"/>
+        <ellipse cx="44" cy="48" rx="4.5" ry="5.5" fill="#fef08a"/><ellipse cx="56" cy="48" rx="4.5" ry="5.5" fill="#fef08a"/>
+        <circle cx="44" cy="48" r="2.2" fill="#14532d"/><circle cx="56" cy="48" r="2.2" fill="#14532d"/>
+        <circle cx="45" cy="46.5" r="0.8" fill="#ffffff"/><circle cx="57" cy="46.5" r="0.8" fill="#ffffff"/>
       </svg>`
     };
 
-    /* Carrying Pose SVGs: Hands raised up carrying/pushing */
     const CARRYING_PIKMIN_SVGS = {
       red: `<svg viewBox="0 0 100 120" class="w-12 h-16 pikmin-shadow animate-bounce" style="animation-duration: 1.2s;" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 48 Q44 22 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
         <circle cx="50" cy="10" r="6" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/><circle cx="50" cy="10" r="2.5" fill="#eab308"/>
-        <!-- Arms raised UP holding fruit -->
         <path d="M34 68 Q 20 42 26 24" stroke="#dc2626" stroke-width="4" stroke-linecap="round" fill="none"/>
         <path d="M66 68 Q 80 42 74 24" stroke="#dc2626" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <!-- Tiny hands pushing -->
-        <circle cx="26" cy="24" r="3" fill="#dc2626"/>
-        <circle cx="74" cy="24" r="3" fill="#dc2626"/>
-        <!-- Body looking up -->
-        <ellipse cx="50" cy="80" rx="18" ry="22" fill="#ef4444"/>
-        <circle cx="50" cy="54" r="14" fill="#ef4444"/>
+        <circle cx="26" cy="24" r="3" fill="#dc2626"/><circle cx="74" cy="24" r="3" fill="#dc2626"/>
+        <ellipse cx="50" cy="80" rx="18" ry="22" fill="#ef4444"/><circle cx="50" cy="54" r="14" fill="#ef4444"/>
         <polygon points="50,53 66,51 50,58" fill="#dc2626"/>
         <ellipse cx="44" cy="48" rx="4" ry="5.5" fill="#ffffff"/><ellipse cx="56" cy="48" rx="4" ry="5.5" fill="#ffffff"/>
         <circle cx="44" cy="46" r="2.2" fill="#0f172a"/><circle cx="56" cy="46" r="2.2" fill="#0f172a"/>
-        <!-- Feet striding -->
         <path d="M42 98 L36 114 M58 98 L64 114" stroke="#dc2626" stroke-width="4" stroke-linecap="round"/>
         <ellipse cx="34" cy="114" rx="4" ry="2" fill="#dc2626"/><ellipse cx="66" cy="114" rx="4" ry="2" fill="#dc2626"/>
       </svg>`,
 
       yellow: `<svg viewBox="0 0 100 120" class="w-12 h-16 pikmin-shadow animate-bounce" style="animation-duration: 1.1s;" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 48 Q44 24 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
         <circle cx="50" cy="10" r="6" fill="#ffffff" stroke="#f1f5f9" stroke-width="1.5"/><circle cx="50" cy="10" r="2.5" fill="#f59e0b"/>
-        <!-- Pointy Ears -->
         <polygon points="36,48 18,40 33,56" fill="#eab308"/><polygon points="64,48 82,40 67,56" fill="#eab308"/>
-        <!-- Arms UP pushing -->
         <path d="M34 68 Q 20 40 24 24" stroke="#ca8a04" stroke-width="4" stroke-linecap="round" fill="none"/>
         <path d="M66 68 Q 80 40 76 24" stroke="#ca8a04" stroke-width="4" stroke-linecap="round" fill="none"/>
         <circle cx="24" cy="24" r="3" fill="#ca8a04"/><circle cx="76" cy="24" r="3" fill="#ca8a04"/>
-        <!-- Body -->
         <ellipse cx="50" cy="80" rx="17" ry="22" fill="#facc15"/><circle cx="50" cy="54" r="14" fill="#facc15"/>
         <ellipse cx="44" cy="50" rx="4" ry="5.5" fill="#ffffff"/><ellipse cx="56" cy="50" rx="4" ry="5.5" fill="#ffffff"/>
         <circle cx="44" cy="48" r="2.2" fill="#0f172a"/><circle cx="56" cy="48" r="2.2" fill="#0f172a"/>
-        <!-- Feet -->
         <path d="M42 98 L36 114 M58 98 L64 114" stroke="#ca8a04" stroke-width="3.8" stroke-linecap="round"/>
         <ellipse cx="34" cy="114" rx="4" ry="2" fill="#ca8a04"/><ellipse cx="66" cy="114" rx="4" ry="2" fill="#ca8a04"/>
       </svg>`,
 
       purple: `<svg viewBox="0 0 100 120" class="w-16 h-20 pikmin-shadow animate-bounce" style="animation-duration: 1.5s;" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 42 Q46 22 50 12" stroke="#22c55e" stroke-width="4.5" stroke-linecap="round" fill="none"/>
         <circle cx="50" cy="10" r="7.5" fill="#e879f9" stroke="#c084fc" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#fae8ff"/>
         <path d="M38 38 L30 30 M62 38 L70 30" stroke="#4c1d95" stroke-width="2.5" stroke-linecap="round"/>
-        <!-- Heavy Bulky Arms UP Lifting Heavy Object -->
         <path d="M30 64 Q 12 36 20 18" stroke="#6d28d9" stroke-width="6.5" stroke-linecap="round" fill="none"/>
         <path d="M70 64 Q 88 36 80 18" stroke="#6d28d9" stroke-width="6.5" stroke-linecap="round" fill="none"/>
         <circle cx="20" cy="18" r="4.5" fill="#5b21b6"/><circle cx="80" cy="18" r="4.5" fill="#5b21b6"/>
-        <!-- Heavy Body -->
         <ellipse cx="50" cy="74" rx="27" ry="25" fill="#8b5cf6"/><ellipse cx="50" cy="48" r="18" fill="#7c3aed"/>
         <ellipse cx="42" cy="46" rx="4.5" ry="5.5" fill="#ffffff"/><ellipse cx="58" cy="46" rx="4.5" ry="5.5" fill="#ffffff"/>
         <circle cx="42" cy="44" r="2.5" fill="#3b0764"/><circle cx="58" cy="44" r="2.5" fill="#3b0764"/>
-        <!-- Thick Sturdy Feet -->
         <path d="M36 96 L32 114 M64 96 L68 114" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
         <ellipse cx="30" cy="114" rx="6" ry="3.5" fill="#5b21b6"/><ellipse cx="70" cy="114" rx="6" ry="3.5" fill="#5b21b6"/>
       </svg>`,
 
       rock: `<svg viewBox="0 0 100 120" class="w-14 h-16 pikmin-shadow animate-bounce" style="animation-duration: 1.3s;" xmlns="http://www.w3.org/2000/svg">
-        <!-- Stem & Flower -->
         <path d="M50 44 Q56 22 50 12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" fill="none"/>
         <circle cx="50" cy="10" r="7" fill="#c084fc" stroke="#ddd6fe" stroke-width="1.5"/><circle cx="50" cy="10" r="3" fill="#ffffff"/>
-        <!-- Rock Arms UP pushing -->
         <path d="M26 66 Q 14 42 22 22" stroke="#334155" stroke-width="5" stroke-linecap="round" fill="none"/>
         <path d="M74 66 Q 86 42 78 22" stroke="#334155" stroke-width="5" stroke-linecap="round" fill="none"/>
         <circle cx="22" cy="22" r="3.5" fill="#1e293b"/><circle cx="78" cy="22" r="3.5" fill="#1e293b"/>
-        <!-- Rock Body -->
         <polygon points="50,38 72,50 80,78 62,98 38,98 20,78 28,50" fill="#475569" stroke="#334155" stroke-width="2"/>
         <polygon points="50,38 72,50 64,72 50,66 36,72 28,50" fill="#64748b"/>
         <ellipse cx="42" cy="54" rx="4" ry="5.5" fill="#ffffff"/><ellipse cx="58" cy="54" rx="4" ry="5.5" fill="#ffffff"/>
         <circle cx="42" cy="52" r="2.2" fill="#0f172a"/><circle cx="58" cy="52" r="2.2" fill="#0f172a"/>
-        <!-- Feet -->
         <path d="M38 98 L34 114 M62 98 L66 114" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>
         <ellipse cx="32" cy="114" rx="5" ry="2.5" fill="#1e293b"/><ellipse cx="68" cy="114" rx="5" ry="2.5" fill="#1e293b"/>
       </svg>`
     };
+
+    const PIKMIN_POWER_MAP = { red: 1, yellow: 1, purple: 10, rock: 3 };
 
     const PIKMIN_ROSTER = [
       { id: 'red', name: '紅皮克敏', color: '#ef4444', bg: 'bg-red-500', svgKey: 'red', trait: '耐火・攻擊力高', selStrength: '勇敢主動、不怕挫折', selHelp: '遇到水和冷水時容易心急' },
@@ -1336,8 +1482,8 @@
     const BADGES = [
       { id: 'self-card', title: '自我覺察徽章', icon: '🪪', desc: '完成皮克敏專屬屬性卡製作', unlocked: false },
       { id: 'calm-whistle', title: '冷靜急救金哨', icon: '🪈', desc: '完成 4-7-8 呼吸與情緒急救演練', unlocked: false },
-      { id: 'empathy-radar', title: '同理心探測儀', icon: '🤝', desc: '完成 4 項同理心夥伴雷達探索', unlocked: false },
-      { id: 'team-fruit', title: '協作搬運大師', icon: '🍓', desc: '完成 3 階段團隊合力搬運挑戰', unlocked: false },
+      { id: 'empathy-radar', title: '同理心探測儀', icon: '🤝', desc: '完成 9 大皮克敏同理心雷達探索', unlocked: false },
+      { id: 'team-fruit', title: '校園合作神隊友', icon: '🏆', desc: '通關 8 大校園生活合力搬運與協作任務', unlocked: false },
       { id: 'organize-hero', title: '校園 10 大收納王', icon: '🗂️', desc: '通過 10 項校園物品收納決策測驗', unlocked: false },
       { id: 'sel-master', title: '全能 Diamond 隊長', icon: '💎', desc: '集滿所有 CASEL 5 大能力成就榮譽！', unlocked: false }
     ];
@@ -1354,6 +1500,26 @@
         ]
       },
       {
+        title: '🟡 黃皮克敏上課好奇心爆發一直東張西望',
+        svgKey: 'yellow',
+        desc: '黃皮克敏耳朵很大、對周圍環境超好奇，上課時被窗外的鳥叫吸引而分心...',
+        options: [
+          { text: '溫和地輕拍牠的桌子，用手指指黑板提醒牠現在的課本頁數', correct: true, note: '非常貼心！不帶批判的溫和提醒，能幫助同伴找回學習焦點！' },
+          { text: '跟老師大聲告狀說牠都不專心', correct: false, note: '直接告狀容易引發同儕防衛與緊張關係。' },
+          { text: '跟著牠一起看窗外聊天', correct: false, note: '這會讓兩個人都錯過學習內容。' }
+        ]
+      },
+      {
+        title: '🔵 藍皮克敏在陸地上跑步總是在最後一名',
+        svgKey: 'blue',
+        desc: '藍皮克敏在水中是游泳健將，但在操場跑步比較慢，接力賽輸了心情很沮喪...',
+        options: [
+          { text: '罵牠害大家輸掉比賽', correct: false, note: '勝敗乃兵家常事，怪罪同伴會破壞團隊信任。' },
+          { text: '走過去給牠一個擁抱說：「你已經盡全力了！游泳課時你可是我們的王牌呢！」', correct: true, note: '太棒了！肯定同伴的付出，並看見牠在其他領域的獨特亮點！' },
+          { text: '叫牠以後都不要參加體育活動', correct: false, note: '剝奪他人參與機會是不公平的。' }
+        ]
+      },
+      {
         title: '🟣 紫皮克敏搬運太重走在最後面',
         svgKey: 'purple',
         desc: '紫皮克敏雖然力氣等於 10 隻，但體重很重、步伐沉重，漸漸跟不上大家跑去操場的腳步...',
@@ -1364,12 +1530,22 @@
         ]
       },
       {
+        title: '⚪ 白皮克敏因為體型嬌小被排擠',
+        svgKey: 'white',
+        desc: '白皮克敏個子很小、眼睛紅紅的，分組時其他組別都說牠太弱不想找牠...',
+        options: [
+          { text: '主動邀請牠加入自己的隊伍，並告訴大家牠移動速度最快、觀察最細心！', correct: true, note: '具備領袖風範！主動包容弱勢同儕，發掘並展現同伴的潛在超能力！' },
+          { text: '也跟著說：「你太小隻了不能跟我們一組」', correct: false, note: '這是以貌取人的排擠行為。' },
+          { text: '叫牠自己一個人去旁邊坐著', correct: false, note: '忽視與孤立同伴是不可取的。' }
+        ]
+      },
+      {
         title: '🪨 岩石皮克敏被誤會態度太生硬',
         svgKey: 'rock',
         desc: '岩石皮克敏說話很直接、原則很硬，有同學誤以為他在生氣而不高興...',
         options: [
-          { text: '一起討厭他，不要跟他說話', correct: false, note: '會造成班級同儕排擠與誤解加深。' },
           { text: '理解他只是表達方式堅硬像石頭，溫和地詢問：「你剛才的想法是什麼呢？我們可以一起討論！」', correct: true, note: '完全正確！看穿表象行為，理解不同溝通風格，展現高度社會知覺！' },
+          { text: '一起討厭他，不要跟他說話', correct: false, note: '會造成班級同儕排擠與誤解加深。' },
           { text: '直接跟他大吵一架', correct: false, note: '衝動應對會讓衝突升級。' }
         ]
       },
@@ -1382,6 +1558,109 @@
           { text: '罵牠「你怎麼連這個都搬不動」', correct: false, note: '羽翼皮克敏的特長在空中，不能用單一標準要求每個人。' },
           { text: '把箱子踢倒不管它', correct: false, note: '這樣既不安全又無法完成任務。' }
         ]
+      },
+      {
+        title: '🧊 冰凍皮克敏在大家吵架時沉默不語',
+        svgKey: 'ice',
+        desc: '小組討論時大家意見不合吵得面紅耳赤，冰凍皮克敏站在旁邊一語不發像塊冰塊...',
+        options: [
+          { text: '理解牠是想讓現場溫度降溫，請牠遞一杯水給大家，大家深呼吸後輪流說話', correct: true, note: '化解衝突的高手！理解安靜也是一種調節力量，幫助團隊重回冷靜！' },
+          { text: '對牠大吼「你都不講話是在發呆嗎」', correct: false, note: '會加劇衝突與情緒惡化。' },
+          { text: '把冰凍皮克敏推到門外去', correct: false, note: '不當肢體接觸是不尊重同伴的行為。' }
+        ]
+      },
+      {
+        title: '🌟 發光皮克敏在白天戶外活動時覺得刺眼疲倦',
+        svgKey: 'glow',
+        desc: '發光皮克敏在夜間發光指引全隊，但大太陽底下牠的眼睛感到很刺眼、很想休息...',
+        options: [
+          { text: '同理牠的晝夜習性，貼心地借牠一頂遮陽帽，並讓牠在樹蔭下擔任計時員', correct: true, note: '充滿同理心的環境調整！尊重生物節律，給予合適的支援照護！' },
+          { text: '強迫牠一定要在大太陽下跑 5 圈', correct: false, note: '忽視同伴身體極限容易造成中暑或傷害。' },
+          { text: '笑牠是大白天的螢火蟲', correct: false, note: '取笑他人的特質是不成熟的行為。' }
+        ]
+      }
+    ];
+
+    const CAMPUS_TEAMWORK_MISSIONS = [
+      {
+        name: '營養午餐大湯桶',
+        emoji: '🍲',
+        headerIcon: '🍱',
+        title: '午餐時間：抬熱騰騰的營養午餐湯桶',
+        category: '生活常規與安全',
+        desc: '湯桶又熱又重，需要大家步調一致、合力平衡才能安全抬到班級盛飯區！',
+        target: 12,
+        insight: '午餐湯桶沉重且有熱湯，一個人硬搬容易傾倒燙傷；只要 2 人合力抬兩側把手、一人在前方幫忙開門，就是最安全的合作！'
+      },
+      {
+        name: '全班新學期教科書大紙箱',
+        emoji: '📦',
+        headerIcon: '📚',
+        title: '開學第一天：從教務處搬回全班新課本',
+        category: '互助合作重物搬運',
+        desc: '一整箱國語、數學新課本重達 25 公斤，單靠一個人絕對搬不動，需要紫皮克敏與小隊支援！',
+        target: 25,
+        insight: '紫皮克敏一次能出 10 力，就像班上的大力士；但樓梯轉角與開門仍需要其他夥伴協助看路，多元分工效率最高！'
+      },
+      {
+        name: '教室高處窗戶清潔大作戰',
+        emoji: '🪟',
+        headerIcon: '🧼',
+        title: '大掃除時間：擦拭教室氣窗與高處玻璃',
+        category: '環境整潔與分工',
+        desc: '高處的氣窗一般人勾不到，需要黃皮克敏的高跳優勢與地面夥伴傳遞抹布配合！',
+        target: 8,
+        insight: '每個人身高與專長不同，高個子或跳得高的同學負責上層，細心的同學負責下層玻璃與洗抹布，合作讓教室煥然一新！'
+      },
+      {
+        name: '整間教室地板拖洗與泥沙清潔',
+        emoji: '🧹',
+        headerIcon: '🪣',
+        title: '雨天過後：拖洗整間教室走廊與地板',
+        category: '團體勞動與默契',
+        desc: '下雨天教室都是泥濘腳印，一桶水很快變髒，需要有人提水、有人掃沙、有人拖地！',
+        target: 15,
+        insight: '掃地、拖地、換水是一條流暢的合作流水線；彼此有默契地接力，就不會重複踩髒剛拖好的地面！'
+      },
+      {
+        name: '全班生字簿與數學習作送科任教室',
+        emoji: '📑',
+        headerIcon: '🏢',
+        title: '放學前任務：將全班 30 本作業送交科任老師',
+        category: '班級幹部與責任分工',
+        desc: '厚厚的 30 本大習作整疊容易滑落，需要小隊分裝或兩人合力端好走過長廊。',
+        target: 10,
+        insight: '小隊長主動邀請同學：「這疊太重容易散落，我們各拿一半一起走吧！」懂得主動求助與分攤重量是成熟的人際技巧。'
+      },
+      {
+        name: '整隊調整全班 30 張課桌椅排列',
+        emoji: '🪑',
+        headerIcon: '📐',
+        title: '班級常規：放學前將桌椅橫平豎直排整齊',
+        category: '團隊紀律與空間管理',
+        desc: '桌椅歪七扭八會影響隔天打掃與動線，每組兩人合力抬起桌椅對齊地板基準線。',
+        target: 18,
+        insight: '用「抬」的取代用「推」的，既保護地板又沒有刺耳噪音；兩人抬一張桌子輕鬆又省力！'
+      },
+      {
+        name: '體育課大型器材箱搬運至大操場',
+        emoji: '⚽',
+        headerIcon: '🏃',
+        title: '體育課前：將籃球、躲避球、飛盤器材箱搬到操場',
+        category: '體育活動與戶外協作',
+        desc: '器材箱裡裝滿各種球類與跳繩，路程很遠，需要小隊輪流或合力推拉！',
+        target: 20,
+        insight: '走到一半手痠時，互相說：「我幫你換手！」，能讓團隊走得更遠、感情更好！'
+      },
+      {
+        name: '美勞課大型立體紙箱城堡搬至展示區',
+        emoji: '🏰',
+        headerIcon: '🎨',
+        title: '成果發表：將小組共同創作的紙箱城堡搬到圖書館',
+        category: '同心協力與小心呵護',
+        desc: '這座城堡貼滿大家的心血，脆弱又龐大，需要 4 個角落都有人穩穩托住！',
+        target: 30,
+        insight: '搬運易碎作品時，大家步伐要保持一致、口令清晰：「一、二、起！」體驗齊心協力的最高默契！'
       }
     ];
 
@@ -1401,8 +1680,8 @@
         icon: '📝',
         desc: '抽屜塞滿考卷，考 100 分的想留，寫錯的堆在一起，丟掉時上面還有姓名座號...',
         options: [
-          { text: '直接整疊揉成一團丟進教室大垃圾桶', correct: false, note: '這樣會暴露個資，且錯題沒有被複習到喔！' },
           { text: '剪貼錯題整理成專屬錯題本；廢棄前將名字以印章遮蔽或剪碎保護隱私', correct: true, note: '太棒了！這是《收納圖鑑》推薦的精準整理術：錯題發揮價值，廢棄注意個資！' },
+          { text: '直接整疊揉成一團丟進教室大垃圾桶', correct: false, note: '這樣會暴露個資，且錯題沒有被複習到喔！' },
           { text: '把所有考卷全部貼在自己桌子四周裝飾', correct: false, note: '會讓上課視線混亂，影響正常學習專注。' }
         ]
       },
@@ -1431,8 +1710,8 @@
         icon: '🧹',
         desc: '寫完生字本後，桌面滿滿都是橡皮擦碎屑，快下課了該怎麼辦？',
         options: [
-          { text: '一手帥氣地全部掃到地板上，留給值日生掃', correct: false, note: '這樣會造成打掃同學的困擾，缺乏同理心喔！' },
           { text: '用桌上小刷具或掌心掃成一堆，下課隨手帶到垃圾桶倒掉', correct: true, note: '答對了！養成「隨手收納擦屑」的常規，保持桌面清爽好專注。' },
+          { text: '一手帥氣地全部掃到地板上，留給值日生掃', correct: false, note: '這樣會造成打掃同學的困擾，缺乏同理心喔！' },
           { text: '把橡皮擦屑全部塞進鉛筆盒裡收藏', correct: false, note: '鉛筆盒會變髒，文具也容易被弄壞。' }
         ]
       },
@@ -1451,8 +1730,8 @@
         icon: '🎨',
         desc: '美勞課結束了，黏土作品還沒乾，工具箱又重又大，一個人快拿不動了...',
         options: [
-          { text: '不管它直接放在走廊地上走人', correct: false, note: '可能會被其他同學踩壞或絆倒同學喔！' },
           { text: '運用「合力搬運」禮貌邀請同學一起抬，作品拍照後放於通風展示架陰乾', correct: true, note: '太讚了！結合了紫皮克敏的合力概念與適當求助技巧！' },
+          { text: '不管它直接放在走廊地上走人', correct: false, note: '可能會被其他同學踩壞或絆倒同學喔！' },
           { text: '用腳踢著工具箱回教室', correct: false, note: '工具會損壞，也是不安全的行為。' }
         ]
       },
@@ -1497,11 +1776,6 @@
     let empathyScore = 0;
 
     let currentFruitLevel = 0;
-    const FRUIT_LEVELS = [
-      { name: '香甜大草莓', emoji: '🍓', target: 10 },
-      { name: '多汁巨峰葡萄', emoji: '🍇', target: 20 },
-      { name: '黃金大鳳梨', emoji: '🍍', target: 35 }
-    ];
     let currentTeamPower = 0;
     let assignedPikminList = [];
 
@@ -1509,208 +1783,348 @@
     let quizScore = 0;
     let breathingInterval = null;
 
-    /* =========================================================
-       Growth Journey & Card History Data Storage
-       ========================================================= */
-    let currentActiveRecordId = 'rec-init';
-    let growthHistory = [
+    let isSpeechRecording = false;
+    let speechRecognitionInstance = null;
+    let clickTimerMap = new Map();
+
+    let growthHistoryRecords = [
       {
-        id: 'rec-init',
-        dateStr: '2026/08/31 16:00',
+        id: 'rec_init_1',
+        dateStr: '2026/09/01',
         name: '小勇士',
-        spiritId: 'red',
+        spirit: 'red',
         stage: 'leaf',
-        strengths: ['🔥 勇敢面對挑戰、很有正義感'],
-        weaknesses: ['💧 遇到挫折容易心急，需要提醒我深呼吸'],
-        note: '第一天加入皮克敏心靈探索小隊，準備好迎接挑戰！'
+        strengths: [STRENGTH_OPTIONS[0]],
+        weaknesses: [WEAKNESS_OPTIONS[0]],
+        note: '開學第一天，我帶領紅皮克敏小隊探索心靈基地！'
       }
     ];
 
     function switchTab(tabId) {
       playSound('pop');
-      const tabs = document.querySelectorAll('.tab-content');
-      tabs.forEach(t => t.classList.add('hidden'));
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+        tab.classList.remove('block');
+      });
 
       const target = document.getElementById(`tab-${tabId}`);
       if (target) {
         target.classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        target.classList.add('block');
       }
-      if (tabId === 'history') {
-        renderGrowthHistory();
-      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       lucide.createIcons();
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const cleanText = text.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').trim();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = 'zh-TW';
+      utterance.rate = 0.95;
+      utterance.pitch = 1.1;
+      window.speechSynthesis.speak(utterance);
     }
 
     function renderPikminEncyclopedia() {
       const grid = document.getElementById('pikmin-encyclopedia-grid');
       if (!grid) return;
       grid.innerHTML = '';
-
       PIKMIN_ROSTER.forEach(p => {
         const item = document.createElement('div');
-        item.className = 'game-card cursor-pointer bg-slate-50 hover:bg-white p-3 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-md transition text-center flex flex-col items-center justify-between group';
+        item.className = 'game-card bg-slate-50 hover:bg-emerald-50/50 p-2.5 rounded-2xl border border-slate-200 flex flex-col items-center text-center cursor-pointer transition';
         item.onclick = () => {
           playSound('pop');
+          speakText(`${p.name}。${p.trait}。優勢是：${p.selStrength}。需要幫助：${p.selHelp}`);
           showModal(
-            `<div class="w-16 h-16 mx-auto">${PIKMIN_SVGS[p.svgKey]}</div>`,
-            p.name,
-            `<strong>屬性特質：</strong>${p.trait}<br><br><strong>🌟 SEL 優勢：</strong>${p.selStrength}<br><strong>🤝 需要協助：</strong>${p.selHelp}`
+            p.name.slice(0, 1),
+            `${p.name} 夥伴特質`,
+            `<strong>屬性特徵：</strong>${p.trait}<br><br><strong>🌱 SEL 超能力：</strong>${p.selStrength}<br><br><strong>🤝 需要隊友：</strong>${p.selHelp}`
           );
         };
-
         item.innerHTML = `
-          <div class="w-12 h-14 mx-auto pikmin-shadow group-hover:scale-110 transition duration-300 flex items-center justify-center">
-            ${PIKMIN_SVGS[p.svgKey]}
-          </div>
-          <div class="mt-2">
-            <h4 class="font-black text-xs text-slate-800">${p.name}</h4>
-            <p class="text-[10px] text-slate-500 line-clamp-1 mt-0.5">${p.trait}</p>
-          </div>
+          <div class="w-12 h-14 pikmin-shadow flex items-center justify-center">${PIKMIN_SVGS[p.svgKey]}</div>
+          <span class="text-xs font-black text-slate-800 mt-1.5">${p.name}</span>
+          <span class="text-[10px] text-slate-500 font-medium truncate w-full">${p.trait}</span>
         `;
         grid.appendChild(item);
       });
     }
 
+    function initCardCustomizer() {
+      const spiritCont = document.getElementById('spirit-selector');
+      if (spiritCont) {
+        spiritCont.innerHTML = '';
+        PIKMIN_ROSTER.forEach(p => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.id = `spirit-btn-${p.id}`;
+          btn.className = `p-2 rounded-xl border-2 flex flex-col items-center gap-1 transition ${
+            selectedSpirit === p.id ? 'border-red-500 bg-red-50 ring-2 ring-red-300' : 'border-slate-200 bg-white hover:border-slate-300'
+          }`;
+          btn.onclick = () => selectSpirit(p.id);
+          btn.innerHTML = `
+            <div class="w-8 h-10 pikmin-shadow flex items-center justify-center">${PIKMIN_SVGS[p.svgKey]}</div>
+            <span class="text-[11px] font-bold text-slate-700">${p.name}</span>
+          `;
+          spiritCont.appendChild(btn);
+        });
+      }
+
+      renderTags();
+      updateCardPreview();
+    }
+
+    function renderTags() {
+      const sCont = document.getElementById('strength-tags');
+      const wCont = document.getElementById('weakness-tags');
+      if (sCont) {
+        sCont.innerHTML = '';
+        STRENGTH_OPTIONS.forEach(s => {
+          const isSelected = selectedStrengths.includes(s);
+          const tag = document.createElement('button');
+          tag.type = 'button';
+          tag.className = `px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1 ${
+            isSelected ? 'bg-emerald-500 text-white shadow-sm ring-2 ring-emerald-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`;
+          tag.textContent = s;
+          tag.onclick = () => handleTagSmartClick('strength', s, tag);
+          sCont.appendChild(tag);
+        });
+      }
+
+      if (wCont) {
+        wCont.innerHTML = '';
+        WEAKNESS_OPTIONS.forEach(w => {
+          const isSelected = selectedWeaknesses.includes(w);
+          const tag = document.createElement('button');
+          tag.type = 'button';
+          tag.className = `px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1 ${
+            isSelected ? 'bg-amber-500 text-white shadow-sm ring-2 ring-amber-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`;
+          tag.textContent = w;
+          tag.onclick = () => handleTagSmartClick('weakness', w, tag);
+          wCont.appendChild(tag);
+        });
+      }
+    }
+
+    function handleTagSmartClick(type, text, el) {
+      const key = type + '_' + text;
+      const lastTime = clickTimerMap.get(key) || 0;
+      const now = Date.now();
+
+      if (now - lastTime < 380) {
+        clickTimerMap.delete(key);
+        if (type === 'strength') toggleStrengthTag(text);
+        else toggleWeaknessTag(text);
+      } else {
+        clickTimerMap.set(key, now);
+        speakText(text);
+        el.classList.add('ring-2', 'ring-teal-400', 'scale-105');
+        setTimeout(() => {
+          el.classList.remove('ring-2', 'ring-teal-400', 'scale-105');
+        }, 500);
+      }
+    }
+
     function selectSpirit(id) {
       playSound('pop');
       selectedSpirit = id;
-      PIKMIN_ROSTER.forEach(p => {
-        const btn = document.getElementById(`spirit-btn-${p.id}`);
-        if (btn) {
-          if (p.id === id) {
-            btn.className = 'p-2 rounded-xl border-2 text-center text-xs font-bold transition flex flex-col items-center gap-1 border-red-500 bg-red-50 shadow-sm';
-          } else {
-            btn.className = 'p-2 rounded-xl border-2 text-center text-xs font-bold transition flex flex-col items-center gap-1 border-slate-200 bg-white hover:border-slate-300';
-          }
-        }
+      document.querySelectorAll('#spirit-selector button').forEach(b => {
+        b.className = 'p-2 rounded-xl border-2 flex flex-col items-center gap-1 transition border-slate-200 bg-white hover:border-slate-300';
       });
+      const activeBtn = document.getElementById(`spirit-btn-${id}`);
+      if (activeBtn) {
+        activeBtn.className = 'p-2 rounded-xl border-2 flex flex-col items-center gap-1 transition border-red-500 bg-red-50 ring-2 ring-red-300';
+      }
       updateCardPreview();
     }
 
     function setGrowthStage(stage) {
       playSound('pop');
       currentStage = stage;
-      ['leaf', 'bud', 'flower'].forEach(s => {
-        const btn = document.getElementById(`btn-stage-${s}`);
-        if (btn) {
-          if (s === stage) {
-            btn.className = 'stage-btn p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-center font-bold text-xs flex flex-col items-center gap-1 transition shadow-sm';
-          } else {
-            btn.className = 'stage-btn p-3 rounded-xl border-2 border-slate-200 bg-white text-center font-bold text-xs flex flex-col items-center gap-1 hover:border-slate-300 transition';
-          }
-        }
+      document.querySelectorAll('.stage-btn').forEach(btn => {
+        btn.classList.remove('border-emerald-500', 'border-amber-400', 'border-pink-400', 'bg-emerald-50', 'bg-amber-50', 'bg-pink-50');
+        btn.classList.add('border-slate-200', 'bg-white');
       });
+      const activeBtn = document.getElementById(`btn-stage-${stage}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-slate-200', 'bg-white');
+        if (stage === 'leaf') activeBtn.classList.add('border-emerald-500', 'bg-emerald-50');
+        if (stage === 'bud') activeBtn.classList.add('border-amber-400', 'bg-amber-50');
+        if (stage === 'flower') activeBtn.classList.add('border-pink-400', 'bg-pink-50');
+      }
+      updateCardPreview();
+    }
+
+    function toggleStrengthTag(s) {
+      playSound('pop');
+      const idx = selectedStrengths.indexOf(s);
+      if (idx > -1) {
+        if (selectedStrengths.length > 1) selectedStrengths.splice(idx, 1);
+      } else {
+        if (selectedStrengths.length < 3) selectedStrengths.push(s);
+        else selectedStrengths[0] = s;
+      }
+      const countEl = document.getElementById('strength-select-count');
+      if (countEl) countEl.textContent = `已選 ${selectedStrengths.length}/3 項`;
+      renderTags();
+      updateCardPreview();
+    }
+
+    function toggleWeaknessTag(w) {
+      playSound('pop');
+      const idx = selectedWeaknesses.indexOf(w);
+      if (idx > -1) {
+        if (selectedWeaknesses.length > 1) selectedWeaknesses.splice(idx, 1);
+      } else {
+        if (selectedWeaknesses.length < 3) selectedWeaknesses.push(w);
+        else selectedWeaknesses[0] = w;
+      }
+      const countEl = document.getElementById('weakness-select-count');
+      if (countEl) countEl.textContent = `已選 ${selectedWeaknesses.length}/3 項`;
+      renderTags();
       updateCardPreview();
     }
 
     function updateCardPreview() {
       const nameInput = document.getElementById('custom-name');
-      const nameVal = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : '小勇士';
-      
+      const name = nameInput ? nameInput.value.trim() || '小勇士' : '小勇士';
+      const spirit = PIKMIN_ROSTER.find(p => p.id === selectedSpirit) || PIKMIN_ROSTER[0];
+
       const pName = document.getElementById('preview-name');
-      if (pName) pName.textContent = nameVal;
-
-      const spiritObj = PIKMIN_ROSTER.find(p => p.id === selectedSpirit) || PIKMIN_ROSTER[0];
-      const typeName = document.getElementById('preview-type-name');
-      if (typeName) {
-        typeName.textContent = `${spiritObj.name}（${spiritObj.trait}）`;
-        typeName.style.color = spiritObj.color;
-      }
-
-      const cardContainer = document.getElementById('physical-card-preview');
-      if (cardContainer) {
-        cardContainer.style.background = `linear-gradient(135deg, ${spiritObj.color}, #1e293b)`;
-      }
-
-      const stageSVGs = {
-        leaf: `<svg viewBox="0 0 40 40" class="w-6 h-6 inline-block"><path d="M12 34 Q 18 20 22 14" stroke="#4ade80" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M22 14 C 18 6, 26 2, 34 6 C 38 14, 30 22, 22 14 Z" fill="#4ade80" stroke="#16a34a" stroke-width="1.2"/></svg>`,
-        bud: `<svg viewBox="0 0 40 40" class="w-6 h-6 inline-block"><path d="M14 34 Q 18 22 20 18" stroke="#4ade80" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M15 20 Q 20 16 25 20 L 20 24 Z" fill="#22c55e"/><path d="M16 18 C 14 10, 22 4, 28 10 C 31 15, 25 20, 20 18 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/></svg>`,
-        flower: `<svg viewBox="0 0 40 40" class="w-6 h-6 inline-block"><circle cx="20" cy="9" r="4.5" fill="#ffffff" stroke="#f1f5f9"/><circle cx="26" cy="13" r="4.5" fill="#ffffff" stroke="#f1f5f9"/><circle cx="24" cy="20" r="4.5" fill="#ffffff" stroke="#f1f5f9"/><circle cx="16" cy="20" r="4.5" fill="#ffffff" stroke="#f1f5f9"/><circle cx="14" cy="13" r="4.5" fill="#ffffff" stroke="#f1f5f9"/><circle cx="20" cy="15" r="4" fill="#f59e0b"/></svg>`
-      };
-
-      const previewStage = document.getElementById('preview-stage-icon');
-      if (previewStage) previewStage.innerHTML = stageSVGs[currentStage] || stageSVGs.leaf;
-
-      const previewSvg = document.getElementById('preview-pikmin-svg');
-      if (previewSvg) previewSvg.innerHTML = PIKMIN_SVGS[spiritObj.svgKey];
-
-      const sText = document.getElementById('preview-strengths-text');
-      if (sText) {
-        sText.innerHTML = selectedStrengths.length > 0 
-          ? selectedStrengths.join('<br>') 
-          : '尚未選擇優勢超能力';
-      }
-
-      const wText = document.getElementById('preview-weakness-text');
-      if (wText) {
-        wText.innerHTML = selectedWeaknesses.length > 0 
-          ? selectedWeaknesses.join('<br>') 
-          : '尚未選擇需要隊友協助的項目';
-      }
-
+      const pTypeName = document.getElementById('preview-type-name');
+      const pSvg = document.getElementById('preview-pikmin-svg');
+      const pStrengths = document.getElementById('preview-strengths-text');
+      const pWeakness = document.getElementById('preview-weakness-text');
+      const pStageIcon = document.getElementById('preview-stage-icon');
+      const pNote = document.getElementById('preview-note-text');
       const noteInput = document.getElementById('custom-note');
-      const noteVal = noteInput ? noteInput.value.trim() : '';
-      const pNoteCont = document.getElementById('preview-note-container');
-      const pNoteText = document.getElementById('preview-note-text');
-      if (pNoteCont && pNoteText) {
-        if (noteVal) {
-          pNoteCont.classList.remove('hidden');
-          pNoteText.textContent = noteVal;
-        } else {
-          pNoteCont.classList.add('hidden');
-        }
+
+      if (pName) pName.textContent = name;
+      if (pTypeName) pTypeName.textContent = `${spirit.name}（${spirit.trait}）`;
+      if (pSvg) pSvg.innerHTML = PIKMIN_SVGS[spirit.svgKey];
+      if (pStrengths) pStrengths.innerHTML = selectedStrengths.join('<br>');
+      if (pWeakness) pWeakness.innerHTML = selectedWeaknesses.join('<br>');
+      if (pStageIcon) {
+        if (currentStage === 'leaf') pStageIcon.textContent = '🌱';
+        else if (currentStage === 'bud') pStageIcon.textContent = '🌿';
+        else pStageIcon.textContent = '🌸';
+      }
+      if (pNote && noteInput) {
+        pNote.textContent = noteInput.value.trim() || '今天也是充滿幹勁的一天！';
       }
     }
 
-    /* Save and History Management Functions */
+    function toggleVoiceInput() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showModal('🎙️', '瀏覽器不支援語音辨識', '您的瀏覽器尚未支援麥克風直接輸入，請使用鍵盤或打字輸入喔！');
+        return;
+      }
+
+      const statusIndicator = document.getElementById('voice-status-indicator');
+      const micBtn = document.getElementById('voice-input-btn');
+      const btnText = document.getElementById('voice-btn-text');
+
+      if (isSpeechRecording) {
+        if (speechRecognitionInstance) speechRecognitionInstance.stop();
+        isSpeechRecording = false;
+        if (statusIndicator) statusIndicator.classList.add('hidden');
+        if (btnText) btnText.textContent = '語音輸入（按一下說話）';
+        if (micBtn) {
+          micBtn.classList.remove('bg-red-500', 'text-white');
+          micBtn.classList.add('bg-emerald-100', 'text-emerald-800');
+        }
+        return;
+      }
+
+      try {
+        speechRecognitionInstance = new SpeechRecognition();
+        speechRecognitionInstance.lang = 'zh-TW';
+        speechRecognitionInstance.continuous = false;
+        speechRecognitionInstance.interimResults = false;
+
+        speechRecognitionInstance.onstart = () => {
+          isSpeechRecording = true;
+          playSound('pop');
+          if (statusIndicator) statusIndicator.classList.remove('hidden');
+          if (btnText) btnText.textContent = '正在錄音中...（再按一下停止）';
+          if (micBtn) {
+            micBtn.classList.remove('bg-emerald-100', 'text-emerald-800');
+            micBtn.classList.add('bg-red-500', 'text-white');
+          }
+        };
+
+        speechRecognitionInstance.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          const noteInput = document.getElementById('custom-note');
+          if (noteInput) {
+            if (noteInput.value.trim()) {
+              noteInput.value += ' ' + transcript;
+            } else {
+              noteInput.value = transcript;
+            }
+            updateCardPreview();
+            playSound('correct');
+          }
+        };
+
+        speechRecognitionInstance.onerror = () => {
+          isSpeechRecording = false;
+          if (statusIndicator) statusIndicator.classList.add('hidden');
+          if (btnText) btnText.textContent = '語音輸入（按一下說話）';
+          if (micBtn) {
+            micBtn.classList.remove('bg-red-500', 'text-white');
+            micBtn.classList.add('bg-emerald-100', 'text-emerald-800');
+          }
+        };
+
+        speechRecognitionInstance.onend = () => {
+          isSpeechRecording = false;
+          if (statusIndicator) statusIndicator.classList.add('hidden');
+          if (btnText) btnText.textContent = '語音輸入（按一下說話）';
+          if (micBtn) {
+            micBtn.classList.remove('bg-red-500', 'text-white');
+            micBtn.classList.add('bg-emerald-100', 'text-emerald-800');
+          }
+        };
+
+        speechRecognitionInstance.start();
+      } catch (err) {
+        console.error('Speech recognition failed to initialize:', err);
+      }
+    }
+
     function finishCustomCard(isNew = false) {
       playSound('success');
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      confetti({ particleCount: 50, spread: 50 });
       unlockBadge('self-card');
 
       const nameInput = document.getElementById('custom-name');
-      const nameVal = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : '小勇士';
       const noteInput = document.getElementById('custom-note');
-      const noteVal = noteInput ? noteInput.value.trim() : '';
+      const rec = {
+        id: 'rec_' + Date.now(),
+        dateStr: new Date().toLocaleDateString('zh-TW'),
+        name: nameInput ? nameInput.value.trim() || '小勇士' : '小勇士',
+        spirit: selectedSpirit,
+        stage: currentStage,
+        strengths: [...selectedStrengths],
+        weaknesses: [...selectedWeaknesses],
+        note: noteInput ? noteInput.value.trim() || '今天也是充滿幹勁的一天！' : '今天也是充滿幹勁的一天！'
+      };
 
-      const now = new Date();
-      const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-      if (isNew || !currentActiveRecordId) {
-        const newRec = {
-          id: 'rec-' + Date.now(),
-          dateStr,
-          name: nameVal,
-          spiritId: selectedSpirit,
-          stage: currentStage,
-          strengths: [...selectedStrengths],
-          weaknesses: [...selectedWeaknesses],
-          note: noteVal || '今天的心情記錄與優勢反思'
-        };
-        growthHistory.unshift(newRec);
-        currentActiveRecordId = newRec.id;
+      if (isNew || growthHistoryRecords.length === 0) {
+        growthHistoryRecords.unshift(rec);
       } else {
-        const existing = growthHistory.find(r => r.id === currentActiveRecordId);
-        if (existing) {
-          existing.name = nameVal;
-          existing.spiritId = selectedSpirit;
-          existing.stage = currentStage;
-          existing.strengths = [...selectedStrengths];
-          existing.weaknesses = [...selectedWeaknesses];
-          existing.note = noteVal;
-          existing.dateStr = dateStr + ' (已更新)';
-        }
+        growthHistoryRecords[0] = rec;
       }
 
       updateHistorySelectDropdown();
       renderGrowthHistory();
-
-      showModal(
-        '🪪',
-        '卡片已儲存至成長手帳！',
-        '太棒了！已將你今天的皮克敏屬性卡與心情狀態存檔。<br>你可以隨時在「成長手帳」查看軌跡，或點擊「修改」調整內容！'
-      );
+      showModal('🪪', '卡片已儲存至成長手帳！', '你的專屬皮克敏個別化優勢卡已更新！可以前往成長手帳查看歷史歷程喔！');
     }
 
     function saveAsNewHistoryRecord() {
@@ -1721,289 +2135,220 @@
       const sel = document.getElementById('history-quick-select');
       if (!sel) return;
       sel.innerHTML = '<option value="new">➕ 建立新卡片紀錄</option>';
-      growthHistory.forEach(rec => {
+      growthHistoryRecords.forEach((rec, idx) => {
         const opt = document.createElement('option');
-        opt.value = rec.id;
-        opt.textContent = `📅 ${rec.dateStr} - ${rec.name} (${rec.stage})`;
-        if (rec.id === currentActiveRecordId) opt.selected = true;
+        opt.value = idx;
+        opt.textContent = `${rec.dateStr} - ${rec.name} (${rec.spirit})`;
         sel.appendChild(opt);
       });
-      document.getElementById('history-badge-count').textContent = growthHistory.length;
     }
 
     function onSelectHistoryRecord(val) {
       if (val === 'new') {
-        currentActiveRecordId = null;
-        document.getElementById('custom-note').value = '';
+        selectedSpirit = 'red';
+        currentStage = 'leaf';
         selectedStrengths = [STRENGTH_OPTIONS[0]];
         selectedWeaknesses = [WEAKNESS_OPTIONS[0]];
-        initCardCustomizerTagStyles();
-        updateCardPreview();
+        document.getElementById('custom-note').value = '';
       } else {
-        loadHistoryRecord(val);
+        const idx = parseInt(val, 10);
+        const rec = growthHistoryRecords[idx];
+        if (rec) {
+          document.getElementById('custom-name').value = rec.name;
+          selectedSpirit = rec.spirit;
+          currentStage = rec.stage;
+          selectedStrengths = [...rec.strengths];
+          selectedWeaknesses = [...rec.weaknesses];
+          document.getElementById('custom-note').value = rec.note;
+        }
       }
-    }
-
-    function loadHistoryRecord(recId) {
-      playSound('pop');
-      const rec = growthHistory.find(r => r.id === recId);
-      if (!rec) return;
-
-      currentActiveRecordId = rec.id;
-      document.getElementById('custom-name').value = rec.name;
-      selectedSpirit = rec.spiritId;
-      currentStage = rec.stage;
-      selectedStrengths = [...rec.strengths];
-      selectedWeaknesses = [...rec.weaknesses];
-      document.getElementById('custom-note').value = rec.note || '';
-
-      selectSpirit(selectedSpirit);
+      initCardCustomizer();
       setGrowthStage(currentStage);
-      initCardCustomizerTagStyles();
-      updateCardPreview();
-
-      const dateLabel = document.getElementById('preview-date-label');
-      if (dateLabel) dateLabel.textContent = `${rec.dateStr} 紀錄`;
-
-      updateHistorySelectDropdown();
+      selectSpirit(selectedSpirit);
     }
 
     function renderGrowthHistory() {
-      const container = document.getElementById('history-timeline-container');
-      if (!container) return;
-      container.innerHTML = '';
+      const cont = document.getElementById('history-timeline-container');
+      const totalLabel = document.getElementById('history-total-label');
+      const badgeCount = document.getElementById('history-badge-count');
+      if (totalLabel) totalLabel.textContent = `共 ${growthHistoryRecords.length} 筆紀錄`;
+      if (badgeCount) badgeCount.textContent = growthHistoryRecords.length;
 
-      let flowerCount = 0, budCount = 0, leafCount = 0;
+      let leafCount = 0, budCount = 0, flowerCount = 0;
+      growthHistoryRecords.forEach(r => {
+        if (r.stage === 'leaf') leafCount++;
+        else if (r.stage === 'bud') budCount++;
+        else if (r.stage === 'flower') flowerCount++;
+      });
 
-      growthHistory.forEach(rec => {
-        if (rec.stage === 'flower') flowerCount++;
-        else if (rec.stage === 'bud') budCount++;
-        else leafCount++;
+      const sFlower = document.getElementById('stat-count-flower');
+      const sBud = document.getElementById('stat-count-bud');
+      const sLeaf = document.getElementById('stat-count-leaf');
+      if (sFlower) sFlower.textContent = flowerCount;
+      if (sBud) sBud.textContent = budCount;
+      if (sLeaf) sLeaf.textContent = leafCount;
 
-        const spirit = PIKMIN_ROSTER.find(p => p.id === rec.spiritId) || PIKMIN_ROSTER[0];
-        const stageLabelMap = {
-          leaf: { text: '🌱 葉子形態（累積能量中）', color: 'bg-emerald-100 text-emerald-800' },
-          bud: { text: '🌿 花苞形態（專注前進）', color: 'bg-amber-100 text-amber-800' },
-          flower: { text: '🌸 開花形態（元氣滿分）', color: 'bg-pink-100 text-pink-800' }
-        };
-        const stageInfo = stageLabelMap[rec.stage] || stageLabelMap.leaf;
-
-        const item = document.createElement('div');
-        item.className = 'p-4 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-md transition bg-slate-50/70 flex flex-col md:flex-row items-start md:items-center justify-between gap-4';
-        item.innerHTML = `
-          <div class="flex items-start gap-3.5">
-            <div class="w-12 h-14 pikmin-shadow flex-shrink-0 flex items-center justify-center">
-              ${PIKMIN_SVGS[spirit.svgKey]}
-            </div>
-            <div class="space-y-1">
-              <div class="flex flex-wrap items-center gap-2">
-                <h5 class="font-black text-slate-800 text-sm">${rec.name} 的探險卡</h5>
-                <span class="text-[10px] px-2 py-0.5 rounded-full font-black ${stageInfo.color}">${stageInfo.text}</span>
-                <span class="text-[10px] text-slate-400 font-medium">${rec.dateStr}</span>
+      if (!cont) return;
+      cont.innerHTML = '';
+      growthHistoryRecords.forEach((rec, idx) => {
+        const spirit = PIKMIN_ROSTER.find(p => p.id === rec.spirit) || PIKMIN_ROSTER[0];
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3';
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-12 pikmin-shadow flex items-center justify-center">${PIKMIN_SVGS[spirit.svgKey]}</div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-black text-slate-800 text-sm">${rec.name}</span>
+                <span class="text-xs text-slate-500">${rec.dateStr}</span>
+                <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">${rec.stage === 'leaf' ? '🌱 葉子' : rec.stage === 'bud' ? '🌿 花苞' : '🌸 開花'}</span>
               </div>
-              <div class="text-xs text-slate-600 font-medium space-y-0.5">
-                <div><span class="font-bold text-emerald-700">🌟 優勢：</span>${rec.strengths.join('、')}</div>
-                <div><span class="font-bold text-amber-700">🤝 需要協助：</span>${rec.weaknesses.join('、')}</div>
-                ${rec.note ? `<div class="text-slate-500 italic text-[11px]">💬 反思：${rec.note}</div>` : ''}
-              </div>
+              <p class="text-xs text-slate-600 mt-1"><strong>超能力：</strong>${rec.strengths.join('、')}</p>
+              <p class="text-xs text-slate-500 italic mt-0.5">💬 ${rec.note}</p>
             </div>
           </div>
-          <div class="flex items-center gap-2 w-full md:w-auto justify-end pt-2 md:pt-0 border-t md:border-t-0 border-slate-200">
-            <button onclick="editAndLoadRecord('${rec.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1">
-              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> 載入修改
-            </button>
-            <button onclick="deleteHistoryRecord('${rec.id}')" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition" title="刪除此紀錄">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </div>
+          <button onclick="onSelectHistoryRecord('${idx}'); switchTab('self-card');" class="px-3 py-1.5 bg-white border border-slate-200 hover:border-emerald-400 rounded-xl text-xs font-bold text-slate-700 shadow-sm transition">
+            載入編輯
+          </button>
         `;
-        container.appendChild(item);
+        cont.appendChild(card);
       });
-
-      document.getElementById('stat-count-flower').textContent = flowerCount;
-      document.getElementById('stat-count-bud').textContent = budCount;
-      document.getElementById('stat-count-leaf').textContent = leafCount;
-      document.getElementById('history-total-label').textContent = `共 ${growthHistory.length} 筆成長紀錄`;
-      document.getElementById('history-badge-count').textContent = growthHistory.length;
-      lucide.createIcons();
     }
 
-    function editAndLoadRecord(id) {
-      loadHistoryRecord(id);
-      switchTab('self-card');
-    }
+    function startWhistleBreathing() {
+      playSound('whistle');
+      unlockBadge('calm-whistle');
 
-    function deleteHistoryRecord(id) {
-      if (growthHistory.length <= 1) {
-        showModal('⚠️', '保留至少一筆紀錄', '成長手帳需要保留至少一筆卡片紀錄喔！');
-        return;
-      }
-      growthHistory = growthHistory.filter(r => r.id !== id);
-      if (currentActiveRecordId === id) {
-        currentActiveRecordId = growthHistory[0].id;
-      }
-      updateHistorySelectDropdown();
-      renderGrowthHistory();
-      playSound('pop');
-    }
+      const stage = document.getElementById('breathing-stage');
+      const disk = document.getElementById('breathe-anim-disk');
+      const actionText = document.getElementById('breathe-action-text');
+      const timerCount = document.getElementById('breathe-timer-count');
+      const emoji = document.getElementById('breathe-pikmin-emoji');
 
-    window.addEventListener('DOMContentLoaded', () => {
-      renderPikminEncyclopedia();
-      initCardCustomizer();
-      loadEmpathyScenario(0);
-      renderBadges();
-      loadQuizQuestion(0);
-      updateHistorySelectDropdown();
-      renderGrowthHistory();
-      lucide.createIcons();
-    });
+      if (stage) stage.classList.remove('hidden');
 
-    function initCardCustomizer() {
-      const spiritCont = document.getElementById('spirit-selector');
-      spiritCont.innerHTML = '';
-      PIKMIN_ROSTER.forEach(p => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.id = `spirit-btn-${p.id}`;
-        btn.onclick = () => selectSpirit(p.id);
-        btn.className = `p-2 rounded-xl border-2 text-center text-xs font-bold transition flex flex-col items-center gap-1 ${
-          p.id === selectedSpirit ? 'border-red-500 bg-red-50 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'
-        }`;
-        btn.innerHTML = `
-          <div class="w-8 h-9 pikmin-shadow">${PIKMIN_SVGS[p.svgKey]}</div>
-          <span class="text-[10px] text-slate-700 font-black">${p.name.replace('皮克敏','')}</span>
-        `;
-        spiritCont.appendChild(btn);
-      });
+      if (breathingInterval) clearInterval(breathingInterval);
 
-      // 15 Strengths
-      const strengthCont = document.getElementById('strength-tags');
-      strengthCont.innerHTML = '';
-      STRENGTH_OPTIONS.forEach((opt, idx) => {
-        const tag = document.createElement('button');
-        tag.type = 'button';
-        tag.onclick = () => toggleStrengthTag(opt, tag);
-        tag.className = `px-3 py-1.5 rounded-xl border text-xs font-bold transition ${
-          idx === 0 ? 'bg-emerald-500 text-white border-emerald-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-        }`;
-        tag.textContent = opt;
-        strengthCont.appendChild(tag);
-      });
+      let phase = 'inhale';
+      let sec = 4;
 
-      // 15 Weaknesses
-      const weaknessCont = document.getElementById('weakness-tags');
-      weaknessCont.innerHTML = '';
-      WEAKNESS_OPTIONS.forEach((opt, idx) => {
-        const tag = document.createElement('button');
-        tag.type = 'button';
-        tag.onclick = () => toggleWeaknessTag(opt, tag);
-        tag.className = `px-3 py-1.5 rounded-xl border text-xs font-bold transition ${
-          idx === 0 ? 'bg-amber-500 text-white border-amber-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-        }`;
-        tag.textContent = opt;
-        weaknessCont.appendChild(tag);
-      });
-
-      updateCardPreview();
-    }
-
-    function toggleStrengthTag(str, el) {
-      playSound('pop');
-      if (selectedStrengths.includes(str)) {
-        if (selectedStrengths.length > 1) {
-          selectedStrengths = selectedStrengths.filter(s => s !== str);
+      const runPhase = () => {
+        if (phase === 'inhale') {
+          if (actionText) actionText.textContent = '吸氣中 (聞花香)';
+          if (emoji) emoji.textContent = '🌸';
+          if (disk) disk.style.transform = 'scale(1.35)';
+          if (timerCount) timerCount.textContent = sec;
+          sec--;
+          if (sec < 0) {
+            phase = 'hold';
+            sec = 7;
+          }
+        } else if (phase === 'hold') {
+          if (actionText) actionText.textContent = '憋氣放鬆 (蓄力)';
+          if (emoji) emoji.textContent = '🌿';
+          if (timerCount) timerCount.textContent = sec;
+          sec--;
+          if (sec < 0) {
+            phase = 'exhale';
+            sec = 8;
+          }
+        } else if (phase === 'exhale') {
+          if (actionText) actionText.textContent = '緩慢吐氣 (吹走煩惱)';
+          if (emoji) emoji.textContent = '💨';
+          if (disk) disk.style.transform = 'scale(1.0)';
+          if (timerCount) timerCount.textContent = sec;
+          sec--;
+          if (sec < 0) {
+            phase = 'inhale';
+            sec = 4;
+          }
         }
-      } else {
-        if (selectedStrengths.length >= 2) selectedStrengths.shift();
-        selectedStrengths.push(str);
-      }
-      initCardCustomizerTagStyles();
-      updateCardPreview();
+      };
+
+      runPhase();
+      breathingInterval = setInterval(runPhase, 1000);
     }
 
-    function toggleWeaknessTag(str, el) {
-      playSound('pop');
-      if (selectedWeaknesses.includes(str)) {
-        if (selectedWeaknesses.length > 1) {
-          selectedWeaknesses = selectedWeaknesses.filter(s => s !== str);
-        }
-      } else {
-        if (selectedWeaknesses.length >= 2) selectedWeaknesses.shift();
-        selectedWeaknesses.push(str);
-      }
-      initCardCustomizerTagStyles();
-      updateCardPreview();
-    }
+    function loadEmpathyScenario(idx) {
+      currentEmpathyIndex = idx;
+      const scenario = EMPATHY_SCENARIOS[idx] || EMPATHY_SCENARIOS[0];
 
-    function initCardCustomizerTagStyles() {
-      const sCont = document.getElementById('strength-tags');
-      Array.from(sCont.children).forEach(tag => {
-        if (selectedStrengths.includes(tag.textContent)) {
-          tag.className = 'px-3 py-1.5 rounded-xl border text-xs font-bold transition bg-emerald-500 text-white border-emerald-600 shadow-sm';
-        } else {
-          tag.className = 'px-3 py-1.5 rounded-xl border text-xs font-bold transition bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
-        }
-      });
-      document.getElementById('strength-select-count').textContent = `已選 ${selectedStrengths.length}/2 項`;
-
-      const wCont = document.getElementById('weakness-tags');
-      Array.from(wCont.children).forEach(tag => {
-        if (selectedWeaknesses.includes(tag.textContent)) {
-          tag.className = 'px-3 py-1.5 rounded-xl border text-xs font-bold transition bg-amber-500 text-white border-amber-600 shadow-sm';
-        } else {
-          tag.className = 'px-3 py-1.5 rounded-xl border text-xs font-bold transition bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
-        }
-      });
-      document.getElementById('weakness-select-count').textContent = `已選 ${selectedWeaknesses.length}/2 項`;
-    }
-
-    function loadEmpathyScenario(index) {
-      currentEmpathyIndex = index;
-      const data = EMPATHY_SCENARIOS[index];
-      if (!data) return;
-
-      document.getElementById('empathy-idx-num').textContent = index + 1;
-      document.getElementById('empathy-scenario-title').textContent = data.title;
-      document.getElementById('empathy-situation-desc').textContent = data.desc;
-      document.getElementById('empathy-pikmin-visual').innerHTML = PIKMIN_SVGS[data.svgKey];
-
-      const optCont = document.getElementById('empathy-options-container');
-      optCont.innerHTML = '';
-
+      const idxNum = document.getElementById('empathy-idx-num');
+      const totalNum = document.getElementById('empathy-total-num');
+      const titleText = document.getElementById('empathy-title-text');
+      const situationDesc = document.getElementById('empathy-situation-desc');
+      const visual = document.getElementById('empathy-pikmin-visual');
+      const container = document.getElementById('empathy-options-container');
       const feedbackBox = document.getElementById('empathy-feedback-box');
-      feedbackBox.classList.add('hidden');
 
-      data.options.forEach((opt, optIdx) => {
-        const btn = document.createElement('button');
-        btn.className = 'w-full p-4 rounded-2xl border-2 border-slate-200 hover:border-teal-400 bg-white hover:bg-teal-50/50 text-left transition font-bold text-xs sm:text-sm text-slate-800 flex items-start gap-3';
-        btn.onclick = () => selectEmpathyAnswer(opt);
-        btn.innerHTML = `
-          <span class="w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">${String.fromCharCode(65 + optIdx)}</span>
-          <span class="flex-1">${opt.text}</span>
-        `;
-        optCont.appendChild(btn);
-      });
+      if (idxNum) idxNum.textContent = idx + 1;
+      if (totalNum) totalNum.textContent = EMPATHY_SCENARIOS.length;
+      if (titleText) titleText.textContent = scenario.title;
+      if (situationDesc) situationDesc.textContent = scenario.desc;
+      if (visual) visual.innerHTML = PIKMIN_SVGS[scenario.svgKey] || PIKMIN_SVGS.red;
+      if (feedbackBox) feedbackBox.classList.add('hidden');
+
+      if (container) {
+        container.innerHTML = '';
+        scenario.options.forEach((opt, oIdx) => {
+          const btn = document.createElement('button');
+          btn.className = 'w-full p-3.5 rounded-2xl border-2 border-slate-200 bg-slate-50 hover:bg-white text-left text-xs font-bold text-slate-800 transition flex items-center justify-between gap-2 shadow-sm';
+          btn.onclick = () => handleEmpathySmartClick(opt, oIdx, btn);
+          btn.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-black text-xs">${String.fromCharCode(65 + oIdx)}</span>
+              <span>${opt.text}</span>
+            </div>
+            <i data-lucide="volume-2" class="w-4 h-4 text-slate-400"></i>
+          `;
+          container.appendChild(btn);
+        });
+      }
+      lucide.createIcons();
     }
 
-    function selectEmpathyAnswer(opt) {
+    function speakEmpathyScenario() {
+      const scenario = EMPATHY_SCENARIOS[currentEmpathyIndex] || EMPATHY_SCENARIOS[0];
+      speakText(`${scenario.title}。${scenario.desc}`);
+    }
+
+    function handleEmpathySmartClick(opt, oIdx, btn) {
+      const key = 'empathy_' + oIdx;
+      const lastTime = clickTimerMap.get(key) || 0;
+      const now = Date.now();
+
+      if (now - lastTime < 380) {
+        clickTimerMap.delete(key);
+        selectEmpathyOption(opt);
+      } else {
+        clickTimerMap.set(key, now);
+        speakText(`選項 ${String.fromCharCode(65 + oIdx)}：${opt.text}`);
+        btn.classList.add('ring-2', 'ring-teal-400', 'scale-[1.01]');
+        setTimeout(() => {
+          btn.classList.remove('ring-2', 'ring-teal-400', 'scale-[1.01]');
+        }, 500);
+      }
+    }
+
+    function selectEmpathyOption(opt) {
       const feedbackBox = document.getElementById('empathy-feedback-box');
       const feedbackTitle = document.getElementById('empathy-feedback-title');
       const feedbackText = document.getElementById('empathy-feedback-text');
 
+      if (!feedbackBox) return;
       feedbackBox.classList.remove('hidden');
 
       if (opt.correct) {
         playSound('correct');
-        feedbackBox.className = 'p-4 rounded-2xl border-2 border-teal-300 bg-teal-50 text-sm space-y-2';
-        feedbackTitle.innerHTML = '<span class="text-teal-800 font-black">🌟 太有同理心了！完全理解夥伴的感受與需要！</span>';
-        feedbackText.textContent = opt.note;
+        feedbackBox.className = 'p-4 rounded-2xl border text-sm space-y-2 bg-teal-50 border-teal-300 text-teal-900';
+        if (feedbackTitle) feedbackTitle.innerHTML = '✨ 太棒了！展現高度社會知覺與同理心！';
         empathyScore++;
       } else {
         playSound('pop');
-        feedbackBox.className = 'p-4 rounded-2xl border-2 border-amber-300 bg-amber-50 text-sm space-y-2';
-        feedbackTitle.innerHTML = '<span class="text-amber-800 font-black">💡 換位思考一下：如果是你，會希望被怎樣對待呢？</span>';
-        feedbackText.textContent = opt.note;
+        feedbackBox.className = 'p-4 rounded-2xl border text-sm space-y-2 bg-amber-50 border-amber-300 text-amber-900';
+        if (feedbackTitle) feedbackTitle.innerHTML = '💡 換個角度想想看：';
       }
+      if (feedbackText) feedbackText.textContent = opt.note;
     }
 
     function nextEmpathyScenario() {
@@ -2012,177 +2357,38 @@
         loadEmpathyScenario(currentEmpathyIndex + 1);
       } else {
         unlockBadge('empathy-radar');
-        confetti({ particleCount: 50, spread: 60 });
-        showModal(
-          '🤝',
-          '同理心雷達任務達成！',
-          '太棒了！你具備了敏銳的社會知覺（Social Awareness），能看見同伴的需要並給予合適的支援！'
-        );
-        switchTab('home');
+        showModal('🤝', '同理心夥伴雷達全探索通關！', '恭喜你完成 9 大皮克敏夥伴同理心探索！你已經掌握了尊重差異與同理支持的最高心法！');
+        loadEmpathyScenario(0);
       }
     }
 
-    /* =========================================================
-       8. Quiz / School Organization Missions (10 Questions)
-       ========================================================= */
-    function loadQuizQuestion(index) {
-      currentQuizIndex = index;
-      const data = QUIZ_DATA[index];
-      if (!data) return;
+    function initTeamworkLevels() {
+      const sel = document.getElementById('teamwork-level-select');
+      const totalEl = document.getElementById('fruit-total-num');
+      if (totalEl) totalEl.textContent = CAMPUS_TEAMWORK_MISSIONS.length;
+      if (!sel) return;
 
-      const qIndexEl = document.getElementById('quiz-index-num');
-      const qTitleEl = document.getElementById('quiz-item-title');
-      const qIconEl = document.getElementById('quiz-item-icon');
-      const qDescEl = document.getElementById('quiz-problem-desc');
-      const optCont = document.getElementById('quiz-options-container');
-      const feedbackBox = document.getElementById('quiz-feedback-box');
-
-      if (qIndexEl) qIndexEl.textContent = index + 1;
-      if (qTitleEl) qTitleEl.textContent = data.title;
-      if (qIconEl) qIconEl.textContent = data.icon;
-      if (qDescEl) qDescEl.textContent = data.desc;
-      if (feedbackBox) feedbackBox.classList.add('hidden');
-
-      if (optCont) {
-        optCont.innerHTML = '';
-        data.options.forEach((opt, optIdx) => {
-          const btn = document.createElement('button');
-          btn.className = 'w-full p-4 rounded-2xl border-2 border-slate-200 hover:border-blue-400 bg-white hover:bg-blue-50/50 text-left transition font-bold text-xs sm:text-sm text-slate-800 flex items-start gap-3';
-          btn.onclick = () => selectQuizAnswer(opt);
-          btn.innerHTML = `
-            <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">${String.fromCharCode(65 + optIdx)}</span>
-            <span class="flex-1">${opt.text}</span>
-          `;
-          optCont.appendChild(btn);
-        });
-      }
+      sel.innerHTML = '';
+      CAMPUS_TEAMWORK_MISSIONS.forEach((m, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `第 ${idx + 1} 關：${m.name}（需 ${m.target} 力）`;
+        if (idx === currentFruitLevel) opt.selected = true;
+        sel.appendChild(opt);
+      });
     }
 
-    function selectQuizAnswer(opt) {
-      const feedbackBox = document.getElementById('quiz-feedback-box');
-      const feedbackTitle = document.getElementById('quiz-feedback-title');
-      const feedbackText = document.getElementById('quiz-feedback-text');
-      const nextBtn = document.getElementById('quiz-next-btn');
-
-      if (!feedbackBox || !feedbackTitle || !feedbackText) return;
-      feedbackBox.classList.remove('hidden');
-
-      if (opt.correct) {
-        playSound('correct');
-        feedbackBox.className = 'p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 text-sm space-y-2';
-        feedbackTitle.innerHTML = '<span class="text-emerald-800 font-black">🌟 決策超棒！符合最佳收納與惜物原則！</span>';
-        feedbackText.textContent = opt.note;
-        quizScore++;
-        if (nextBtn) nextBtn.textContent = (currentQuizIndex === QUIZ_DATA.length - 1) ? '完成收納挑戰 ➔' : '下一項收納任務 ➔';
-      } else {
-        playSound('pop');
-        feedbackBox.className = 'p-4 rounded-2xl border-2 border-amber-300 bg-amber-50 text-sm space-y-2';
-        feedbackTitle.innerHTML = '<span class="text-amber-800 font-black">💡 思考看看：這樣的整理方式會帶來什麼問題呢？</span>';
-        feedbackText.textContent = opt.note;
-        if (nextBtn) nextBtn.textContent = '嘗試下一題 ➔';
-      }
-    }
-
-    function nextQuizQuestion() {
+    function jumpToTeamworkLevel(idx) {
       playSound('pop');
-      if (currentQuizIndex < QUIZ_DATA.length - 1) {
-        loadQuizQuestion(currentQuizIndex + 1);
-      } else {
-        unlockBadge('organize-hero');
-        confetti({ particleCount: 70, spread: 80 });
-        showModal(
-          '🗂️',
-          '恭喜通過校園 10 大收納測驗！',
-          `你已完成所有收納決策挑戰！<br>獲得分數：<strong>${quizScore} / 10</strong><br>將這些好習慣帶到你的教室生活中吧！`
-        );
-        switchTab('home');
-      }
+      currentFruitLevel = parseInt(idx, 10) || 0;
+      resetTeamworkLevel();
     }
 
-    /* =========================================================
-       9. Calming Whistle Breathing Exercise (4-7-8 Breathing)
-       ========================================================= */
-    function startWhistleBreathing() {
-      playSound('whistle');
-      const stage = document.getElementById('breathing-stage');
-      const disk = document.getElementById('breathe-anim-disk');
-      const actionText = document.getElementById('breathe-action-text');
-      const timerCount = document.getElementById('breathe-timer-count');
-      const tipText = document.getElementById('breathe-guide-tip');
-
-      if (!stage || !disk || !actionText || !timerCount) return;
-      stage.classList.remove('hidden');
-
-      if (breathingInterval) clearInterval(breathingInterval);
-
-      let step = 0; // 0: Inhale (4s), 1: Hold (7s), 2: Exhale (8s)
-      let count = 4;
-      let cycles = 0;
-
-      function updatePhase() {
-        if (step === 0) {
-          // Inhale (4s)
-          actionText.textContent = '深深吸氣';
-          actionText.className = 'text-lg font-black text-teal-900';
-          disk.style.transform = 'scale(1.4)';
-          disk.style.opacity = '1';
-          if (tipText) tipText.textContent = '🌸 緩緩吸氣 4 秒，想像聞著皮克敏花朵的清香...';
-        } else if (step === 1) {
-          // Hold (7s)
-          actionText.textContent = '屏住呼吸';
-          actionText.className = 'text-lg font-black text-amber-900';
-          disk.style.transform = 'scale(1.4)';
-          disk.style.opacity = '0.9';
-          if (tipText) tipText.textContent = '🛑 保持屏息 7 秒，感受身體的穩定與寧靜...';
-        } else if (step === 2) {
-          // Exhale (8s)
-          actionText.textContent = '慢慢吐氣';
-          actionText.className = 'text-lg font-black text-blue-900';
-          disk.style.transform = 'scale(0.85)';
-          disk.style.opacity = '0.7';
-          if (tipText) tipText.textContent = '🌬️ 緩慢吐氣 8 秒，把所有焦慮與火氣都吹走...';
-        }
-      }
-
-      updatePhase();
-      timerCount.textContent = count;
-
-      breathingInterval = setInterval(() => {
-        count--;
-        if (count < 0) {
-          if (step === 0) {
-            step = 1;
-            count = 7;
-          } else if (step === 1) {
-            step = 2;
-            count = 8;
-          } else {
-            step = 0;
-            count = 4;
-            cycles++;
-            if (cycles >= 2) {
-              clearInterval(breathingInterval);
-              unlockBadge('calm-whistle');
-              playSound('success');
-              confetti({ particleCount: 50, spread: 60 });
-              showModal(
-                '🪈',
-                '情緒冷靜急救完成！',
-                '深呼吸調節成功！你的皮克敏小隊已冷靜集合完畢，理智與平靜回到基地！'
-              );
-              return;
-            }
-          }
-          updatePhase();
-        }
-        timerCount.textContent = count;
-      }, 1000);
+    function speakTeamworkMission() {
+      const mission = CAMPUS_TEAMWORK_MISSIONS[currentFruitLevel] || CAMPUS_TEAMWORK_MISSIONS[0];
+      const text = `${mission.title}。${mission.desc}。目標需要 ${mission.target} 力量。${mission.insight}`;
+      speakText(text);
     }
-
-    /* =========================================================
-       10. Teamwork Fruit Carrying Simulation
-       ========================================================= */
-    const PIKMIN_POWER_MAP = { red: 1, yellow: 1, purple: 10, rock: 3 };
 
     function addPikminToTeam(type) {
       playSound('pop');
@@ -2200,37 +2406,52 @@
     }
 
     function updateTeamworkVisuals() {
-      const currentFruit = FRUIT_LEVELS[currentFruitLevel] || FRUIT_LEVELS[0];
-      const target = currentFruit.target;
+      const currentMission = CAMPUS_TEAMWORK_MISSIONS[currentFruitLevel] || CAMPUS_TEAMWORK_MISSIONS[0];
+      const target = currentMission.target;
 
       const lvlNum = document.getElementById('fruit-level-num');
+      const totalNum = document.getElementById('fruit-total-num');
+      const categoryTag = document.getElementById('mission-category-tag');
+      const headerIcon = document.getElementById('task-icon-header');
+      const headerTitle = document.getElementById('task-title-header');
+      const headerDesc = document.getElementById('task-desc-header');
+      const selInsight = document.getElementById('task-sel-insight');
+
       const targetDisplay = document.getElementById('target-power-display');
       const currentPowerDisplay = document.getElementById('current-power-display');
       const powerStatusMsg = document.getElementById('power-status-msg');
       const powerBar = document.getElementById('power-progress-bar');
-      const fruitLabel = document.getElementById('fruit-name-label');
+      const badgeName = document.getElementById('item-badge-name');
+      const badgeTarget = document.getElementById('item-badge-target');
       const fruitEmoji = document.getElementById('fruit-emoji');
       const carryingSquad = document.getElementById('carrying-squad-display');
       const assignedTokens = document.getElementById('assigned-pikmin-tokens');
+      const levelSelect = document.getElementById('teamwork-level-select');
 
       if (lvlNum) lvlNum.textContent = currentFruitLevel + 1;
+      if (totalNum) totalNum.textContent = CAMPUS_TEAMWORK_MISSIONS.length;
+      if (categoryTag) categoryTag.textContent = currentMission.category;
+      if (headerIcon) headerIcon.textContent = currentMission.headerIcon;
+      if (headerTitle) headerTitle.textContent = currentMission.title;
+      if (headerDesc) headerDesc.textContent = currentMission.desc;
+      if (selInsight) selInsight.textContent = currentMission.insight;
+
       if (targetDisplay) targetDisplay.textContent = target;
       if (currentPowerDisplay) currentPowerDisplay.textContent = currentTeamPower;
-      if (fruitEmoji) fruitEmoji.textContent = currentFruit.emoji;
+      if (fruitEmoji) fruitEmoji.textContent = currentMission.emoji;
+      if (badgeName) badgeName.textContent = currentMission.name;
+      if (badgeTarget) badgeTarget.textContent = `（需 ${target} 力）`;
 
-      if (fruitLabel) {
-        fruitLabel.innerHTML = `<span>${currentFruit.name}</span><span class="text-purple-600 font-black">（需 ${target} 力）</span>`;
-      }
+      if (levelSelect) levelSelect.value = currentFruitLevel;
 
       const percent = Math.min(100, Math.round((currentTeamPower / target) * 100));
       if (powerBar) powerBar.style.width = `${percent}%`;
 
-      // Render carrying pikmin pod
       if (carryingSquad) {
         if (assignedPikminList.length === 0) {
           carryingSquad.innerHTML = `
             <div id="empty-squad-hint" class="text-xs text-slate-400 font-bold bg-white/80 px-4 py-2 rounded-2xl border border-dashed border-slate-300 mt-6 animate-pulse">
-              👇 點擊下方按鈕派遣皮克敏，牠們會跑過來合力頂起水果！
+              👇 點擊下方夥伴派遣皮克敏，牠們會跑過來合力頂起物品！
             </div>
           `;
         } else {
@@ -2238,14 +2459,13 @@
           assignedPikminList.forEach((type, idx) => {
             const pikminWrapper = document.createElement('div');
             pikminWrapper.className = 'flex flex-col items-center justify-end';
-            pikminWrapper.style.animationDelay = `${(idx % 5) * 0.15}s`;
+            pikminWrapper.style.animationDelay = `${(idx % 6) * 0.12}s`;
             pikminWrapper.innerHTML = CARRYING_PIKMIN_SVGS[type] || CARRYING_PIKMIN_SVGS.red;
             carryingSquad.appendChild(pikminWrapper);
           });
         }
       }
 
-      // Render token summary
       if (assignedTokens) {
         if (assignedPikminList.length === 0) {
           assignedTokens.innerHTML = '<span class="text-xs text-slate-400 italic">尚無隊員</span>';
@@ -2259,28 +2479,26 @@
         }
       }
 
-      // Elevation lifting animation
       const fruitWrapper = document.getElementById('fruit-stage-wrapper');
       if (fruitWrapper) {
-        const translateY = Math.min(24, Math.round((currentTeamPower / target) * 20));
+        const translateY = Math.min(26, Math.round((currentTeamPower / target) * 22));
         fruitWrapper.style.transform = `translateY(-${translateY}px)`;
       }
 
-      // Check success condition
       if (currentTeamPower >= target) {
         if (powerStatusMsg) {
-          powerStatusMsg.textContent = '🎉 力量充足！小隊正合力搬回宇宙船！';
-          powerStatusMsg.className = 'text-emerald-700 font-black bg-emerald-100 px-3 py-0.5 rounded-full border border-emerald-300';
+          powerStatusMsg.textContent = '🎉 力量充足！小隊步調一致合力搬運中！';
+          powerStatusMsg.className = 'text-emerald-700 font-black bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 text-xs shadow-sm';
         }
         playSound('success');
         confetti({ particleCount: 60, spread: 60 });
 
         setTimeout(() => {
-          if (currentFruitLevel < FRUIT_LEVELS.length - 1) {
+          if (currentFruitLevel < CAMPUS_TEAMWORK_MISSIONS.length - 1) {
             showModal(
-              '🍓',
-              `第 ${currentFruitLevel + 1} 關搬運成功！`,
-              `太棒了！大家合力搬起了 ${currentFruit.name}！<br>接下來挑戰更重的下一種水果！`
+              currentMission.headerIcon,
+              `第 ${currentFruitLevel + 1} 關合作成功！`,
+              `太棒了！大家合力搬起了 <strong>${currentMission.name}</strong>！<br><br>💡 <strong>SEL 智慧：</strong>${currentMission.insight}<br><br>準備好挑戰下一項校園任務了嗎？`
             );
             currentFruitLevel++;
             resetTeamworkLevel();
@@ -2288,8 +2506,8 @@
             unlockBadge('team-fruit');
             showModal(
               '🏆',
-              '合力搬運大師榮譽達成！',
-              '恭喜你帶領皮克敏小隊完成了所有水果搬運任務！深刻體會到多元分工與團隊協作的強大力量！'
+              '校園合作神隊友 8 大任務全通關！',
+              '恭喜你帶領皮克敏小隊完成了全校 8 大生活合作任務！<br>你已經具備最棒的人際合作（Relationship Skills）與團隊分工精神！'
             );
             currentFruitLevel = 0;
             resetTeamworkLevel();
@@ -2298,17 +2516,106 @@
       } else {
         if (powerStatusMsg) {
           const diff = target - currentTeamPower;
-          powerStatusMsg.textContent = `還差 ${diff} 力量即可搬動！`;
-          powerStatusMsg.className = 'text-amber-700 font-bold bg-white/80 px-2.5 py-0.5 rounded-full border';
+          powerStatusMsg.textContent = `還差 ${diff} 力量即可安全搬動！`;
+          powerStatusMsg.className = 'text-amber-700 font-bold bg-white/90 px-3 py-1 rounded-full border shadow-sm text-xs';
         }
       }
     }
 
-    /* =========================================================
-       11. Badges and Modal Alerts
-       ========================================================= */
+    function loadQuizQuestion(idx) {
+      currentQuizIndex = idx;
+      const q = QUIZ_DATA[idx] || QUIZ_DATA[0];
+
+      const idxNum = document.getElementById('quiz-index-num');
+      const titleText = document.getElementById('quiz-title-text');
+      const icon = document.getElementById('quiz-item-icon');
+      const desc = document.getElementById('quiz-problem-desc');
+      const container = document.getElementById('quiz-options-container');
+      const feedbackBox = document.getElementById('quiz-feedback-box');
+
+      if (idxNum) idxNum.textContent = idx + 1;
+      if (titleText) titleText.textContent = q.title;
+      if (icon) icon.textContent = q.icon;
+      if (desc) desc.textContent = q.desc;
+      if (feedbackBox) feedbackBox.classList.add('hidden');
+
+      if (container) {
+        container.innerHTML = '';
+        q.options.forEach((opt, oIdx) => {
+          const btn = document.createElement('button');
+          btn.className = 'w-full p-3.5 rounded-2xl border-2 border-slate-200 bg-slate-50 hover:bg-white text-left text-xs font-bold text-slate-800 transition flex items-center justify-between gap-2 shadow-sm';
+          btn.onclick = () => handleQuizSmartClick(opt, oIdx, btn);
+          btn.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-black text-xs">${String.fromCharCode(65 + oIdx)}</span>
+              <span>${opt.text}</span>
+            </div>
+            <i data-lucide="volume-2" class="w-4 h-4 text-slate-400"></i>
+          `;
+          container.appendChild(btn);
+        });
+      }
+      lucide.createIcons();
+    }
+
+    function speakQuizItem() {
+      const q = QUIZ_DATA[currentQuizIndex] || QUIZ_DATA[0];
+      speakText(`${q.title}。${q.desc}`);
+    }
+
+    function handleQuizSmartClick(opt, oIdx, btn) {
+      const key = 'quiz_' + oIdx;
+      const lastTime = clickTimerMap.get(key) || 0;
+      const now = Date.now();
+
+      if (now - lastTime < 380) {
+        clickTimerMap.delete(key);
+        selectQuizAnswer(opt);
+      } else {
+        clickTimerMap.set(key, now);
+        speakText(`選項 ${String.fromCharCode(65 + oIdx)}：${opt.text}`);
+        btn.classList.add('ring-2', 'ring-blue-400', 'scale-[1.01]');
+        setTimeout(() => {
+          btn.classList.remove('ring-2', 'ring-blue-400', 'scale-[1.01]');
+        }, 500);
+      }
+    }
+
+    function selectQuizAnswer(opt) {
+      const feedbackBox = document.getElementById('quiz-feedback-box');
+      const feedbackTitle = document.getElementById('quiz-feedback-title');
+      const feedbackText = document.getElementById('quiz-feedback-text');
+
+      if (!feedbackBox) return;
+      feedbackBox.classList.remove('hidden');
+
+      if (opt.correct) {
+        playSound('correct');
+        feedbackBox.className = 'p-4 rounded-2xl border text-sm space-y-2 bg-emerald-50 border-emerald-300 text-emerald-900';
+        if (feedbackTitle) feedbackTitle.innerHTML = '✨ 決策超棒！符合最佳收納與生活常規原則！';
+        quizScore++;
+      } else {
+        playSound('pop');
+        feedbackBox.className = 'p-4 rounded-2xl border text-sm space-y-2 bg-amber-50 border-amber-300 text-amber-900';
+        if (feedbackTitle) feedbackTitle.innerHTML = '💡 換個收納巧思再試試：';
+      }
+      if (feedbackText) feedbackText.textContent = opt.note;
+    }
+
+    function nextQuizQuestion() {
+      playSound('pop');
+      if (currentQuizIndex < QUIZ_DATA.length - 1) {
+        loadQuizQuestion(currentQuizIndex + 1);
+      } else {
+        unlockBadge('organize-hero');
+        showModal('🗂️', '校園 10 大收納王達成！', '恭喜你完成 10 大校園收納決策挑戰！你已經是具備負責任決策（Responsible Decision-Making）的收納高手！');
+        loadQuizQuestion(0);
+      }
+    }
+
     function renderBadges() {
       const cont = document.getElementById('badges-container');
+      if (!cont) return;
       cont.innerHTML = '';
       let unlockedCount = 0;
 
@@ -2321,18 +2628,22 @@
             : 'bg-slate-50 border-slate-200 opacity-60'
         }`;
         card.innerHTML = `
-          <div class="text-3xl ${b.unlocked ? 'animate-bounce' : 'grayscale'}">${b.icon}</div>
+          <div class="text-3xl">${b.icon}</div>
           <div>
-            <h5 class="font-black text-sm ${b.unlocked ? 'text-amber-950' : 'text-slate-400'}">${b.title}</h5>
+            <h4 class="font-black text-sm ${b.unlocked ? 'text-amber-950' : 'text-slate-600'}">${b.title}</h4>
             <p class="text-[11px] text-slate-500 mt-0.5">${b.desc}</p>
+            <span class="text-[10px] font-bold mt-1 inline-block ${b.unlocked ? 'text-emerald-600' : 'text-slate-400'}">
+              ${b.unlocked ? '✨ 已解鎖榮譽' : '🔒 待探索解鎖'}
+            </span>
           </div>
         `;
         cont.appendChild(card);
       });
 
-      document.getElementById('badge-count').textContent = `${unlockedCount}/${BADGES.length}`;
+      const badgeCount = document.getElementById('badge-count');
+      if (badgeCount) badgeCount.textContent = `${unlockedCount}/${BADGES.length}`;
 
-      if (unlockedCount === BADGES.length - 1 && !BADGES[4].unlocked) {
+      if (unlockedCount === BADGES.length - 1 && !BADGES[5].unlocked) {
         unlockBadge('sel-master');
       }
     }
@@ -2346,16 +2657,46 @@
     }
 
     function showModal(icon, title, message) {
-      document.getElementById('modal-icon').innerHTML = icon;
-      document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-message').innerHTML = message.replace(/\n/g, '<br>');
-      document.getElementById('custom-modal').classList.remove('hidden');
+      const mIcon = document.getElementById('modal-icon');
+      const mTitle = document.getElementById('modal-title');
+      const mMessage = document.getElementById('modal-message');
+      const modal = document.getElementById('custom-modal');
+
+      if (mIcon) mIcon.innerHTML = icon;
+      if (mTitle) mTitle.textContent = title;
+      if (mMessage) mMessage.innerHTML = message;
+      if (modal) modal.classList.remove('hidden');
     }
 
     function closeModal() {
       playSound('pop');
-      document.getElementById('custom-modal').classList.add('hidden');
+      const modal = document.getElementById('custom-modal');
+      if (modal) modal.classList.add('hidden');
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderPikminEncyclopedia();
+      initCardCustomizer();
+      loadEmpathyScenario(0);
+      initTeamworkLevels();
+      updateTeamworkVisuals();
+      renderBadges();
+      loadQuizQuestion(0);
+      updateHistorySelectDropdown();
+      renderGrowthHistory();
+      lucide.createIcons();
+
+      // Autostart BGM on first user interaction anywhere on the page (comply with browser audio policy)
+      const autoStartHandler = () => {
+        if (!isBgmPlaying) {
+          startBgm();
+        }
+        window.removeEventListener('click', autoStartHandler);
+        window.removeEventListener('touchstart', autoStartHandler);
+      };
+      window.addEventListener('click', autoStartHandler, { once: true });
+      window.addEventListener('touchstart', autoStartHandler, { once: true });
+    });
   </script>
 </body>
 </html>
