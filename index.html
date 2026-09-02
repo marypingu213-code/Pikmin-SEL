@@ -106,9 +106,10 @@
         <button id="sound-toggle-btn" onclick="toggleMute()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center shadow-inner" title="開啟/關閉操作音效">
           <i data-lucide="volume-2" id="sound-icon" class="w-5 h-5 text-emerald-600"></i>
         </button>
-        <button onclick="switchTab('history')" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm" title="查看成長歷程">
+        <!-- 項目 1 & 2: 頂部導覽列按鈕更新為「全班學生所有手帳」 -->
+        <button onclick="filterHistoryByStudent('ALL'); switchTab('history');" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm" title="查看全班學生所有手帳">
           <i data-lucide="book-heart" class="w-4 h-4"></i>
-          <span class="hidden sm:inline">成長手帳</span>
+          <span class="hidden sm:inline">全班學生所有手帳</span>
           <span id="history-badge-count" class="bg-emerald-700 text-emerald-100 text-xs px-2 py-0.5 rounded-full font-black">1</span>
         </button>
         <button onclick="switchTab('badges')" class="px-3.5 py-2 bg-amber-400/90 hover:bg-amber-400 text-amber-950 font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm">
@@ -266,8 +267,9 @@
           <i data-lucide="chevron-left" class="w-4 h-4"></i> 回基地總部
         </button>
         <div class="flex items-center gap-2">
-          <button onclick="switchTab('history')" class="text-xs font-bold bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 py-1.5 rounded-full transition flex items-center gap-1">
-            <i data-lucide="history" class="w-3.5 h-3.5"></i> 查看我的成長手帳
+          <!-- 項目 3: 點擊「查看我的成長手帳」只看到自己的記錄 -->
+          <button onclick="viewMyPersonalHistory()" class="text-xs font-bold bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3.5 py-1.5 rounded-full transition flex items-center gap-1 shadow-sm border border-emerald-200">
+            <i data-lucide="history" class="w-3.5 h-3.5 text-emerald-700"></i> 查看我的成長手帳
           </button>
           <span class="text-xs font-black bg-red-100 text-red-700 px-3 py-1 rounded-full">SEL 模組 1 · 自我覺察</span>
         </div>
@@ -467,28 +469,41 @@
             </div>
           </div>
 
-          <!-- Quick Actions under preview -->
-          <div class="flex gap-2 w-full max-w-sm">
-            <button onclick="window.print()" class="flex-1 py-2 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 shadow-sm flex items-center justify-center gap-1.5 transition">
-              <i data-lucide="printer" class="w-3.5 h-3.5"></i> 列印／下載探險證
-            </button>
-            <button onclick="switchTab('history')" class="flex-1 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-xl border border-emerald-200 shadow-sm flex items-center justify-center gap-1.5 transition">
-              <i data-lucide="book-open" class="w-3.5 h-3.5"></i> 查看歷程手帳
+          <!-- 項目 4: 取消重複的「查看歷程手帳」按鈕，只保留獨立的列印/下載探險證按鈕 -->
+          <div class="w-full max-w-sm">
+            <button onclick="window.print()" class="w-full py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 shadow-sm flex items-center justify-center gap-2 transition">
+              <i data-lucide="printer" class="w-4 h-4 text-slate-500"></i> 列印／下載探險證
             </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- TAB 7: HISTORY & GROWTH JOURNEY (心靈成長歷程手帳) -->
+    <!-- TAB 7: HISTORY & GROWTH JOURNEY (全班學生所有手帳) -->
     <section id="tab-history" class="tab-content hidden space-y-6">
       <div class="flex items-center justify-between">
         <button onclick="switchTab('home')" class="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-emerald-600 transition">
           <i data-lucide="chevron-left" class="w-4 h-4"></i> 回基地總部
         </button>
-        <button onclick="switchTab('self-card')" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5 transition">
-          <i data-lucide="plus" class="w-4 h-4"></i> 撰寫今日心情卡片
-        </button>
+        <div class="flex items-center gap-2">
+          <!-- 教師管理模式切換按鈕 -->
+          <button id="teacher-mode-btn" onclick="toggleTeacherMode()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-slate-300 transition">
+            <i data-lucide="shield-alert" id="teacher-mode-icon" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span id="teacher-mode-label">教師管理模式 (關閉)</span>
+          </button>
+          <button onclick="switchTab('self-card')" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i> 撰寫今日心情卡片
+          </button>
+        </div>
+      </div>
+
+      <!-- 教師模式啟動通知條 -->
+      <div id="teacher-notice-banner" class="hidden p-3 bg-amber-50 border-2 border-amber-300 rounded-2xl flex items-center justify-between text-xs text-amber-900 font-bold">
+        <span class="flex items-center gap-2">
+          <i data-lucide="info" class="w-4 h-4 text-amber-700"></i>
+          教師管理模式已開啟：每張紀錄卡右側皆可進行「刪除紀錄」，以協助清理多餘或誤植的學童資料。
+        </span>
+        <button onclick="toggleTeacherMode()" class="underline text-amber-800 hover:text-amber-950 text-xs">關閉管理模式</button>
       </div>
 
       <!-- Growth Summary Header Card -->
@@ -498,9 +513,9 @@
             <span class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-white/20 text-xs font-black">
               📖 SEL 心靈手帳
             </span>
-            <h3 class="text-2xl font-black">探險家的自我成長軌跡</h3>
-            <p class="text-xs text-emerald-100">
-              記錄每一天的情緒代幣、優勢發現與需要支持的地方，看見自己的蛻變！
+            <h3 class="text-2xl font-black" id="history-header-title">全班學生成長軌跡資料庫</h3>
+            <p class="text-xs text-emerald-100" id="history-header-subtitle">
+              記錄每一位同學的心情代幣、優勢發現與需要支持的地方，看見班級互助的蛻變！
             </p>
           </div>
           <!-- Quick Stage Stats -->
@@ -1948,6 +1963,7 @@
 
     // Student filter for the multi-student classroom setting
     let selectedStudentFilter = 'ALL';
+    let isTeacherMode = false; // Teacher edit/delete permission flag
 
     // Shuffled runtime lists to prevent memorization
     let activeQuizList = [];
@@ -2382,7 +2398,113 @@
     function filterHistoryByStudent(studentName) {
       playSound('pop');
       selectedStudentFilter = studentName;
+      const sel = document.getElementById('student-filter-select');
+      if (sel && sel.value !== studentName) {
+        sel.value = studentName;
+      }
+
+      // Update header banner text based on filter
+      const headerTitle = document.getElementById('history-header-title');
+      const headerSubtitle = document.getElementById('history-header-subtitle');
+      const listCaption = document.getElementById('history-list-caption');
+
+      if (studentName === 'ALL') {
+        if (headerTitle) headerTitle.textContent = '全班學生成長軌跡資料庫';
+        if (headerSubtitle) headerSubtitle.textContent = '記錄每一位同學的心情代幣、優勢發現與需要支持的地方，看見班級互助的蛻變！';
+        if (listCaption) listCaption.textContent = '全班學生歷次成長紀錄';
+      } else {
+        if (headerTitle) headerTitle.textContent = `【${studentName}】的專屬心靈手帳`;
+        if (headerSubtitle) headerSubtitle.textContent = `專注於 ${studentName} 的個人心情變化、優勢發掘與隊友互助需求！`;
+        if (listCaption) listCaption.textContent = `【${studentName}】的個人專屬紀錄`;
+      }
+
       renderGrowthHistory();
+    }
+
+    // View strictly current student's own records from Self-Card
+    function viewMyPersonalHistory() {
+      const nameInput = document.getElementById('custom-name');
+      const currentStudent = nameInput ? nameInput.value.trim() || '小勇士' : '小勇士';
+
+      // Check if this student has any records
+      const hasRecords = growthHistoryRecords.some(r => r.name === currentStudent);
+      if (!hasRecords) {
+        // Automatically save current card as first record if none exists
+        finishCustomCard(false);
+      }
+
+      switchTab('history');
+      filterHistoryByStudent(currentStudent);
+    }
+
+    // Teacher Management Mode Toggle
+    function toggleTeacherMode() {
+      playSound('pop');
+      isTeacherMode = !isTeacherMode;
+      const btn = document.getElementById('teacher-mode-btn');
+      const icon = document.getElementById('teacher-mode-icon');
+      const label = document.getElementById('teacher-mode-label');
+      const banner = document.getElementById('teacher-notice-banner');
+
+      if (isTeacherMode) {
+        if (btn) {
+          btn.className = 'px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition';
+        }
+        if (icon) {
+          icon.className = 'w-3.5 h-3.5 text-white';
+        }
+        if (label) label.textContent = '教師管理模式 (已開啟)';
+        if (banner) banner.classList.remove('hidden');
+      } else {
+        if (btn) {
+          btn.className = 'px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-slate-300 transition';
+        }
+        if (icon) {
+          icon.className = 'w-3.5 h-3.5 text-slate-500';
+        }
+        if (label) label.textContent = '教師管理模式 (關閉)';
+        if (banner) banner.classList.add('hidden');
+      }
+      lucide.createIcons();
+      renderGrowthHistory();
+    }
+
+    // Delete single record function for teacher
+    function deleteStudentHistoryRecord(recordId, studentName) {
+      playSound('pop');
+      const idx = growthHistoryRecords.findIndex(r => r.id === recordId);
+      if (idx === -1) return;
+
+      // Remove the targeted record
+      growthHistoryRecords.splice(idx, 1);
+
+      // If no records left, provide a default fresh record
+      if (growthHistoryRecords.length === 0) {
+        growthHistoryRecords.push({
+          id: 'rec_' + Date.now(),
+          dateStr: new Date().toLocaleDateString('zh-TW'),
+          timeStr: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }),
+          name: '小勇士',
+          spirit: 'red',
+          stage: 'leaf',
+          strengths: [STRENGTH_OPTIONS[0]],
+          weaknesses: [WEAKNESS_OPTIONS[0]],
+          note: '新起點：開始撰寫第一張皮克敏成長卡！'
+        });
+      }
+
+      updateHistorySelectDropdown();
+      updateStudentFilterDropdown();
+
+      // If current filtered student no longer exists, reset to ALL
+      if (selectedStudentFilter !== 'ALL' && !growthHistoryRecords.some(r => r.name === selectedStudentFilter)) {
+        selectedStudentFilter = 'ALL';
+        const filterSel = document.getElementById('student-filter-select');
+        if (filterSel) filterSel.value = 'ALL';
+      }
+
+      renderGrowthHistory();
+      showModal('🗑️', '已刪除手帳紀錄', `已成功移除【${studentName}】的此筆紀錄！`);
     }
 
     function onSelectHistoryRecord(val) {
@@ -2459,6 +2581,15 @@
         const timeBadge = rec.timeStr ? ` · ${rec.timeStr}` : '';
         
         card.className = 'p-4 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm';
+        
+        // Teacher delete button rendering
+        const deleteButtonHtml = isTeacherMode ? `
+          <button onclick="deleteStudentHistoryRecord('${rec.id}', '${rec.name}')" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-xl text-xs font-bold transition flex items-center gap-1" title="教師刪除此筆錯誤或多餘紀錄">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-red-600"></i>
+            <span>刪除紀錄</span>
+          </button>
+        ` : '';
+
         card.innerHTML = `
           <div class="flex items-center gap-3">
             <div class="w-11 h-13 pikmin-shadow flex items-center justify-center flex-shrink-0">
@@ -2475,66 +2606,16 @@
               <p class="text-xs text-slate-500 italic mt-0.5">💬 ${rec.note}</p>
             </div>
           </div>
-          <button onclick="onSelectHistoryRecord('${origIdx}'); switchTab('self-card');" class="px-3 py-1.5 bg-white border border-slate-200 hover:border-emerald-400 rounded-xl text-xs font-bold text-slate-700 shadow-sm transition whitespace-nowrap">
-            載入編輯
-          </button>
+          <div class="flex items-center gap-2 self-end sm:self-center">
+            ${deleteButtonHtml}
+            <button onclick="onSelectHistoryRecord('${origIdx}'); switchTab('self-card');" class="px-3 py-1.5 bg-white border border-slate-200 hover:border-emerald-400 rounded-xl text-xs font-bold text-slate-700 shadow-sm transition whitespace-nowrap">
+              載入編輯
+            </button>
+          </div>
         `;
         cont.appendChild(card);
       });
-    }
-
-    function startWhistleBreathing() {
-      playSound('whistle');
-      unlockBadge('calm-whistle');
-
-      const stage = document.getElementById('breathing-stage');
-      const disk = document.getElementById('breathe-anim-disk');
-      const actionText = document.getElementById('breathe-action-text');
-      const timerCount = document.getElementById('breathe-timer-count');
-      const emoji = document.getElementById('breathe-pikmin-emoji');
-
-      if (stage) stage.classList.remove('hidden');
-
-      if (breathingInterval) clearInterval(breathingInterval);
-
-      let phase = 'inhale';
-      let sec = 4;
-
-      const runPhase = () => {
-        if (phase === 'inhale') {
-          if (actionText) actionText.textContent = '吸氣中 (聞花香)';
-          if (emoji) emoji.textContent = '🌸';
-          if (disk) disk.style.transform = 'scale(1.35)';
-          if (timerCount) timerCount.textContent = sec;
-          sec--;
-          if (sec < 0) {
-            phase = 'hold';
-            sec = 7;
-          }
-        } else if (phase === 'hold') {
-          if (actionText) actionText.textContent = '憋氣放鬆 (蓄力)';
-          if (emoji) emoji.textContent = '🌿';
-          if (timerCount) timerCount.textContent = sec;
-          sec--;
-          if (sec < 0) {
-            phase = 'exhale';
-            sec = 8;
-          }
-        } else if (phase === 'exhale') {
-          if (actionText) actionText.textContent = '緩慢吐氣 (吹走煩惱)';
-          if (emoji) emoji.textContent = '💨';
-          if (disk) disk.style.transform = 'scale(1.0)';
-          if (timerCount) timerCount.textContent = sec;
-          sec--;
-          if (sec < 0) {
-            phase = 'inhale';
-            sec = 4;
-          }
-        }
-      };
-
-      runPhase();
-      breathingInterval = setInterval(runPhase, 1000);
+      lucide.createIcons();
     }
 
     function loadEmpathyScenario(idx) {
@@ -2543,20 +2624,21 @@
       }
       currentEmpathyIndex = idx;
       const scenario = activeEmpathyList[idx] || activeEmpathyList[0];
+      if (!scenario) return;
 
       const idxNum = document.getElementById('empathy-idx-num');
       const totalNum = document.getElementById('empathy-total-num');
       const titleText = document.getElementById('empathy-title-text');
-      const situationDesc = document.getElementById('empathy-situation-desc');
       const visual = document.getElementById('empathy-pikmin-visual');
+      const desc = document.getElementById('empathy-situation-desc');
       const container = document.getElementById('empathy-options-container');
       const feedbackBox = document.getElementById('empathy-feedback-box');
 
       if (idxNum) idxNum.textContent = idx + 1;
       if (totalNum) totalNum.textContent = activeEmpathyList.length;
       if (titleText) titleText.textContent = scenario.title;
-      if (situationDesc) situationDesc.textContent = scenario.desc;
       if (visual) visual.innerHTML = PIKMIN_SVGS[scenario.svgKey] || PIKMIN_SVGS.red;
+      if (desc) desc.textContent = scenario.desc;
       if (feedbackBox) feedbackBox.classList.add('hidden');
 
       if (container) {
@@ -2571,7 +2653,7 @@
               <span class="w-6 h-6 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-black text-xs">${String.fromCharCode(65 + oIdx)}</span>
               <span>${opt.text}</span>
             </div>
-            <i data-lucide="volume-2" class="w-4 h-4 text-slate-400"></i>
+            <i data-lucide="volume-2" class="w-4 h-4 text-teal-500"></i>
           `;
           container.appendChild(btn);
         });
@@ -2633,6 +2715,79 @@
         initShuffledEmpathy();
         loadEmpathyScenario(0);
       }
+    }
+
+    function startWhistleBreathing() {
+      playSound('whistle');
+      unlockBadge('calm-whistle');
+      const stage = document.getElementById('breathing-stage');
+      const btn = document.getElementById('whistle-button');
+      const actionText = document.getElementById('breathe-action-text');
+      const timerCount = document.getElementById('breathe-timer-count');
+      const disk = document.getElementById('breathe-anim-disk');
+
+      if (stage) stage.classList.remove('hidden');
+      if (btn) btn.classList.add('pointer-events-none', 'opacity-60');
+
+      if (breathingInterval) clearInterval(breathingInterval);
+
+      // 4-7-8 breathing sequence
+      let phase = 0; // 0: inhale (4s), 1: hold (7s), 2: exhale (8s)
+      let count = 4;
+
+      function updatePhaseUI() {
+        if (phase === 0) {
+          if (actionText) actionText.textContent = '吸氣（像聞花香）';
+          if (timerCount) timerCount.textContent = count;
+          if (disk) {
+            disk.style.transform = 'scale(1.35)';
+            disk.className = 'w-44 h-44 rounded-full bg-gradient-to-tr from-teal-400 to-emerald-300 opacity-95 flex items-center justify-center shadow-2xl transition-all duration-1000 ease-in-out';
+          }
+        } else if (phase === 1) {
+          if (actionText) actionText.textContent = '屏息屏住氣息';
+          if (timerCount) timerCount.textContent = count;
+          if (disk) {
+            disk.style.transform = 'scale(1.35)';
+            disk.className = 'w-44 h-44 rounded-full bg-gradient-to-tr from-amber-300 to-yellow-400 opacity-90 flex items-center justify-center shadow-2xl transition-all duration-1000 ease-in-out';
+          }
+        } else {
+          if (actionText) actionText.textContent = '緩慢吐氣（吹走煩惱）';
+          if (timerCount) timerCount.textContent = count;
+          if (disk) {
+            disk.style.transform = 'scale(0.95)';
+            disk.className = 'w-44 h-44 rounded-full bg-gradient-to-tr from-blue-300 to-teal-400 opacity-80 flex items-center justify-center shadow-2xl transition-all duration-1000 ease-in-out';
+          }
+        }
+      }
+
+      updatePhaseUI();
+
+      let totalCycles = 0;
+      breathingInterval = setInterval(() => {
+        count--;
+        if (count <= 0) {
+          if (phase === 0) {
+            phase = 1;
+            count = 7;
+          } else if (phase === 1) {
+            phase = 2;
+            count = 8;
+          } else {
+            totalCycles++;
+            if (totalCycles >= 2) {
+              clearInterval(breathingInterval);
+              if (actionText) actionText.textContent = '心情平靜完成了！';
+              if (timerCount) timerCount.textContent = '🌸';
+              playSound('success');
+              if (btn) btn.classList.remove('pointer-events-none', 'opacity-60');
+              return;
+            }
+            phase = 0;
+            count = 4;
+          }
+        }
+        updatePhaseUI();
+      }, 1000);
     }
 
     function initTeamworkLevels() {
