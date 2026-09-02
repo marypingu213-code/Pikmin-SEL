@@ -68,6 +68,117 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #64748b;
     }
+
+    @media print {
+      @page {
+        size: 5.4cm 9cm;
+        margin: 0;
+      }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 5.4cm !important;
+        height: 9cm !important;
+        overflow: hidden !important;
+      }
+      /* Hide all site navigation, headers, footers, forms and unneeded tabs */
+      header, footer, nav, #tab-home, #tab-history, #tab-calm-down, #tab-empathy, #tab-teamwork, #tab-organize, #tab-badges, #custom-modal {
+        display: none !important;
+      }
+      #tab-self-card {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      #tab-self-card > div:first-child,
+      #tab-self-card > div.grid > div.lg\:col-span-7,
+      #tab-self-card > div.grid > div.lg\:col-span-5 > div:first-child,
+      #card-action-buttons-container {
+        display: none !important;
+      }
+      #tab-self-card > div.grid {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      #tab-self-card > div.grid > div.lg\:col-span-5 {
+        display: block !important;
+        width: 5.4cm !important;
+        height: 9cm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      /* Strict 5.4cm x 9cm Card Container */
+      #physical-card-preview {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 5.4cm !important;
+        height: 9cm !important;
+        max-width: 5.4cm !important;
+        max-height: 9cm !important;
+        margin: 0 !important;
+        padding: 2.2mm !important;
+        box-sizing: border-box !important;
+        border-radius: 4mm !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+        page-break-inside: avoid !important;
+      }
+      #card-inner-frame {
+        height: 100% !important;
+        padding: 2.4mm !important;
+        border-radius: 3mm !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        box-shadow: none !important;
+      }
+      #card-top-header {
+        border-bottom: 1.5px solid #e2e8f0 !important;
+        padding-bottom: 1.5mm !important;
+        margin-bottom: 1.5mm !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+      #preview-name {
+        font-size: 15px !important;
+        text-align: center !important;
+        letter-spacing: 0.5px !important;
+      }
+      #preview-card-illus-bg {
+        height: 3.2cm !important;
+        border-radius: 2.5mm !important;
+        padding: 1.5mm !important;
+        flex-shrink: 0 !important;
+      }
+      #preview-pikmin-svg {
+        width: 2.6cm !important;
+        height: 2.6cm !important;
+      }
+      #card-strengths-box, #card-weakness-box {
+        padding: 1.8mm 2.2mm !important;
+        border-radius: 2mm !important;
+        margin-bottom: 1.2mm !important;
+        font-size: 9px !important;
+        line-height: 1.3 !important;
+      }
+      #card-strengths-box span, #card-weakness-box span {
+        font-size: 9.5px !important;
+        margin-bottom: 0.8mm !important;
+      }
+      /* Elements with red crosses in the specification are strictly hidden */
+      .print-exclude {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 
@@ -169,16 +280,16 @@
           <div class="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-bl-full -z-0 group-hover:scale-110 transition duration-300"></div>
           <div class="z-10 space-y-3">
             <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl font-bold shadow-sm">
-              <i data-lucide="bell-ring" class="w-6 h-6 text-amber-600"></i>
+              <i data-lucide="sparkles" class="w-6 h-6 text-amber-600"></i>
             </div>
             <div>
               <span class="text-xs font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-md">SEL 2 · 自我管理</span>
-              <h3 class="text-base font-bold text-slate-800 mt-1">情緒風暴·吹哨急救</h3>
-              <p class="text-xs text-slate-500 mt-1">遇到水火過載快吹哨！進行 4-7-8 呼吸調節，召回冷靜基地。</p>
+              <h3 class="text-base font-bold text-slate-800 mt-1">情緒調節·8大心靈平靜基地</h3>
+              <p class="text-xs text-slate-500 mt-1">正念呼吸、肌肉緊鬆、紓壓按鈕、自然音、曼陀羅彩繪、接落葉、吹泡泡、皮克敏彈弓！</p>
             </div>
           </div>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600">
-            <span>吹哨集合</span>
+            <span>進入平靜基地（8大工具）</span>
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </div>
         </div>
@@ -414,23 +525,23 @@
         <div class="lg:col-span-5 flex flex-col items-center justify-start space-y-4">
           <div class="w-full flex items-center justify-between px-1">
             <span class="text-xs font-bold text-slate-400">即時卡牌預覽</span>
-            <span id="preview-date-label" class="text-[10px] font-bold text-slate-400">2026/09/01 紀錄</span>
+            <span id="preview-date-label" class="text-[10px] font-bold text-slate-400">標準探險證（5.4 × 9 cm）</span>
           </div>
 
           <!-- The Physical-looking Card -->
           <div id="physical-card-preview" class="w-full max-w-sm bg-gradient-to-b from-red-500 to-red-600 rounded-3xl p-4 text-white shadow-2xl border-4 border-white transition-all transform duration-300">
             <!-- Inner Frame -->
-            <div class="bg-white rounded-2xl p-4 text-slate-800 space-y-3.5 shadow-inner">
-              <!-- Top Banner -->
-              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div id="card-inner-frame" class="bg-white rounded-2xl p-4 text-slate-800 space-y-3 shadow-inner">
+              <!-- Top Banner (Excludes flower icon & Pikmin type subtext & SEL badge upon print) -->
+              <div id="card-top-header" class="flex items-center justify-between pb-2 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                  <span id="preview-stage-icon" class="text-2xl">🌱</span>
+                  <span id="preview-stage-icon" class="text-2xl print-exclude">🌱</span>
                   <div>
                     <h4 id="preview-name" class="font-black text-base text-slate-900 leading-tight">小勇士</h4>
-                    <span id="preview-type-name" class="text-[11px] font-bold text-red-600">紅皮克敏（耐火・攻擊力高）</span>
+                    <span id="preview-type-name" class="text-[11px] font-bold text-red-600 print-exclude">紅皮克敏（耐火・攻擊力高）</span>
                   </div>
                 </div>
-                <span class="bg-slate-100 text-slate-600 text-[10px] font-black px-2 py-0.5 rounded-full border">SEL 探險證</span>
+                <span class="bg-slate-100 text-slate-600 text-[10px] font-black px-2 py-0.5 rounded-full border print-exclude">SEL 探險證</span>
               </div>
 
               <!-- Illustration Box -->
@@ -443,36 +554,40 @@
 
               <!-- Content Strengths & Help -->
               <div class="space-y-2 text-xs">
-                <div class="bg-emerald-50 border border-emerald-200/80 rounded-xl p-2.5">
+                <div id="card-strengths-box" class="bg-emerald-50 border border-emerald-200/80 rounded-xl p-2.5">
                   <span class="font-black text-emerald-800 flex items-center gap-1 mb-1">
                     <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-600"></i> 我的優勢超能力：
                   </span>
                   <p id="preview-strengths-text" class="text-slate-700 font-medium pl-4">🔥 勇敢面對挑戰、很有正義感</p>
                 </div>
 
-                <div class="bg-amber-50 border border-amber-200/80 rounded-xl p-2.5">
+                <div id="card-weakness-box" class="bg-amber-50 border border-amber-200/80 rounded-xl p-2.5">
                   <span class="font-black text-amber-900 flex items-center gap-1 mb-1">
                     <i data-lucide="hand-metal" class="w-3.5 h-3.5 text-amber-600"></i> 我需要的隊友幫忙：
                   </span>
                   <p id="preview-weakness-text" class="text-slate-700 font-medium pl-4">💧 遇到挫折容易心急，需要提醒我深呼吸</p>
                 </div>
                 
-                <div id="preview-note-container" class="bg-slate-50 border border-slate-200 rounded-xl p-2 text-[11px] text-slate-600 italic">
+                <!-- Bottom note container (Excluded on print/download as marked with red X) -->
+                <div id="preview-note-container" class="bg-slate-50 border border-slate-200 rounded-xl p-2 text-[11px] text-slate-600 italic print-exclude">
                   💬 <span id="preview-note-text">今天也是充滿幹勁的一天！</span>
                 </div>
               </div>
 
-              <!-- Bottom quote -->
-              <div class="text-center text-[10px] text-slate-400 font-bold tracking-tight">
+              <!-- Bottom quote (Excluded on print/download as marked with red X) -->
+              <div class="text-center text-[10px] text-slate-400 font-bold tracking-tight print-exclude">
                 「即使屬性不同，合力就是無敵戰隊！」
               </div>
             </div>
           </div>
 
-          <!-- 項目 4: 取消重複的「查看歷程手帳」按鈕，只保留獨立的列印/下載探險證按鈕 -->
-          <div class="w-full max-w-sm">
-            <button onclick="window.print()" class="w-full py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 shadow-sm flex items-center justify-center gap-2 transition">
-              <i data-lucide="printer" class="w-4 h-4 text-slate-500"></i> 列印／下載探險證
+          <!-- Print & Download Control Buttons -->
+          <div id="card-action-buttons-container" class="w-full max-w-sm flex gap-2">
+            <button onclick="printCard54x90()" class="flex-1 py-2.5 bg-white hover:bg-slate-50 text-slate-800 font-black text-xs rounded-xl border-2 border-slate-300 shadow-sm flex items-center justify-center gap-1.5 transition active:scale-95" title="列印 5.4cm × 9cm 探險證卡片">
+              <i data-lucide="printer" class="w-4 h-4 text-emerald-600"></i> 列印探險證 (5.4×9cm)
+            </button>
+            <button onclick="downloadCardPng54x90()" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5 transition active:scale-95" title="下載 5.4cm × 9cm 高解析度圖檔">
+              <i data-lucide="download" class="w-4 h-4"></i> 下載圖檔 (PNG)
             </button>
           </div>
         </div>
@@ -565,61 +680,333 @@
         <button onclick="switchTab('home')" class="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-emerald-600 transition">
           <i data-lucide="chevron-left" class="w-4 h-4"></i> 回基地總部
         </button>
-        <span class="text-xs font-black bg-amber-100 text-amber-800 px-3 py-1 rounded-full">SEL 模組 2 · 自我管理</span>
+        <span class="text-xs font-black bg-amber-100 text-amber-800 px-3 py-1 rounded-full">SEL 模組 2 · 自我管理 (Self-Management)</span>
       </div>
 
-      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-amber-200/80 max-w-3xl mx-auto space-y-6 text-center">
-        <div>
-          <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-black rounded-full">⚠️ 緊急狀況：遭遇情緒大火/淹水過載！</span>
-          <h3 class="text-2xl sm:text-3xl font-black text-slate-800 mt-2">Diamond 隊長的金色急救哨（4-7-8 呼吸調節）</h3>
-          <p class="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto">
-            在遊戲中，皮克敏溺水或著火時，隊長必須立刻吹哨召回！當你感到心煩、生氣或想哭時，按下金色哨子，跟著皮克敏深呼吸召回理智。
-          </p>
+      <!-- 8 Activity Selector Grid Navigation Bar -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-amber-200/80 space-y-3">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-amber-100 pb-3">
+          <div>
+            <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+              <span>🧘</span> 8 大情緒調節與心靈平靜基地
+            </h3>
+            <p class="text-xs text-slate-500">選擇適合你當下心情的正念平復工具，放鬆身心並找回專注能量！</p>
+          </div>
+          <span class="text-[11px] font-bold bg-amber-50 text-amber-800 px-3 py-1 rounded-full border border-amber-200">
+            💡 操作體驗將自動記入手帳 SEL2
+          </span>
         </div>
 
-        <!-- Interactive Whistle Button -->
-        <div class="py-4">
-          <button id="whistle-button" onclick="startWhistleBreathing()" class="pulse-glow px-8 py-5 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-amber-950 font-black text-lg rounded-3xl shadow-xl transition transform active:scale-95 flex items-center gap-3 mx-auto">
-            <span class="text-3xl animate-bounce">🪈</span>
-            <span>按下「吹響召回哨」進行深呼吸</span>
+        <!-- 8 Tool Navigation Buttons -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+          <button onclick="switchSel2Tool('breathe')" id="sel2-nav-breathe" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-amber-50 border-amber-400 text-amber-900 shadow-sm">
+            <span class="text-2xl">🌬️</span>
+            <span class="truncate">正念呼吸</span>
+          </button>
+          <button onclick="switchSel2Tool('muscle')" id="sel2-nav-muscle" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300">
+            <span class="text-2xl">💪</span>
+            <span class="truncate">肌肉緊鬆</span>
+          </button>
+          <button onclick="switchSel2Tool('fidget')" id="sel2-nav-fidget" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300">
+            <span class="text-2xl">🔘</span>
+            <span class="truncate">紓壓按鈕</span>
+          </button>
+          <button onclick="switchSel2Tool('nature')" id="sel2-nav-nature" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300">
+            <span class="text-2xl">🍃</span>
+            <span class="truncate">自然音效</span>
+          </button>
+          <button onclick="switchSel2Tool('mandala')" id="sel2-nav-mandala" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300">
+            <span class="text-2xl">🎨</span>
+            <span class="truncate">曼陀羅</span>
+          </button>
+          <button onclick="switchSel2Tool('leaves')" id="sel2-nav-leaves" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300">
+            <span class="text-2xl">🍂</span>
+            <span class="truncate">接飄落葉</span>
+          </button>
+          <button onclick="switchSel2Tool('bubbles')" id="sel2-nav-bubbles" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300">
+            <span class="text-2xl">🫧</span>
+            <span class="truncate">吹戳泡泡</span>
+          </button>
+          <button onclick="switchSel2Tool('slingshot')" id="sel2-nav-slingshot" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300">
+            <span class="text-2xl">🎯</span>
+            <span class="truncate">皮克敏彈弓</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ACTIVITY 1: MINDFUL BREATHING -->
+      <div id="sel2-tool-breathe" class="sel2-activity-panel bg-white rounded-3xl p-6 shadow-sm border border-amber-200 max-w-3xl mx-auto space-y-5 text-center">
+        <div class="space-y-1">
+          <span class="px-3 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-black rounded-full">工具 1 · 視覺化呼吸引導</span>
+          <h4 class="text-2xl font-black text-slate-800 mt-1">正念呼吸：與花朵一同綻放平靜</h4>
+          <p class="text-xs text-slate-500 max-w-md mx-auto">跟隨動態圓環的放大與縮小，配合規律呼吸，讓身心自然放鬆！</p>
+        </div>
+
+        <!-- Mode Buttons -->
+        <div class="flex items-center justify-center gap-2 flex-wrap pt-1">
+          <button onclick="setBreatheMode('478')" id="breathe-mode-478" class="px-3.5 py-1.5 rounded-xl text-xs font-black border-2 border-emerald-500 bg-emerald-50 text-emerald-900 transition">
+            🌟 4-7-8 深度安定 (吸4-屏7-吐8)
+          </button>
+          <button onclick="setBreatheMode('box')" id="breathe-mode-box" class="px-3.5 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 transition">
+            🟦 4-4-4-4 方塊呼吸 (吸4-屏4-吐4-停4)
+          </button>
+          <button onclick="setBreatheMode('calm')" id="breathe-mode-calm" class="px-3.5 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 transition">
+            🍃 4-6 溫和放鬆 (吸4-吐6)
           </button>
         </div>
 
-        <!-- Breathing Visualizer Circle -->
-        <div id="breathing-stage" class="hidden flex flex-col items-center justify-center space-y-4 py-6">
-          <div class="relative w-56 h-56 flex items-center justify-center">
-            <!-- Outer Pulsing Circle -->
-            <div id="breathe-anim-disk" class="w-44 h-44 rounded-full bg-gradient-to-tr from-teal-400 to-emerald-300 opacity-80 flex items-center justify-center shadow-2xl transition-all duration-1000 ease-in-out">
-              <span id="breathe-pikmin-emoji" class="text-5xl">🌱</span>
+        <!-- Breathing Ring -->
+        <div class="py-6 flex flex-col items-center justify-center">
+          <div class="relative w-64 h-64 flex items-center justify-center">
+            <div id="mindful-breath-ring" class="w-48 h-48 rounded-full bg-gradient-to-tr from-teal-300 via-emerald-300 to-cyan-400 opacity-90 flex items-center justify-center shadow-2xl transition-all duration-1000 ease-in-out">
+              <span id="mindful-breath-icon" class="text-5xl">🌸</span>
             </div>
-            <!-- Countdown Overlay -->
             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span id="breathe-action-text" class="text-lg font-black text-teal-900">準備開始</span>
-              <span id="breathe-timer-count" class="text-3xl font-black text-teal-950">4</span>
-            </div>
-          </div>
-
-          <div class="max-w-xs text-xs font-bold text-slate-500 space-y-1">
-            <p id="breathe-guide-tip">吸氣 4 秒（像聞花香） $\to$ 屏息 7 秒 $\to$ 吐氣 8 秒（吹走煩惱）</p>
-          </div>
-
-          <!-- Grounding Support Cards -->
-          <div class="grid grid-cols-3 gap-3 w-full max-w-md pt-4">
-            <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200">
-              <span class="text-xl">🪑</span>
-              <p class="text-[11px] font-bold text-slate-700 mt-1">前往冷靜角落</p>
-            </div>
-            <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200">
-              <span class="text-xl">💧</span>
-              <p class="text-[11px] font-bold text-slate-700 mt-1">喝一口溫水</p>
-            </div>
-            <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200">
-              <span class="text-xl">🙋‍♂️</span>
-              <p class="text-[11px] font-bold text-slate-700 mt-1">向老師/同學求助</p>
+              <span id="mindful-breath-state" class="text-base font-black text-teal-950">準備吸氣</span>
+              <span id="mindful-breath-counter" class="text-4xl font-black text-teal-950 mt-1">4</span>
             </div>
           </div>
         </div>
 
+        <div>
+          <button id="mindful-breathe-start-btn" onclick="toggleMindfulBreathing()" class="px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 text-white font-black text-sm rounded-2xl shadow-md transition transform active:scale-95">
+            ▶️ 開始呼吸引導
+          </button>
+        </div>
+      </div>
+
+      <!-- ACTIVITY 2: PROGRESSIVE MUSCLE RELAXATION -->
+      <div id="sel2-tool-muscle" class="sel2-activity-panel hidden bg-white rounded-3xl p-6 shadow-sm border border-amber-200 max-w-3xl mx-auto space-y-5 text-center">
+        <div class="space-y-1">
+          <span class="px-3 py-0.5 bg-purple-100 text-purple-800 text-xs font-black rounded-full">工具 2 · 肌肉緊鬆對比 (PMR)</span>
+          <h4 class="text-2xl font-black text-slate-800 mt-1">漸進式肌肉緊繃與完全釋放</h4>
+          <p class="text-xs text-slate-500 max-w-md mx-auto">透過「先用力緊縮 5 秒，再瞬間完全放鬆 10 秒」，讓大腦清楚感受壓力卸下的舒適感！</p>
+        </div>
+
+        <!-- 4 Body Parts Selector -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
+          <button onclick="setMuscleTarget(0)" class="p-3 bg-slate-50 hover:bg-purple-50 rounded-2xl border-2 border-slate-200 hover:border-purple-300 text-xs font-black text-slate-800 flex flex-col items-center gap-1 transition">
+            <span class="text-2xl">✊</span>
+            <span>1. 雙手握拳</span>
+          </button>
+          <button onclick="setMuscleTarget(1)" class="p-3 bg-slate-50 hover:bg-purple-50 rounded-2xl border-2 border-slate-200 hover:border-purple-300 text-xs font-black text-slate-800 flex flex-col items-center gap-1 transition">
+            <span class="text-2xl">💪</span>
+            <span>2. 聳緊雙肩</span>
+          </button>
+          <button onclick="setMuscleTarget(2)" class="p-3 bg-slate-50 hover:bg-purple-50 rounded-2xl border-2 border-slate-200 hover:border-purple-300 text-xs font-black text-slate-800 flex flex-col items-center gap-1 transition">
+            <span class="text-2xl">😬</span>
+            <span>3. 臉部五官</span>
+          </button>
+          <button onclick="setMuscleTarget(3)" class="p-3 bg-slate-50 hover:bg-purple-50 rounded-2xl border-2 border-slate-200 hover:border-purple-300 text-xs font-black text-slate-800 flex flex-col items-center gap-1 transition">
+            <span class="text-2xl">🦶</span>
+            <span>4. 抓緊腳趾</span>
+          </button>
+        </div>
+
+        <!-- Visual Stage -->
+        <div class="p-6 bg-purple-50/60 rounded-2xl border border-purple-200 space-y-3">
+          <div id="muscle-body-visual" class="text-6xl transition-transform duration-500">✊</div>
+          <h5 id="muscle-target-title" class="font-black text-slate-800 text-base">部位 1：雙手握緊拳頭</h5>
+          <p id="muscle-guide-text" class="text-xs text-slate-600 max-w-md mx-auto">用盡全力將雙手握緊成結實的拳頭，感受指節的緊繃...</p>
+          <div id="muscle-status-badge" class="inline-block text-xs font-black px-3 py-1 rounded-full bg-slate-100 text-slate-600">
+            準備就緒
+          </div>
+
+          <!-- Progress Bar & Timer -->
+          <div class="w-full max-w-xs mx-auto space-y-1 pt-2">
+            <div class="flex justify-between text-[11px] font-black text-purple-900">
+              <span>緊繃倒數</span>
+              <span id="muscle-sec-label">5 秒</span>
+            </div>
+            <div class="w-full bg-white rounded-full h-3 p-0.5 overflow-hidden border border-purple-200">
+              <div id="muscle-timer-bar" class="bg-purple-600 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <button id="start-muscle-btn" onclick="startMuscleCycle()" class="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black text-sm rounded-2xl shadow-md transition active:scale-95">
+            ⚡ 開始緊繃倒數
+          </button>
+        </div>
+      </div>
+
+      <!-- ACTIVITY 3: FIDGET POP GRID -->
+      <div id="sel2-tool-fidget" class="sel2-activity-panel hidden bg-white rounded-3xl p-6 shadow-sm border border-amber-200 max-w-3xl mx-auto space-y-5 text-center">
+        <div class="space-y-1">
+          <span class="px-3 py-0.5 bg-pink-100 text-pink-800 text-xs font-black rounded-full">工具 3 · 柔和紓壓按鈕 (Pop Fidget)</span>
+          <h4 class="text-2xl font-black text-slate-800 mt-1">按壓跳動色塊，釋放焦慮情緒</h4>
+          <p class="text-xs text-slate-500">點擊柔和泡泡色塊消除壓力，伴隨清脆 pop 聲音，幾秒後會自動復原喔！</p>
+        </div>
+
+        <div class="flex items-center justify-between max-w-md mx-auto text-xs font-black text-slate-600 px-2">
+          <span>已按壓消除：<span id="fidget-popped-count" class="text-pink-600 text-base font-black">0</span> 次</span>
+          <button onclick="resetFidgetGrid()" class="text-slate-400 hover:text-slate-600 underline">全部復原</button>
+        </div>
+
+        <!-- Fidget Pop Board -->
+        <div id="fidget-board-grid" class="grid grid-cols-6 gap-2 sm:gap-3 max-w-md mx-auto p-4 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+          <!-- Dynamically populated 24 buttons -->
+        </div>
+      </div>
+
+      <!-- ACTIVITY 4: NATURE SOUND SYNTHESIZER -->
+      <div id="sel2-tool-nature" class="sel2-activity-panel hidden bg-white rounded-3xl p-6 shadow-sm border border-amber-200 max-w-3xl mx-auto space-y-5 text-center">
+        <div class="space-y-1">
+          <span class="px-3 py-0.5 bg-teal-100 text-teal-800 text-xs font-black rounded-full">工具 4 · 自然白噪音合成</span>
+          <h4 class="text-2xl font-black text-slate-800 mt-1">大自然的聲音療癒場景</h4>
+          <p class="text-xs text-slate-500">純 Web Audio 演算法即時生成，點擊切換播放微風、雨聲、流水與鳥鳴！</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto pt-2">
+          <div class="p-4 bg-gradient-to-r from-sky-50 to-teal-50 rounded-2xl border border-teal-200 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">🌬️</span>
+              <div class="text-left">
+                <h5 class="font-black text-slate-800 text-sm">森林微風 (Wind)</h5>
+                <p class="text-[11px] text-slate-500">平穩白噪音，舒緩緊張</p>
+              </div>
+            </div>
+            <button id="btn-nature-wind" onclick="toggleNatureSound('wind')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-black hover:bg-slate-200 transition">
+              播放
+            </button>
+          </div>
+
+          <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">🌧️</span>
+              <div class="text-left">
+                <h5 class="font-black text-slate-800 text-sm">溫柔細雨 (Rain)</h5>
+                <p class="text-[11px] text-slate-500">綿密雨絲，提升專注</p>
+              </div>
+            </div>
+            <button id="btn-nature-rain" onclick="toggleNatureSound('rain')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-black hover:bg-slate-200 transition">
+              播放
+            </button>
+          </div>
+
+          <div class="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-2xl border border-cyan-200 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">🏞️</span>
+              <div class="text-left">
+                <h5 class="font-black text-slate-800 text-sm">山澗溪流 (Stream)</h5>
+                <p class="text-[11px] text-slate-500">潺潺水聲，洗滌思緒</p>
+              </div>
+            </div>
+            <button id="btn-nature-stream" onclick="toggleNatureSound('stream')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-black hover:bg-slate-200 transition">
+              播放
+            </button>
+          </div>
+
+          <div class="p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-emerald-200 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">🐦</span>
+              <div class="text-left">
+                <h5 class="font-black text-slate-800 text-sm">晨曦鳥鳴 (Birds)</h5>
+                <p class="text-[11px] text-slate-500">活潑清脆，重拾活力</p>
+              </div>
+            </div>
+            <button id="btn-nature-birds" onclick="toggleNatureSound('birds')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-black hover:bg-slate-200 transition">
+              播放
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY 5: MANDALA COLORING -->
+      <div id="sel2-tool-mandala" class="sel2-activity-panel hidden bg-white rounded-3xl p-6 shadow-sm border border-amber-200 max-w-3xl mx-auto space-y-4 text-center">
+        <div class="space-y-1">
+          <span class="px-3 py-0.5 bg-rose-100 text-rose-800 text-xs font-black rounded-full">工具 5 · 曼陀羅心靈彩繪</span>
+          <h4 class="text-2xl font-black text-slate-800 mt-1">對稱幾何著色，凝聚內在平靜</h4>
+          <p class="text-xs text-slate-500">選擇畫布與顏色後，點擊曼陀羅的幾何色塊填入顏色！</p>
+        </div>
+
+        <!-- 4 Mandala Templates Switcher -->
+        <div class="flex items-center justify-center gap-2 flex-wrap pt-1">
+          <span class="text-xs font-bold text-slate-500 mr-1">選擇畫布：</span>
+          <button type="button" onclick="switchMandalaTemplate(0)" id="mandala-tpl-0" class="px-3 py-1.5 rounded-xl text-xs font-black border-2 border-pink-500 bg-pink-50 text-pink-900 transition">🌸 經典八瓣蓮</button>
+          <button type="button" onclick="switchMandalaTemplate(1)" id="mandala-tpl-1" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">⭐ 十二芒星脈輪</button>
+          <button type="button" onclick="switchMandalaTemplate(2)" id="mandala-tpl-2" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌻 太陽放射繁花</button>
+          <button type="button" onclick="switchMandalaTemplate(3)" id="mandala-tpl-3" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">❄️ 冰晶幾何迷宮</button>
+        </div>
+
+        <div id="mandala-palette" class="flex items-center justify-center gap-2 flex-wrap pt-1">
+          <!-- Dynamically populated palette -->
+        </div>
+
+        <!-- Mandala Interactive SVG Wrapper -->
+        <div id="mandala-svg-wrapper" class="w-64 h-64 sm:w-72 sm:h-72 mx-auto p-2 bg-slate-50 rounded-3xl border-2 border-slate-200 shadow-inner flex items-center justify-center">
+          <!-- Dynamically populated by renderMandalaSvg() -->
+        </div>
+
+        <div>
+          <button onclick="resetMandala()" class="text-xs font-bold text-slate-500 hover:text-red-500 underline">
+            重設曼陀羅畫布
+          </button>
+        </div>
+      </div>
+
+      <!-- ACTIVITY 6: FALLING LEAVES GAME -->
+      <div id="sel2-tool-leaves" class="sel2-activity-panel hidden bg-white rounded-3xl p-6 shadow-sm border border-amber-200 max-w-3xl mx-auto space-y-3 text-center">
+        <div class="space-y-1">
+          <span class="px-3 py-0.5 bg-lime-100 text-lime-800 text-xs font-black rounded-full">工具 6 · 緩緩飄落的落葉</span>
+          <h4 class="text-2xl font-black text-slate-800 mt-1">左右滑動木桶，靜心接住落葉</h4>
+          <p class="text-xs text-slate-500">落葉緩慢飄動無時間壓力，左右移動滑鼠或用手指滑動木桶收集！</p>
+        </div>
+
+        <div class="text-xs font-black text-slate-600">
+          🧺 已接住落葉：<span id="leaves-score-counter" class="text-emerald-600 text-base font-black">0</span> 片
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="relative w-full h-[300px] bg-gradient-to-b from-sky-50 via-emerald-50/40 to-amber-50/60 rounded-3xl border-2 border-emerald-200 overflow-hidden shadow-inner cursor-ew-resize">
+          <canvas id="leaves-canvas" class="w-full h-full block"></canvas>
+        </div>
+      </div>
+
+      <!-- ACTIVITY 7: FLOATING BUBBLES -->
+      <div id="sel2-tool-bubbles" class="sel2-activity-panel hidden bg-white rounded-3xl p-6 shadow-sm border border-amber-200 max-w-3xl mx-auto space-y-3 text-center">
+        <div class="space-y-1">
+          <span class="px-3 py-0.5 bg-cyan-100 text-cyan-800 text-xs font-black rounded-full">工具 7 · 吹泡泡與戳破</span>
+          <h4 class="text-2xl font-black text-slate-800 mt-1">輕觸戳破泡泡，帶走沉重心事</h4>
+          <p class="text-xs text-slate-500">晶瑩泡泡正從左邊徐徐吹出，點擊泡泡戳破它！</p>
+        </div>
+
+        <div class="flex items-center justify-between max-w-md mx-auto text-xs font-black text-slate-600 px-2">
+          <span>✨ 戳破泡泡：<span id="bubble-popped-counter" class="text-cyan-600 text-base font-black">0</span> 顆</span>
+          <button onclick="spawnExtraBubbles()" class="px-3.5 py-1.5 bg-cyan-100 hover:bg-cyan-200 text-cyan-800 rounded-xl font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-600"></i>
+            <span>吹更多泡泡</span>
+          </button>
+        </div>
+
+        <!-- Bubbles Sky Stage -->
+        <div id="bubble-container" class="relative w-full h-[300px] bg-gradient-to-r from-sky-100/60 via-blue-50/50 to-indigo-100/60 rounded-3xl border-2 border-cyan-200 overflow-hidden shadow-inner select-none">
+        </div>
+      </div>
+
+      <!-- ACTIVITY 8: SLINGSHOT PIKMIN LAUNCHER -->
+      <div id="sel2-tool-slingshot" class="sel2-activity-panel hidden bg-white rounded-3xl p-6 shadow-sm border border-amber-200 max-w-3xl mx-auto space-y-3 text-center">
+        <div class="space-y-1">
+          <span class="px-3 py-0.5 bg-orange-100 text-orange-800 text-xs font-black rounded-full">工具 8 · 皮克敏彈弓平復遊戲</span>
+          <h4 class="text-2xl font-black text-slate-800 mt-1">拉動彈弓，發射皮克敏喚醒目標花</h4>
+          <p class="text-xs text-slate-500">按住彈弓向後拖拉瞄準，鬆開手指發射皮克敏，擊中右側山壁上的 5 瓣開花目標！</p>
+        </div>
+
+        <div class="flex items-center justify-between max-w-lg mx-auto text-xs font-black text-slate-700 px-1">
+          <span>🎯 擊中盛開花朵：<span id="slingshot-hits" class="text-orange-600 text-base font-black">0</span> 次</span>
+          <span class="text-slate-400">選擇彈藥夥伴：</span>
+        </div>
+
+        <!-- Ammo Selector -->
+        <div id="slingshot-pikmin-selector" class="flex items-center gap-1.5 overflow-x-auto max-w-lg mx-auto pb-1 px-1">
+          <!-- Dynamically populated 9 Pikmin -->
+        </div>
+
+        <!-- Slingshot Canvas -->
+        <div class="relative w-full h-[320px] bg-gradient-to-b from-sky-200 via-amber-50 to-emerald-100 rounded-3xl border-2 border-orange-200 overflow-hidden shadow-inner cursor-crosshair">
+          <canvas id="slingshot-canvas" class="w-full h-full block"></canvas>
+        </div>
       </div>
     </section>
 
@@ -990,21 +1377,1036 @@
 
     function initAudio() {
       if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // SFX Master Gain
-        sfxGainNode = audioCtx.createGain();
-        sfxGainNode.gain.setValueAtTime(isMuted ? 0 : 1.0, audioCtx.currentTime);
-        sfxGainNode.connect(audioCtx.destination);
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
 
-        // BGM Master Gain (Independent)
-        bgmGainNode = audioCtx.createGain();
-        bgmGainNode.gain.setValueAtTime(bgmVolume, audioCtx.currentTime);
-        bgmGainNode.connect(audioCtx.destination);
+          // Create dedicated gain node for BGM
+          bgmGainNode = audioCtx.createGain();
+          bgmGainNode.gain.setValueAtTime(bgmVolume, audioCtx.currentTime);
+          bgmGainNode.connect(audioCtx.destination);
+
+          // Create dedicated gain node for sound effects
+          sfxGainNode = audioCtx.createGain();
+          sfxGainNode.gain.setValueAtTime(isMuted ? 0 : 1.0, audioCtx.currentTime);
+          sfxGainNode.connect(audioCtx.destination);
+        }
       }
-      if (audioCtx.state === 'suspended') {
+      if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
+    }
+
+    let currentSel2Tool = 'breathe';
+    let mindfulBreatheTimer = null;
+    let isMindfulBreathing = false;
+    let mindfulPhase = 0; // 0: in, 1: hold, 2: out
+    let mindfulCount = 4;
+    let currentBreatheMode = '478';
+
+    let muscleCycleTimer = null;
+    let muscleStep = 0;
+    const MUSCLE_TARGETS = [
+      { name: '雙手握緊拳頭', icon: '✊', instruction: '用盡全力將雙手握緊成結實的拳頭，感受指節的緊繃...' },
+      { name: '聳緊雙側肩膀', icon: '💪', instruction: '用力將雙肩向上聳至耳朵處，感受頸部與肩背的緊繃...' },
+      { name: '緊縮臉部五官', icon: '😬', instruction: '緊緊皺眉、閉緊眼睛、嘴巴咬緊，感受臉頰肌肉的緊縮...' },
+      { name: '向下抓緊腳趾', icon: '🦶', instruction: '將腳趾頭向下用力扣緊鞋底，繃緊小腿肌肉...' }
+    ];
+
+    let fidgetPoppedCount = 0;
+    let activeNatureSounds = { wind: null, rain: null, stream: null, birds: null };
+
+    let selectedMandalaColor = '#f472b6';
+    let currentMandalaTemplate = 0;
+    const MANDALA_COLORS = ['#f87171', '#fb923c', '#facc15', '#4ade80', '#2dd4bf', '#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#ffffff'];
+
+    let leavesGameRunning = false;
+    let leavesScore = 0;
+    let leavesList = [];
+    let leafBucketX = 150;
+    let leafCanvasAnimId = null;
+
+    let bubblePoppedCount = 0;
+    let bubbleSpawnInterval = null;
+
+    let slingshotPikminAmmo = 'red';
+    let slingshotHits = 0;
+    let slingshotAnimId = null;
+    let isSlingshotDragging = false;
+    let slingshotDragPos = { x: 90, y: 220 };
+    let slingshotBasePos = { x: 90, y: 220 };
+    let slingshotProjectile = null;
+    let cliffTargets = [];
+
+    // Preloaded image caches for Pikmin SVG sprites in slingshot
+    const pikminSpriteImages = {};
+    function preloadPikminSprites() {
+      if (typeof PIKMIN_ROSTER === 'undefined' || typeof getDynamicPikminSvg === 'undefined') return;
+      PIKMIN_ROSTER.forEach(p => {
+        const svgStr = getDynamicPikminSvg(p.id, 'flower');
+        const img = new Image();
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+        pikminSpriteImages[p.id] = img;
+      });
+    }
+
+    function switchSel2Tool(toolId) {
+      playSound('pop');
+      currentSel2Tool = toolId;
+      document.querySelectorAll('.sel2-tool-btn').forEach(btn => {
+        btn.className = 'sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300';
+      });
+      const activeBtn = document.getElementById(`sel2-nav-${toolId}`);
+      if (activeBtn) {
+        activeBtn.className = 'sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-amber-50 border-amber-400 text-amber-900 shadow-sm';
+      }
+
+      document.querySelectorAll('.sel2-activity-panel').forEach(p => p.classList.add('hidden'));
+      const panel = document.getElementById(`sel2-tool-${toolId}`);
+      if (panel) panel.classList.remove('hidden');
+
+      // Activity initializations
+      if (toolId === 'fidget') initFidgetGrid();
+      if (toolId === 'mandala') {
+        initMandalaPalette();
+        renderMandalaSvg();
+      }
+      if (toolId === 'leaves') initLeavesGame();
+      else stopLeavesGame();
+      if (toolId === 'bubbles') initBubbleBlower();
+      else stopBubbleBlower();
+      if (toolId === 'slingshot') initSlingshotGame();
+      else stopSlingshotGame();
+
+      // Count exploration in SEL2 handbook progress
+      updateActiveStudentRecord(2, 2);
+      lucide.createIcons();
+    }
+
+    // --- TOOL 1: MINDFUL BREATHING (No inner icon, perfectly smooth scaling) ---
+    function setBreatheMode(mode) {
+      playSound('pop');
+      currentBreatheMode = mode;
+      ['478', 'box', 'calm'].forEach(m => {
+        const b = document.getElementById(`breathe-mode-${m}`);
+        if (b) {
+          b.className = m === mode
+            ? 'px-3.5 py-1.5 rounded-xl text-xs font-black border-2 border-emerald-500 bg-emerald-50 text-emerald-900 transition'
+            : 'px-3.5 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 transition';
+        }
+      });
+    }
+
+    function toggleMindfulBreathing() {
+      const btn = document.getElementById('mindful-breathe-start-btn');
+      if (isMindfulBreathing) {
+        clearInterval(mindfulBreatheTimer);
+        isMindfulBreathing = false;
+        if (btn) btn.textContent = '▶️ 開始呼吸引導';
+        return;
+      }
+
+      isMindfulBreathing = true;
+      if (btn) btn.textContent = '⏸️ 暫停呼吸引導';
+      playSound('pop');
+
+      mindfulPhase = 0;
+      mindfulCount = 4;
+      runMindfulPhase();
+
+      mindfulBreatheTimer = setInterval(() => {
+        mindfulCount--;
+        const counter = document.getElementById('mindful-breath-counter');
+        if (counter) counter.textContent = mindfulCount;
+
+        if (mindfulCount <= 0) {
+          if (currentBreatheMode === '478') {
+            mindfulPhase = (mindfulPhase + 1) % 3;
+            mindfulCount = mindfulPhase === 0 ? 4 : (mindfulPhase === 1 ? 7 : 8);
+          } else if (currentBreatheMode === 'box') {
+            mindfulPhase = (mindfulPhase + 1) % 4;
+            mindfulCount = 4;
+          } else {
+            mindfulPhase = (mindfulPhase + 1) % 2;
+            mindfulCount = mindfulPhase === 0 ? 4 : 6;
+          }
+          runMindfulPhase();
+        }
+      }, 1000);
+    }
+
+    function runMindfulPhase() {
+      const ring = document.getElementById('mindful-breath-ring');
+      const state = document.getElementById('mindful-breath-state');
+      const counter = document.getElementById('mindful-breath-counter');
+      if (counter) counter.textContent = mindfulCount;
+
+      if (!ring) return;
+
+      if (mindfulPhase === 0) {
+        // Inhale: smoothly expand over duration
+        if (state) state.textContent = '緩緩吸氣';
+        const dur = currentBreatheMode === '478' ? 4 : 4;
+        ring.style.transition = `transform ${dur}s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s ease`;
+        ring.style.transform = 'scale(1.4)';
+        ring.className = 'w-48 h-48 rounded-full bg-gradient-to-tr from-teal-300 via-emerald-300 to-cyan-300 opacity-95 shadow-2xl flex flex-col items-center justify-center';
+      } else if (mindfulPhase === 1 && currentBreatheMode !== 'calm') {
+        // Hold breath: sustain size
+        if (state) state.textContent = '保持屏息';
+        ring.style.transition = 'transform 0.5s ease, background-color 1s ease';
+        ring.style.transform = 'scale(1.4)';
+        ring.className = 'w-48 h-48 rounded-full bg-gradient-to-tr from-amber-300 via-yellow-300 to-orange-300 opacity-90 shadow-2xl flex flex-col items-center justify-center';
+      } else {
+        // Exhale: smoothly shrink over duration
+        if (state) state.textContent = '放慢吐氣';
+        const dur = currentBreatheMode === '478' ? 8 : (currentBreatheMode === 'calm' ? 6 : 4);
+        ring.style.transition = `transform ${dur}s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s ease`;
+        ring.style.transform = 'scale(0.8)';
+        ring.className = 'w-48 h-48 rounded-full bg-gradient-to-tr from-sky-300 via-blue-300 to-teal-300 opacity-80 shadow-2xl flex flex-col items-center justify-center';
+      }
+    }
+
+    // --- TOOL 2: MUSCLE PMR CONTROLLER ---
+    let currentMuscleTargetIndex = 0;
+    function setMuscleTarget(idx) {
+      playSound('pop');
+      currentMuscleTargetIndex = idx;
+      const target = MUSCLE_TARGETS[idx];
+      if (!target) return;
+
+      const visual = document.getElementById('muscle-body-visual');
+      const title = document.getElementById('muscle-target-title');
+      const guide = document.getElementById('muscle-guide-text');
+      const badge = document.getElementById('muscle-status-badge');
+      const timerBar = document.getElementById('muscle-timer-bar');
+      const secLabel = document.getElementById('muscle-sec-label');
+
+      if (visual) visual.textContent = target.icon;
+      if (title) title.textContent = `部位 ${idx + 1}：${target.name}`;
+      if (guide) guide.textContent = target.instruction;
+      if (badge) {
+        badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-slate-100 text-slate-600';
+        badge.textContent = '準備就緒';
+      }
+      if (timerBar) timerBar.style.width = '0%';
+      if (secLabel) secLabel.textContent = '5 秒';
+      if (muscleCycleTimer) clearInterval(muscleCycleTimer);
+    }
+
+    function startMuscleCycle() {
+      initAudio();
+      playSound('pop');
+      const target = MUSCLE_TARGETS[currentMuscleTargetIndex];
+      const badge = document.getElementById('muscle-status-badge');
+      const bar = document.getElementById('muscle-timer-bar');
+      const secLabel = document.getElementById('muscle-sec-label');
+      const startBtn = document.getElementById('start-muscle-btn');
+
+      if (muscleCycleTimer) clearInterval(muscleCycleTimer);
+      if (startBtn) startBtn.disabled = true;
+
+      // Phase 1: Tension for 5 seconds
+      let tenseSeconds = 5;
+      if (badge) {
+        badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-red-100 text-red-700 animate-pulse';
+        badge.textContent = '⚡ 用力緊繃！感受肌肉張力！';
+      }
+      if (secLabel) secLabel.textContent = `${tenseSeconds} 秒 (緊繃中)`;
+
+      muscleCycleTimer = setInterval(() => {
+        tenseSeconds--;
+        if (bar) bar.style.width = `${((5 - tenseSeconds) / 5) * 100}%`;
+        if (secLabel) secLabel.textContent = `${tenseSeconds} 秒 (緊繃中)`;
+
+        if (tenseSeconds <= 0) {
+          clearInterval(muscleCycleTimer);
+          // Phase 2: Complete Release for 8 seconds
+          playSound('success');
+          let releaseSeconds = 8;
+          if (badge) {
+            badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 animate-bounce';
+            badge.textContent = '🍃 瞬間完全放鬆！感受壓力卸下...';
+          }
+          if (secLabel) secLabel.textContent = `${releaseSeconds} 秒 (放鬆舒緩)`;
+
+          muscleCycleTimer = setInterval(() => {
+            releaseSeconds--;
+            if (bar) bar.style.width = `${(releaseSeconds / 8) * 100}%`;
+            if (secLabel) secLabel.textContent = `${releaseSeconds} 秒 (放鬆舒緩)`;
+
+            if (releaseSeconds <= 0) {
+              clearInterval(muscleCycleTimer);
+              if (badge) {
+                badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-purple-100 text-purple-800';
+                badge.textContent = '✨ 放鬆練習完成！身心很平靜';
+              }
+              if (startBtn) startBtn.disabled = false;
+              updateActiveStudentRecord(2, 2);
+            }
+          }, 1000);
+        }
+      }, 1000);
+    }
+
+    // --- TOOL 3: FIDGET POP GRID (Pure circles, disappear on click) ---
+    // --- TOOL 3: FIDGET POP GRID (Leaves empty circular frame with light solid border on press) ---
+    function initFidgetGrid() {
+      const grid = document.getElementById('fidget-board-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      const colors = [
+        'bg-pink-300 hover:bg-pink-400 border-pink-400',
+        'bg-sky-300 hover:bg-sky-400 border-sky-400',
+        'bg-amber-300 hover:bg-amber-400 border-amber-400',
+        'bg-emerald-300 hover:bg-emerald-400 border-emerald-400',
+        'bg-purple-300 hover:bg-purple-400 border-purple-400'
+      ];
+
+      for (let i = 0; i < 24; i++) {
+        const btn = document.createElement('button');
+        const c = colors[i % colors.length];
+        btn.className = `w-12 h-12 rounded-full border-2 ${c} shadow-md transition-all duration-300 transform select-none cursor-pointer hover:scale-105 active:scale-95`;
+        btn.onclick = () => {
+          if (btn.dataset.popped === 'true') return;
+          btn.dataset.popped = 'true';
+          playSound('pop');
+          fidgetPoppedCount++;
+          const counter = document.getElementById('fidget-popped-count');
+          if (counter) counter.textContent = fidgetPoppedCount;
+          
+          // Leave an empty circular frame with light solid line (not dashed)
+          btn.className = 'w-12 h-12 rounded-full border-2 border-solid border-slate-200 bg-white/40 shadow-inner transition-all duration-300 select-none cursor-default';
+        };
+        grid.appendChild(btn);
+      }
+    }
+
+    function resetFidgetGrid() {
+      fidgetPoppedCount = 0;
+      const counter = document.getElementById('fidget-popped-count');
+      if (counter) counter.textContent = '0';
+      initFidgetGrid();
+    }
+
+    // --- TOOL 4: NATURE SOUND SYNTHESIZER ---
+    function toggleNatureSound(type) {
+      initAudio();
+      if (!audioCtx) return;
+      const btn = document.getElementById(`btn-nature-${type}`);
+
+      if (activeNatureSounds[type]) {
+        // Stop current sound
+        try {
+          activeNatureSounds[type].stop();
+          activeNatureSounds[type].disconnect();
+        } catch (e) {}
+        activeNatureSounds[type] = null;
+        if (btn) {
+          btn.textContent = '播放';
+          btn.className = 'px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-black hover:bg-slate-200 transition';
+        }
+        return;
+      }
+
+      // Start procedural Web Audio nature sound
+      playSound('pop');
+      const now = audioCtx.currentTime;
+      const bufferSize = audioCtx.sampleRate * 2;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      const gain = audioCtx.createGain();
+
+      if (type === 'wind') {
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(320, now);
+        filter.Q.setValueAtTime(2.5, now);
+        gain.gain.setValueAtTime(0.2, now);
+        whiteNoise.connect(filter);
+        filter.connect(gain);
+      } else if (type === 'rain') {
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(800, now);
+        gain.gain.setValueAtTime(0.12, now);
+        whiteNoise.connect(filter);
+        filter.connect(gain);
+      } else if (type === 'stream') {
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(700, now);
+        gain.gain.setValueAtTime(0.18, now);
+        whiteNoise.connect(filter);
+        filter.connect(gain);
+      } else if (type === 'birds') {
+        // Gentle bird loop interval
+        gain.gain.setValueAtTime(0.15, now);
+        whiteNoise.start(now);
+        whiteNoise.stop(now + 0.05); // Dummy to satisfy cleanup
+        const birdInterval = setInterval(() => {
+          if (!activeNatureSounds.birds) {
+            clearInterval(birdInterval);
+            return;
+          }
+          triggerGardenBird();
+        }, 1200);
+        activeNatureSounds.birds = {
+          stop: () => clearInterval(birdInterval),
+          disconnect: () => {}
+        };
+        if (btn) {
+          btn.textContent = '暫停';
+          btn.className = 'px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-black shadow-sm transition animate-pulse';
+        }
+        return;
+      }
+
+      gain.connect(sfxGainNode || audioCtx.destination);
+      whiteNoise.start(now);
+      activeNatureSounds[type] = whiteNoise;
+
+      if (btn) {
+        btn.textContent = '暫停';
+        btn.className = 'px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-black shadow-sm transition animate-pulse';
+      }
+    }
+
+    // --- TOOL 5: MANDALA COLORING (Multiple templates with high complexity) ---
+    function initMandalaPalette() {
+      const pal = document.getElementById('mandala-palette');
+      if (!pal) return;
+      pal.innerHTML = '<span class="text-xs font-bold text-slate-500 mr-2">選擇色彩：</span>';
+      MANDALA_COLORS.forEach(c => {
+        const dot = document.createElement('button');
+        dot.className = `w-7 h-7 rounded-full border-2 shadow-sm transition transform hover:scale-110 ${selectedMandalaColor === c ? 'ring-2 ring-emerald-400 scale-110' : ''}`;
+        dot.style.backgroundColor = c;
+        dot.onclick = () => {
+          playSound('pop');
+          selectedMandalaColor = c;
+          initMandalaPalette();
+        };
+        pal.appendChild(dot);
+      });
+    }
+
+    function switchMandalaTemplate(idx) {
+      playSound('pop');
+      currentMandalaTemplate = idx;
+      [0, 1, 2, 3].forEach(i => {
+        const btn = document.getElementById(`mandala-tpl-${i}`);
+        if (btn) {
+          btn.className = i === idx
+            ? 'px-3 py-1.5 rounded-xl text-xs font-black border-2 border-pink-500 bg-pink-50 text-pink-900 transition'
+            : 'px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition';
+        }
+      });
+      renderMandalaSvg();
+    }
+
+    function renderMandalaSvg() {
+      const wrapper = document.getElementById('mandala-svg-wrapper');
+      if (!wrapper) return;
+
+      if (currentMandalaTemplate === 0) {
+        // Template 0: Classic 8-Petal Lotus with Concentric Rings
+        wrapper.innerHTML = `
+          <svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none">
+            <circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+            <!-- 8 Outer Petals -->
+            <path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 100 Q100 25 132 45 Q100 75 100 100 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 100 Q100 25 68 45 Q100 75 100 100 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 100 Q175 100 155 132 Q125 100 100 100 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 100 Q175 100 155 68 Q125 100 100 100 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 100 Q100 175 132 155 Q100 125 100 100 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 100 Q100 175 68 155 Q100 125 100 100 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 100 Q25 100 45 132 Q75 100 100 100 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 100 Q25 100 45 68 Q75 100 100 100 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <!-- 8 Middle Diamond Points -->
+            <polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="100,50 114,64 100,78 86,64" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="150,100 136,114 122,100 136,86" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="100,150 114,136 100,122 86,136" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="50,100 64,114 78,100 64,86" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <!-- Inner Concentric Rings -->
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="30" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="15" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+          </svg>
+        `;
+      } else if (currentMandalaTemplate === 1) {
+        // Template 1: 12-Star Chakra Geometry
+        let starPaths = '';
+        for (let i = 0; i < 12; i++) {
+          const angle = (i * 30 * Math.PI) / 180;
+          const cos = Math.cos(angle);
+          const sin = Math.sin(angle);
+          const x1 = 100 + cos * 40;
+          const y1 = 100 + sin * 40;
+          const x2 = 100 + cos * 88;
+          const y2 = 100 + sin * 88;
+          const crossAngle1 = angle + 0.22;
+          const crossAngle2 = angle - 0.22;
+          const cx1 = 100 + Math.cos(crossAngle1) * 65;
+          const cy1 = 100 + Math.sin(crossAngle1) * 65;
+          const cx2 = 100 + Math.cos(crossAngle2) * 65;
+          const cy2 = 100 + Math.sin(crossAngle2) * 65;
+
+          starPaths += `<polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="${x1},${y1} ${cx1},${cy1} ${x2},${y2} ${cx2},${cy2}" fill="#ffffff" stroke="#64748b" stroke-width="1.2"/>`;
+        }
+
+        wrapper.innerHTML = `
+          <svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none">
+            <circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+            ${starPaths}
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="42" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="28" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="14" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+          </svg>
+        `;
+      } else if (currentMandalaTemplate === 2) {
+        // Template 2: Sunflower Bloom & Radiant Scales
+        let petalRays = '';
+        for (let i = 0; i < 16; i++) {
+          const angle = (i * 22.5 * Math.PI) / 180;
+          const cos = Math.cos(angle);
+          const sin = Math.sin(angle);
+          const px = 100 + cos * 75;
+          const py = 100 + sin * 75;
+          const tipX = 100 + cos * 94;
+          const tipY = 100 + sin * 94;
+          const sideAngle1 = angle + 0.14;
+          const sideAngle2 = angle - 0.14;
+          const sx1 = 100 + Math.cos(sideAngle1) * 62;
+          const sy1 = 100 + Math.sin(sideAngle1) * 62;
+          const sx2 = 100 + Math.cos(sideAngle2) * 62;
+          const sy2 = 100 + Math.sin(sideAngle2) * 62;
+
+          petalRays += `<path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M${sx1} ${sy1} Q${px} ${py} ${tipX} ${tipY} Q${px} ${py} ${sx2} ${sy2} Z" fill="#ffffff" stroke="#64748b" stroke-width="1.2"/>`;
+        }
+
+        let innerScales = '';
+        for (let i = 0; i < 8; i++) {
+          const angle = (i * 45 * Math.PI) / 180;
+          const cos = Math.cos(angle);
+          const sin = Math.sin(angle);
+          const ix = 100 + cos * 38;
+          const iy = 100 + sin * 38;
+          innerScales += `<circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="${ix}" cy="${iy}" r="14" fill="#ffffff" stroke="#94a3b8" stroke-width="1.2"/>`;
+        }
+
+        wrapper.innerHTML = `
+          <svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none">
+            <circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+            ${petalRays}
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="54" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+            ${innerScales}
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="22" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="10" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+          </svg>
+        `;
+      } else {
+        // Template 3: Crystal Snowflake & Sacred Geometry Rings
+        let crystalWings = '';
+        for (let i = 0; i < 8; i++) {
+          const deg = i * 45;
+          crystalWings += `
+            <g transform="rotate(${deg} 100 100)">
+              <polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="100,20 108,40 100,56 92,40" fill="#ffffff" stroke="#64748b" stroke-width="1.2"/>
+              <polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="84,35 100,45 88,58 76,46" fill="#ffffff" stroke="#64748b" stroke-width="1.2"/>
+              <polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="116,35 124,46 112,58 100,45" fill="#ffffff" stroke="#64748b" stroke-width="1.2"/>
+              <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="68" r="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.2"/>
+            </g>
+          `;
+        }
+        wrapper.innerHTML = `
+          <svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none">
+            <circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+            ${crystalWings}
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="32" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+            <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="16" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+          </svg>
+        `;
+      }
+    }
+
+    function colorMandalaSegment(el) {
+      playSound('pop');
+      el.setAttribute('fill', selectedMandalaColor);
+    }
+
+    function resetMandala() {
+      playSound('pop');
+      document.querySelectorAll('.mandala-piece').forEach(p => p.setAttribute('fill', '#ffffff'));
+    }
+
+    // --- TOOL 6: FALLING LEAVES GAME (Large bucket icon, no rectangular button wrapper) ---
+    function initLeavesGame() {
+      leavesGameRunning = true;
+      leavesScore = 0;
+      leavesList = [];
+      const canvas = document.getElementById('leaves-canvas');
+      if (!canvas) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      leafBucketX = canvas.width / 2;
+
+      const updatePos = (clientX) => {
+        const cRect = canvas.getBoundingClientRect();
+        leafBucketX = Math.max(35, Math.min(canvas.width - 35, clientX - cRect.left));
+      };
+
+      canvas.onmousemove = (e) => updatePos(e.clientX);
+      canvas.ontouchmove = (e) => {
+        if (e.touches[0]) updatePos(e.touches[0].clientX);
+      };
+
+      function spawnLeaf() {
+        if (!leavesGameRunning) return;
+        leavesList.push({
+          x: Math.random() * (canvas.width - 50) + 25,
+          y: -20,
+          vx: (Math.random() - 0.5) * 1.4,
+          vy: Math.random() * 0.7 + 0.8,
+          angle: Math.random() * Math.PI,
+          vAngle: (Math.random() - 0.5) * 0.05,
+          color: ['#4ade80', '#22c55e', '#fbbf24', '#f97316', '#a3e635'][Math.floor(Math.random() * 5)]
+        });
+        setTimeout(spawnLeaf, 1300 + Math.random() * 1100);
+      }
+      spawnLeaf();
+
+      function loop() {
+        if (!leavesGameRunning) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw clean Wooden Bucket Graphic directly (no brown pill box)
+        ctx.save();
+        ctx.translate(leafBucketX, canvas.height - 30);
+
+        // Wooden Barrel Body
+        ctx.fillStyle = '#92400e';
+        ctx.beginPath();
+        ctx.moveTo(-32, -18);
+        ctx.lineTo(32, -18);
+        ctx.lineTo(24, 22);
+        ctx.lineTo(-24, 22);
+        ctx.closePath();
+        ctx.fill();
+
+        // Staves / Planks shading
+        ctx.fillStyle = '#b45309';
+        ctx.beginPath();
+        ctx.moveTo(-16, -18);
+        ctx.lineTo(16, -18);
+        ctx.lineTo(12, 22);
+        ctx.lineTo(-12, 22);
+        ctx.closePath();
+        ctx.fill();
+
+        // Iron Hoops
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-30, -6);
+        ctx.lineTo(30, -6);
+        ctx.moveTo(-26, 12);
+        ctx.lineTo(26, 12);
+        ctx.stroke();
+
+        // Rim
+        ctx.fillStyle = '#78350f';
+        ctx.beginPath();
+        ctx.ellipse(0, -18, 32, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+
+        // Update & Draw Leaves
+        for (let i = leavesList.length - 1; i >= 0; i--) {
+          const l = leavesList[i];
+          l.y += l.vy;
+          l.x += Math.sin(l.y * 0.028) * 1.8 + l.vx;
+          l.angle += l.vAngle;
+
+          ctx.save();
+          ctx.translate(l.x, l.y);
+          ctx.rotate(l.angle);
+          ctx.fillStyle = l.color;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 11, 7, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+
+          // Catch Check
+          if (l.y >= canvas.height - 52 && l.y <= canvas.height - 15 && Math.abs(l.x - leafBucketX) < 38) {
+            playSound('pop');
+            leavesScore++;
+            const counter = document.getElementById('leaves-score-counter');
+            if (counter) counter.textContent = leavesScore;
+            leavesList.splice(i, 1);
+            continue;
+          }
+
+          if (l.y > canvas.height + 20) {
+            leavesList.splice(i, 1);
+          }
+        }
+
+        leafCanvasAnimId = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function stopLeavesGame() {
+      leavesGameRunning = false;
+      if (leafCanvasAnimId) cancelAnimationFrame(leafCanvasAnimId);
+    }
+
+    // --- TOOL 7: BUBBLES BLOWER ENGINE ---
+    function initBubbleBlower() {
+      const container = document.getElementById('bubble-container');
+      if (!container) return;
+      if (bubbleSpawnInterval) clearInterval(bubbleSpawnInterval);
+
+      // Spawn initial bubbles
+      for (let i = 0; i < 6; i++) {
+        setTimeout(spawnOneBubble, i * 400);
+      }
+      bubbleSpawnInterval = setInterval(spawnOneBubble, 1400);
+    }
+
+    function spawnOneBubble() {
+      const container = document.getElementById('bubble-container');
+      if (!container || currentSel2Tool !== 'bubbles') return;
+
+      const b = document.createElement('div');
+      const size = Math.floor(Math.random() * 28) + 36; // 36px ~ 64px
+      const startY = Math.floor(Math.random() * (container.clientHeight - size - 40)) + 20;
+      const duration = (Math.random() * 4 + 7); // 7s ~ 11s
+
+      b.className = 'absolute rounded-full border-2 border-white/80 bg-gradient-to-tr from-cyan-200/50 via-sky-300/40 to-white/70 shadow-md cursor-pointer select-none transition-transform hover:scale-110';
+      b.style.width = `${size}px`;
+      b.style.height = `${size}px`;
+      b.style.left = '-60px';
+      b.style.top = `${startY}px`;
+      b.style.transition = `left ${duration}s linear, top 2s ease-in-out`;
+
+      // Sparkle reflection dot
+      b.innerHTML = '<span class="absolute top-2 left-2.5 w-2 h-2 rounded-full bg-white opacity-80 pointer-events-none"></span>';
+
+      b.onclick = (e) => {
+        e.stopPropagation();
+        playSound('pop');
+        bubblePoppedCount++;
+        const counter = document.getElementById('bubble-popped-counter');
+        if (counter) counter.textContent = bubblePoppedCount;
+
+        // Pop burst animation
+        b.style.transform = 'scale(1.4)';
+        b.style.opacity = '0';
+        b.style.transition = 'all 0.15s ease-out';
+        setTimeout(() => {
+          if (b.parentNode) b.parentNode.removeChild(b);
+        }, 160);
+      };
+
+      container.appendChild(b);
+
+      // Trigger floating across the screen
+      requestAnimationFrame(() => {
+        b.style.left = `${container.clientWidth + 80}px`;
+        // Gentle wave drift
+        const wave = Math.random() > 0.5 ? -30 : 30;
+        b.style.top = `${Math.max(10, Math.min(container.clientHeight - size - 10, startY + wave))}px`;
+      });
+
+      // Cleanup when reached end
+      setTimeout(() => {
+        if (b.parentNode) b.parentNode.removeChild(b);
+      }, duration * 1000 + 500);
+    }
+
+    function spawnExtraBubbles() {
+      playSound('pop');
+      for (let i = 0; i < 5; i++) {
+        setTimeout(spawnOneBubble, i * 200);
+      }
+    }
+
+    function stopBubbleBlower() {
+      if (bubbleSpawnInterval) {
+        clearInterval(bubbleSpawnInterval);
+        bubbleSpawnInterval = null;
+      }
+    }
+
+    // --- TOOL 8: SLINGSHOT (Natural Brown Rocky Cliff, 9 Pikmin Sprites, Trajectory Dots) ---
+    let slingshotPikminIndex = 0;
+
+    function initSlingshotGame() {
+      const canvas = document.getElementById('slingshot-canvas');
+      if (!canvas) return;
+
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      slingshotBasePos = { x: 95, y: canvas.height - 95 };
+      slingshotDragPos = { ...slingshotBasePos };
+
+      // Ensure active pikmin name indicator is updated
+      const activePikmin = PIKMIN_ROSTER[slingshotPikminIndex] || PIKMIN_ROSTER[0];
+      const nameEl = document.getElementById('slingshot-current-pikmin-name');
+      if (nameEl) nameEl.textContent = `目前隊員：${activePikmin.name}`;
+
+      // Generate Target Flowers sitting on natural brown rocky ledges (lower top flower so it's comfortably hit!)
+      cliffTargets = [
+        { x: canvas.width - 55, y: 105, radius: 25, hit: false, color: '#f59e0b' },
+        { x: canvas.width - 85, y: 175, radius: 25, hit: false, color: '#ef4444' },
+        { x: canvas.width - 55, y: 245, radius: 25, hit: false, color: '#3b82f6' }
+      ];
+
+      // Mouse & Touch events
+      const getCoords = (e) => {
+        const cRect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - cRect.left, y: clientY - cRect.top };
+      };
+
+      canvas.onmousedown = canvas.ontouchstart = (e) => {
+        const pt = getCoords(e);
+        const dist = Math.hypot(pt.x - slingshotBasePos.x, pt.y - slingshotBasePos.y);
+        if (dist < 50) {
+          isSlingshotDragging = true;
+          slingshotDragPos = pt;
+        }
+      };
+
+      canvas.onmousemove = canvas.ontouchmove = (e) => {
+        if (!isSlingshotDragging) return;
+        const pt = getCoords(e);
+        const dx = pt.x - slingshotBasePos.x;
+        const dy = pt.y - slingshotBasePos.y;
+        const dist = Math.hypot(dx, dy);
+        const maxDist = 80;
+        if (dist > maxDist) {
+          slingshotDragPos = {
+            x: slingshotBasePos.x + (dx / dist) * maxDist,
+            y: slingshotBasePos.y + (dy / dist) * maxDist
+          };
+        } else {
+          slingshotDragPos = pt;
+        }
+      };
+
+      canvas.onmouseup = canvas.ontouchend = () => {
+        if (!isSlingshotDragging) return;
+        isSlingshotDragging = false;
+        // Fire Pikmin with enhanced velocity for easy reach
+        playSound('pop');
+        const vx = (slingshotBasePos.x - slingshotDragPos.x) * 0.28;
+        const vy = (slingshotBasePos.y - slingshotDragPos.y) * 0.28;
+        const firingPikmin = PIKMIN_ROSTER[slingshotPikminIndex] || PIKMIN_ROSTER[0];
+
+        slingshotProjectile = {
+          x: slingshotDragPos.x,
+          y: slingshotDragPos.y,
+          vx,
+          vy,
+          type: firingPikmin.id,
+          angle: 0
+        };
+        slingshotDragPos = { ...slingshotBasePos };
+
+        // Automatically cycle to next Pikmin in rotation!
+        slingshotPikminIndex = (slingshotPikminIndex + 1) % PIKMIN_ROSTER.length;
+        const nextPikmin = PIKMIN_ROSTER[slingshotPikminIndex];
+        const currentNameEl = document.getElementById('slingshot-current-pikmin-name');
+        if (currentNameEl) currentNameEl.textContent = `目前隊員：${nextPikmin.name}`;
+      };
+
+      function slingshotLoop() {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 1. Draw Realistic Brown Rocky Cliff matching adjusted flower heights
+        ctx.fillStyle = '#78350f'; // Earthy rock brown
+        ctx.beginPath();
+        ctx.moveTo(canvas.width, 0);
+        ctx.lineTo(canvas.width - 35, 0);
+        ctx.lineTo(canvas.width - 65, 80);
+        ctx.lineTo(canvas.width - 35, 115); // Ledge 1 (lower top)
+        ctx.lineTo(canvas.width - 100, 155);
+        ctx.lineTo(canvas.width - 70, 185); // Ledge 2
+        ctx.lineTo(canvas.width - 65, 225);
+        ctx.lineTo(canvas.width - 40, 255); // Ledge 3
+        ctx.lineTo(canvas.width - 95, canvas.height);
+        ctx.lineTo(canvas.width, canvas.height);
+        ctx.closePath();
+        ctx.fill();
+
+        // Rock highlight shading & cracks
+        ctx.strokeStyle = '#9a3412';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width - 65, 80);
+        ctx.lineTo(canvas.width - 35, 115);
+        ctx.moveTo(canvas.width - 100, 155);
+        ctx.lineTo(canvas.width - 70, 185);
+        ctx.moveTo(canvas.width - 65, 225);
+        ctx.lineTo(canvas.width - 40, 255);
+        ctx.stroke();
+
+        // 2. Draw Slingshot Stand & Fork
+        ctx.strokeStyle = '#5c2b16';
+        ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(slingshotBasePos.x, canvas.height);
+        ctx.lineTo(slingshotBasePos.x, slingshotBasePos.y + 16);
+        ctx.lineTo(slingshotBasePos.x - 14, slingshotBasePos.y - 8);
+        ctx.moveTo(slingshotBasePos.x, slingshotBasePos.y + 16);
+        ctx.lineTo(slingshotBasePos.x + 14, slingshotBasePos.y - 8);
+        ctx.stroke();
+
+        // 3. Elastic Rubber Bands
+        ctx.strokeStyle = '#ea580c';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(slingshotBasePos.x - 14, slingshotBasePos.y - 8);
+        ctx.lineTo(slingshotDragPos.x, slingshotDragPos.y);
+        ctx.lineTo(slingshotBasePos.x + 14, slingshotBasePos.y - 8);
+        ctx.stroke();
+
+        // 4. Visual Trajectory Dots (Predicted Parabolic Path when dragging)
+        if (isSlingshotDragging) {
+          const simVx = (slingshotBasePos.x - slingshotDragPos.x) * 0.28;
+          const simVy = (slingshotBasePos.y - slingshotDragPos.y) * 0.28;
+          let simX = slingshotDragPos.x;
+          let simY = slingshotDragPos.y;
+          let simGravity = 0.28;
+
+          ctx.fillStyle = '#f97316';
+          for (let step = 0; step < 26; step++) {
+            simX += simVx;
+            simY += simVy + (step * simGravity * 0.5);
+            if (simX > canvas.width - 50 || simY > canvas.height) break;
+            if (step % 2 === 0) {
+              ctx.beginPath();
+              ctx.arc(simX, simY, Math.max(1.8, 4.8 - step * 0.12), 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        }
+
+        // 5. Draw Target Flowers (SEL 1 Blooming Flower Design) on cliff ledges
+        cliffTargets.forEach(target => {
+          if (target.hit) {
+            ctx.fillStyle = '#22c55e';
+            ctx.font = 'bold 15px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🌸 盛開！', target.x, target.y);
+            return;
+          }
+
+          // 5-Petal White Flower
+          const petalCount = 5;
+          ctx.fillStyle = '#ffffff';
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1.2;
+          for (let p = 0; p < petalCount; p++) {
+            const angle = (p * 2 * Math.PI) / petalCount;
+            const px = target.x + Math.cos(angle) * 11;
+            const py = target.y + Math.sin(angle) * 11;
+            ctx.beginPath();
+            ctx.arc(px, py, 6.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          }
+          // Pistil
+          ctx.fillStyle = target.color;
+          ctx.beginPath();
+          ctx.arc(target.x, target.y, 5.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // 6. Draw Loaded Pikmin in slingshot pouch
+        const activePikmin = PIKMIN_ROSTER[slingshotPikminIndex] || PIKMIN_ROSTER[0];
+        const pikminImg = pikminSpriteImages[activePikmin.id] || pikminSpriteImages.red;
+
+        if (!slingshotProjectile) {
+          ctx.save();
+          ctx.translate(slingshotDragPos.x, slingshotDragPos.y);
+          if (pikminImg && pikminImg.complete) {
+            ctx.drawImage(pikminImg, -18, -26, 36, 42);
+          } else {
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(0, 0, 14, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        // 7. Update Flying Pikmin Projectile
+        if (slingshotProjectile) {
+          slingshotProjectile.x += slingshotProjectile.vx;
+          slingshotProjectile.y += slingshotProjectile.vy;
+          slingshotProjectile.vy += 0.28; // balanced gentle gravity
+          slingshotProjectile.angle = Math.atan2(slingshotProjectile.vy, slingshotProjectile.vx);
+
+          const projImg = pikminSpriteImages[slingshotProjectile.type] || pikminSpriteImages.red;
+          ctx.save();
+          ctx.translate(slingshotProjectile.x, slingshotProjectile.y);
+          ctx.rotate(slingshotProjectile.angle);
+          if (projImg && projImg.complete) {
+            ctx.drawImage(projImg, -18, -22, 36, 42);
+          } else {
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(0, 0, 14, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+
+          // Target Hit Collision Check
+          cliffTargets.forEach(target => {
+            if (!target.hit) {
+              const dist = Math.hypot(slingshotProjectile.x - target.x, slingshotProjectile.y - target.y);
+              if (dist < target.radius + 18) {
+                target.hit = true;
+                playSound('correct');
+                confetti({ particleCount: 40, origin: { x: target.x / canvas.width, y: target.y / canvas.height } });
+                slingshotHits++;
+                const hitsEl = document.getElementById('slingshot-hits');
+                if (hitsEl) hitsEl.textContent = slingshotHits;
+              }
+            }
+          });
+
+          // Reset when out of bounds
+          if (slingshotProjectile.y > canvas.height + 30 || slingshotProjectile.x > canvas.width + 30) {
+            slingshotProjectile = null;
+          }
+        }
+
+        slingshotAnimId = requestAnimationFrame(slingshotLoop);
+      }
+      slingshotAnimId = requestAnimationFrame(slingshotLoop);
+    }
+
+    function stopSlingshotGame() {
+      if (slingshotAnimId) cancelAnimationFrame(slingshotAnimId);
     }
 
     // Synthesize warm Kalimba / Marimba wooden tines with harmonic overtone
@@ -2007,7 +3409,11 @@
         stage: 'leaf',
         strengths: [STRENGTH_OPTIONS[0]],
         weaknesses: [WEAKNESS_OPTIONS[0]],
-        note: '開學第一天，我帶領紅皮克敏小隊探索心靈基地！'
+        note: '開學第一天，我帶領紅皮克敏小隊探索心靈基地！',
+        sel2: 2,
+        sel3: 6,
+        sel4: 8,
+        sel5: 8
       }
     ];
 
@@ -2234,6 +3640,23 @@
       const pNote = document.getElementById('preview-note-text');
       const noteInput = document.getElementById('custom-note');
 
+      // Update card border gradient to match the chosen spirit
+      const cardContainer = document.getElementById('physical-card-preview');
+      if (cardContainer) {
+        const spiritGradients = {
+          red: 'from-red-500 to-red-600',
+          yellow: 'from-amber-400 to-yellow-500',
+          blue: 'from-blue-500 to-cyan-600',
+          purple: 'from-purple-600 to-violet-700',
+          white: 'from-rose-400 to-pink-500',
+          rock: 'from-slate-600 to-slate-800',
+          wing: 'from-pink-400 to-rose-500',
+          ice: 'from-cyan-400 to-blue-500',
+          glow: 'from-lime-500 to-emerald-600'
+        };
+        cardContainer.className = `w-full max-w-sm bg-gradient-to-b ${spiritGradients[spirit.id] || 'from-red-500 to-red-600'} rounded-3xl p-4 text-white shadow-2xl border-4 border-white transition-all transform duration-300`;
+      }
+
       if (pName) pName.textContent = name;
       if (pTypeName) pTypeName.textContent = `${spirit.name}（${spirit.trait}）`;
       // Dynamic Head Morphology based on current stage (leaf, bud, flower)
@@ -2248,6 +3671,166 @@
       if (pNote && noteInput) {
         pNote.textContent = noteInput.value.trim() || '今天也是充滿幹勁的一天！';
       }
+    }
+
+    function printCard54x90() {
+      playSound('pop');
+      window.print();
+    }
+
+    // High-resolution Canvas generator for 5.4cm x 9cm PNG download
+    function downloadCardPng54x90() {
+      playSound('pop');
+      const nameInput = document.getElementById('custom-name');
+      const studentName = nameInput ? nameInput.value.trim() || '小勇士' : '小勇士';
+      const spirit = PIKMIN_ROSTER.find(p => p.id === selectedSpirit) || PIKMIN_ROSTER[0];
+
+      // 5.4cm x 9.0cm at 100 DPI = 540 x 900 px
+      const width = 540;
+      const height = 900;
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+
+      // Helper function for rounded rectangles
+      function roundRect(x, y, w, h, radius, fill, stroke, strokeWidth = 1) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + w - radius, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+        ctx.lineTo(x + w, y + h - radius);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+        ctx.lineTo(x + radius, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+        if (fill) {
+          ctx.fillStyle = fill;
+          ctx.fill();
+        }
+        if (stroke) {
+          ctx.strokeStyle = stroke;
+          ctx.lineWidth = strokeWidth;
+          ctx.stroke();
+        }
+      }
+
+      // Outer Card Background Gradient
+      const spiritColors = {
+        red: ['#ef4444', '#dc2626'],
+        yellow: ['#f59e0b', '#d97706'],
+        blue: ['#3b82f6', '#1d4ed8'],
+        purple: ['#8b5cf6', '#6d28d9'],
+        white: ['#fb7185', '#e11d48'],
+        rock: ['#475569', '#1e293b'],
+        wing: ['#ec4899', '#be185d'],
+        ice: ['#06b6d4', '#0284c7'],
+        glow: ['#84cc16', '#4d7c0f']
+      };
+      const colors = spiritColors[spirit.id] || ['#ef4444', '#dc2626'];
+      const outerGrad = ctx.createLinearGradient(0, 0, 0, height);
+      outerGrad.addColorStop(0, colors[0]);
+      outerGrad.addColorStop(1, colors[1]);
+      roundRect(0, 0, width, height, 36, outerGrad, null);
+
+      // Inner White Frame
+      const padding = 20;
+      roundRect(padding, padding, width - padding * 2, height - padding * 2, 28, '#ffffff', null);
+
+      // Header: ONLY Student Name (excl. stage icon, type description & SEL badge as requested)
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 36px "Noto Sans TC", sans-serif';
+      ctx.fillText(studentName, width / 2, 78);
+
+      // Divider line
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(padding + 20, 102);
+      ctx.lineTo(width - padding - 20, 102);
+      ctx.stroke();
+
+      // Illustration Box
+      const illusX = padding + 16;
+      const illusY = 120;
+      const illusW = width - (padding + 16) * 2;
+      const illusH = 340;
+      const illusGrad = ctx.createLinearGradient(illusX, illusY, illusX + illusW, illusY + illusH);
+      illusGrad.addColorStop(0, '#fef3c7');
+      illusGrad.addColorStop(0.5, '#fef9c3');
+      illusGrad.addColorStop(1, '#f1f5f9');
+      roundRect(illusX, illusY, illusW, illusH, 22, illusGrad, '#fde68a', 2);
+
+      // Render Pikmin SVG into illustration box
+      const svgString = getDynamicPikminSvg(spirit.id, currentStage);
+      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const URL = window.URL || window.webkitURL || window;
+      const blobURL = URL.createObjectURL(blob);
+      const img = new Image();
+
+      img.onload = function() {
+        const pikminSize = 250;
+        ctx.drawImage(img, (width - pikminSize) / 2, illusY + 40, pikminSize, pikminSize);
+        URL.revokeObjectURL(blobURL);
+
+        // Watermark text in bottom right of illustration
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 18px "Fredoka", sans-serif';
+        ctx.fillText('Pikmin SEL Squad', width - padding - 36, illusY + illusH - 18);
+
+        // Section 1: Strengths Box
+        const boxX = padding + 16;
+        let curY = 480;
+        const boxW = width - (padding + 16) * 2;
+        const boxH1 = 175;
+        roundRect(boxX, curY, boxW, boxH1, 20, '#ecfdf5', '#a7f3d0', 2);
+
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#065f46';
+        ctx.font = 'bold 22px "Noto Sans TC", sans-serif';
+        ctx.fillText('⚡ 我的優勢超能力：', boxX + 18, curY + 36);
+
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '500 18px "Noto Sans TC", sans-serif';
+        let lineY = curY + 70;
+        selectedStrengths.forEach(st => {
+          ctx.fillText(st, boxX + 22, lineY);
+          lineY += 34;
+        });
+
+        // Section 2: Support Needs Box
+        curY = 675;
+        const boxH2 = 175;
+        roundRect(boxX, curY, boxW, boxH2, 20, '#fffbeb', '#fde68a', 2);
+
+        ctx.fillStyle = '#92400e';
+        ctx.font = 'bold 22px "Noto Sans TC", sans-serif';
+        ctx.fillText('🤝 我需要的隊友幫忙：', boxX + 18, curY + 36);
+
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '500 18px "Noto Sans TC", sans-serif';
+        lineY = curY + 70;
+        selectedWeaknesses.forEach(wk => {
+          ctx.fillText(wk, boxX + 22, lineY);
+          lineY += 34;
+        });
+
+        // Trigger Direct Download
+        const a = document.createElement('a');
+        a.download = `${studentName}_皮克敏探險證_5.4x9cm.png`;
+        a.href = canvas.toDataURL('image/png');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        showModal('🪪', '探險證已輸出！', `已下載【${studentName}】的 5.4cm × 9cm 標準尺寸探險證圖檔！`);
+      };
+
+      img.src = blobURL;
     }
 
     function toggleVoiceInput() {
@@ -2339,6 +3922,9 @@
       const noteInput = document.getElementById('custom-note');
       const studentName = nameInput ? nameInput.value.trim() || '小勇士' : '小勇士';
 
+      // Preserve existing student's SEL 2-5 scores if already in progress
+      const existingRec = growthHistoryRecords.find(r => r.name === studentName);
+
       const rec = {
         id: 'rec_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
         dateStr: new Date().toLocaleDateString('zh-TW'),
@@ -2348,7 +3934,11 @@
         stage: currentStage,
         strengths: [...selectedStrengths],
         weaknesses: [...selectedWeaknesses],
-        note: noteInput ? noteInput.value.trim() || '今天也是充滿幹勁的一天！' : '今天也是充滿幹勁的一天！'
+        note: noteInput ? noteInput.value.trim() || '今天也是充滿幹勁的一天！' : '今天也是充滿幹勁的一天！',
+        sel2: existingRec ? (existingRec.sel2 || 0) : 0,
+        sel3: existingRec ? (existingRec.sel3 || 0) : 0,
+        sel4: existingRec ? (existingRec.sel4 || 0) : 0,
+        sel5: existingRec ? (existingRec.sel5 || 0) : 0
       };
 
       // In classroom setting: always append a distinct record so students rotating never overwrite each other
@@ -2489,7 +4079,11 @@
           stage: 'leaf',
           strengths: [STRENGTH_OPTIONS[0]],
           weaknesses: [WEAKNESS_OPTIONS[0]],
-          note: '新起點：開始撰寫第一張皮克敏成長卡！'
+          note: '新起點：開始撰寫第一張皮克敏成長卡！',
+          sel2: 0,
+          sel3: 0,
+          sel4: 0,
+          sel5: 0
         });
       }
 
@@ -2505,6 +4099,60 @@
 
       renderGrowthHistory();
       showModal('🗑️', '已刪除手帳紀錄', `已成功移除【${studentName}】的此筆紀錄！`);
+    }
+
+    // Helper: update active student's quantitative SEL 2-5 progress
+    function updateActiveStudentRecord(selNumber, count) {
+      const nameInput = document.getElementById('custom-name');
+      const studentName = nameInput ? nameInput.value.trim() || '小勇士' : '小勇士';
+
+      let targetRec = growthHistoryRecords.find(r => r.name === studentName);
+      if (!targetRec && growthHistoryRecords.length > 0) {
+        targetRec = growthHistoryRecords[0];
+      }
+      if (!targetRec) return;
+
+      if (selNumber === 2) {
+        targetRec.sel2 = Math.min(2, Math.max(targetRec.sel2 || 0, count));
+      } else if (selNumber === 3) {
+        targetRec.sel3 = Math.min(9, Math.max(targetRec.sel3 || 0, count));
+      } else if (selNumber === 4) {
+        targetRec.sel4 = Math.min(8, Math.max(targetRec.sel4 || 0, count));
+      } else if (selNumber === 5) {
+        targetRec.sel5 = Math.min(10, Math.max(targetRec.sel5 || 0, count));
+      }
+
+      renderGrowthHistory();
+    }
+
+    // Helper: generate contiguous quantitative strip matching user diagram
+    function generateProgressStrip(title, current, total, colorBg = 'bg-amber-300') {
+      let cells = '';
+      for (let i = 0; i < total; i++) {
+        const isFilled = i < current;
+        const isFirst = i === 0;
+        const isLast = i === total - 1;
+        
+        // Soft rounded corners on the head and tail of each strip
+        const roundedClass = (isFirst && isLast) ? 'rounded-md' : (isFirst ? 'rounded-l-md' : (isLast ? 'rounded-r-md' : ''));
+        
+        cells += `
+          <div class="w-3.5 h-4 sm:w-4 sm:h-4.5 border border-slate-600/80 flex items-center justify-center select-none ${roundedClass} ${
+            isFilled ? colorBg + ' shadow-inner' : 'bg-white/90'
+          }" title="${title}：第 ${i + 1} 關 ${isFilled ? '已完成' : '待挑戰'}"></div>
+        `;
+      }
+      return `
+        <div class="flex flex-col items-center bg-transparent px-1 py-0.5">
+          <div class="flex items-center justify-between w-full px-0.5 mb-1">
+            <span class="text-[11px] font-black text-slate-800 tracking-tight">${title}</span>
+            <span class="text-[10px] font-bold text-slate-500 ml-1.5">${current}/${total}</span>
+          </div>
+          <div class="flex items-center rounded-md overflow-hidden shadow-xs">
+            ${cells}
+          </div>
+        </div>
+      `;
     }
 
     function onSelectHistoryRecord(val) {
@@ -2579,36 +4227,53 @@
         const card = document.createElement('div');
         const origIdx = growthHistoryRecords.findIndex(r => r.id === rec.id);
         const timeBadge = rec.timeStr ? ` · ${rec.timeStr}` : '';
+
+        // Default quantitative counts if unset
+        const s2 = rec.sel2 || 0;
+        const s3 = rec.sel3 || 0;
+        const s4 = rec.sel4 || 0;
+        const s5 = rec.sel5 || 0;
         
-        card.className = 'p-4 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm';
+        card.className = 'p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white transition flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-sm';
         
         // Teacher delete button rendering
         const deleteButtonHtml = isTeacherMode ? `
-          <button onclick="deleteStudentHistoryRecord('${rec.id}', '${rec.name}')" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-xl text-xs font-bold transition flex items-center gap-1" title="教師刪除此筆錯誤或多餘紀錄">
+          <button onclick="deleteStudentHistoryRecord('${rec.id}', '${rec.name}')" class="px-2 py-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-xl text-xs font-bold transition flex items-center gap-1" title="教師刪除此筆錯誤或多餘紀錄">
             <i data-lucide="trash-2" class="w-3.5 h-3.5 text-red-600"></i>
-            <span>刪除紀錄</span>
+            <span>刪除</span>
           </button>
         ` : '';
 
         card.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-11 h-13 pikmin-shadow flex items-center justify-center flex-shrink-0">
+          <!-- Left: SEL 1 Profile & Card Details (First column) -->
+          <div class="flex items-center gap-2.5 flex-1 min-w-[240px] max-w-full md:max-w-xs xl:max-w-sm">
+            <div class="w-10 h-12 pikmin-shadow flex items-center justify-center flex-shrink-0">
               ${getDynamicPikminSvg(spirit.id, rec.stage)}
             </div>
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-black text-slate-800 text-sm">👤 ${rec.name}</span>
-                <span class="text-xs text-slate-500 font-medium">${rec.dateStr}${timeBadge}</span>
-                <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">${rec.stage === 'leaf' ? '🌱 葉子' : rec.stage === 'bud' ? '🌿 花苞' : '🌸 開花'}</span>
-                <span class="text-xs bg-slate-200/70 text-slate-700 font-bold px-2 py-0.5 rounded-full">${spirit.name}</span>
+            <div class="space-y-0.5 min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-black text-slate-800 text-xs">👤 ${rec.name}</span>
+                <span class="text-[10px] text-slate-400 font-medium">${rec.dateStr}</span>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded-full">${rec.stage === 'leaf' ? '🌱 葉子' : rec.stage === 'bud' ? '🌿 花苞' : '🌸 開花'}</span>
+                <span class="text-[10px] bg-slate-200/70 text-slate-700 font-bold px-1.5 py-0.2 rounded-full">${spirit.name}</span>
               </div>
-              <p class="text-xs text-slate-600 mt-1"><strong>超能力：</strong>${rec.strengths.join('、')}</p>
-              <p class="text-xs text-slate-500 italic mt-0.5">💬 ${rec.note}</p>
+              <p class="text-[11px] text-slate-600 truncate"><strong>超能力：</strong>${rec.strengths.join('、')}</p>
+              <p class="text-[10px] text-slate-400 italic truncate">💬 ${rec.note}</p>
             </div>
           </div>
-          <div class="flex items-center gap-2 self-end sm:self-center">
+
+          <!-- Middle: SEL 2-5 Quantitative Progress Grids (Seamlessly blended into card background, smoothly rounded) -->
+          <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center py-1 flex-shrink-0">
+            ${generateProgressStrip('SEL2', s2, 2, 'bg-amber-300')}
+            ${generateProgressStrip('SEL3', s3, 9, 'bg-amber-300')}
+            ${generateProgressStrip('SEL4', s4, 8, 'bg-amber-300')}
+            ${generateProgressStrip('SEL5', s5, 10, 'bg-amber-300')}
+          </div>
+
+          <!-- Right: Action Buttons (Kept clear, button-styled, aligned right) -->
+          <div class="flex items-center gap-2 self-end md:self-center flex-shrink-0">
             ${deleteButtonHtml}
-            <button onclick="onSelectHistoryRecord('${origIdx}'); switchTab('self-card');" class="px-3 py-1.5 bg-white border border-slate-200 hover:border-emerald-400 rounded-xl text-xs font-bold text-slate-700 shadow-sm transition whitespace-nowrap">
+            <button onclick="onSelectHistoryRecord('${origIdx}'); switchTab('self-card');" class="px-3.5 py-2 bg-white hover:bg-slate-50 border-2 border-slate-300 hover:border-emerald-500 rounded-xl text-xs font-black text-slate-800 shadow-sm transition active:scale-95 whitespace-nowrap" title="載入並編輯此筆紀錄">
               載入編輯
             </button>
           </div>
@@ -2697,6 +4362,8 @@
         feedbackBox.className = 'p-4 rounded-2xl border text-sm space-y-2 bg-teal-50 border-teal-300 text-teal-900';
         if (feedbackTitle) feedbackTitle.innerHTML = '✨ 太棒了！展現高度社會知覺與同理心！';
         empathyScore++;
+        // Update SEL 3 quantitative progress
+        updateActiveStudentRecord(3, Math.max(empathyScore, currentEmpathyIndex + 1));
       } else {
         playSound('pop');
         feedbackBox.className = 'p-4 rounded-2xl border text-sm space-y-2 bg-amber-50 border-amber-300 text-amber-900';
@@ -2780,6 +4447,8 @@
               if (timerCount) timerCount.textContent = '🌸';
               playSound('success');
               if (btn) btn.classList.remove('pointer-events-none', 'opacity-60');
+              // Update SEL 2 quantitative progress (completed 2 cycles)
+              updateActiveStudentRecord(2, 2);
               return;
             }
             phase = 0;
@@ -2921,6 +4590,9 @@
         playSound('success');
         confetti({ particleCount: 60, spread: 60 });
 
+        // Update SEL 4 quantitative progress
+        updateActiveStudentRecord(4, currentFruitLevel + 1);
+
         setTimeout(() => {
           if (currentFruitLevel < CAMPUS_TEAMWORK_MISSIONS.length - 1) {
             showModal(
@@ -3026,6 +4698,8 @@
         feedbackBox.className = 'p-4 rounded-2xl border text-sm space-y-2 bg-emerald-50 border-emerald-300 text-emerald-900';
         if (feedbackTitle) feedbackTitle.innerHTML = '✨ 決策超棒！符合最佳收納與生活常規原則！';
         quizScore++;
+        // Update SEL 5 quantitative progress
+        updateActiveStudentRecord(5, Math.max(quizScore, currentQuizIndex + 1));
       } else {
         playSound('pop');
         feedbackBox.className = 'p-4 rounded-2xl border text-sm space-y-2 bg-amber-50 border-amber-300 text-amber-900';
@@ -3110,6 +4784,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       renderPikminEncyclopedia();
       initCardCustomizer();
+      switchSel2Tool('breathe');
       initShuffledEmpathy();
       loadEmpathyScenario(0);
       initTeamworkLevels();
@@ -3121,6 +4796,9 @@
       updateStudentFilterDropdown();
       renderGrowthHistory();
       lucide.createIcons();
+
+      // Preload Pikmin SVG Sprites safely now that PIKMIN_ROSTER & getDynamicPikminSvg are ready
+      preloadPikminSprites();
 
       // Autostart BGM on first user interaction anywhere on the page (comply with browser audio policy)
       const autoStartHandler = () => {
