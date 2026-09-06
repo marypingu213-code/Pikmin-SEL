@@ -217,6 +217,13 @@
         <button id="sound-toggle-btn" onclick="toggleMute()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center shadow-inner" title="開啟/關閉操作音效">
           <i data-lucide="volume-2" id="sound-icon" class="w-5 h-5 text-emerald-600"></i>
         </button>
+
+        <!-- Voice Persona Switcher Button -->
+        <button id="voice-settings-btn" onclick="openVoiceModal()" class="px-2.5 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 text-xs border border-emerald-300" title="切換語音朗讀助手風格">
+          <span id="voice-persona-badge-icon" class="text-sm">🌸</span>
+          <span id="voice-persona-label" class="hidden md:inline font-bold">語音：溫柔夥伴</span>
+        </button>
+
         <!-- 項目 1 & 2: 頂部導覽列按鈕更新為「全班學生所有手帳」 -->
         <button onclick="filterHistoryByStudent('ALL'); switchTab('history');" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm" title="查看全班學生所有手帳">
           <i data-lucide="book-heart" class="w-4 h-4"></i>
@@ -1271,12 +1278,30 @@
 
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-blue-100 space-y-6 max-w-3xl mx-auto">
         
+        <!-- Category Filter Tabs -->
+        <div class="flex items-center justify-center gap-2 flex-wrap pb-2 border-b border-blue-100">
+          <button type="button" id="quiz-filter-all" onclick="filterQuizCategory('ALL')" class="px-3 py-1.5 rounded-xl text-xs font-black border-2 border-blue-500 bg-blue-50 text-blue-900 shadow-sm transition">
+            🌟 全部 16 題完整挑戰
+          </button>
+          <button type="button" id="quiz-filter-real" onclick="filterQuizCategory('REAL')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 transition">
+            🎒 近期 6 大生活與學習適應
+          </button>
+          <button type="button" id="quiz-filter-storage" onclick="filterQuizCategory('STORAGE')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 transition">
+            📦 10 大校園收納圖鑑
+          </button>
+        </div>
+
         <!-- Quiz Header -->
         <div class="flex items-center justify-between border-b pb-4">
           <div>
-            <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md">
-              校園收納圖鑑第 <span id="quiz-index-num">1</span> 題 / 共 10 題
-            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md">
+                第 <span id="quiz-index-num">1</span> 題 / 共 <span id="quiz-total-num">16</span> 題
+              </span>
+              <span id="quiz-sel-tag" class="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                SEL 5 · 負責任決策
+              </span>
+            </div>
             <h3 id="quiz-item-title" class="text-xl font-black text-slate-900 mt-1 cursor-pointer flex items-center gap-2 hover:text-blue-700" onclick="speakQuizItem()">
               <span id="quiz-title-text">📝 散落抽屜的小考考卷與評量單</span>
               <i data-lucide="volume-2" class="w-4 h-4 text-blue-600"></i>
@@ -1349,6 +1374,65 @@
   <footer class="bg-white/60 border-t border-slate-200 py-4 mt-8 text-center text-xs text-slate-400 font-medium">
     <p>皮克敏心靈探索小隊 · 依據 CASEL SEL 核心素養與校園生活常規設計</p>
   </footer>
+
+  <!-- Voice Assistant Selector Modal -->
+  <div id="voice-settings-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-emerald-100 space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🗣️</span>
+          <div>
+            <h4 class="text-base font-black text-slate-800">選擇探索小隊語音助手</h4>
+            <p class="text-[11px] text-slate-400">挑選你最喜歡的生動語調，告別嚴肅死板的聲音！</p>
+          </div>
+        </div>
+        <button onclick="closeVoiceModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 4 Persona Cards -->
+      <div class="grid grid-cols-2 gap-2.5" id="persona-cards-container">
+        <button type="button" onclick="setVoicePersona('gentle')" id="persona-btn-gentle" class="persona-card p-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-left transition flex flex-col gap-1 shadow-sm">
+          <span class="text-2xl">🌸</span>
+          <span class="text-xs font-black text-slate-800">溫柔夥伴</span>
+          <span class="text-[10px] text-slate-500">親切柔和・溫暖陪伴</span>
+        </button>
+        <button type="button" onclick="setVoicePersona('pikmin')" id="persona-btn-pikmin" class="persona-card p-3 rounded-2xl border-2 border-slate-200 bg-white text-left transition flex flex-col gap-1 hover:border-amber-300">
+          <span class="text-2xl">🌟</span>
+          <span class="text-xs font-black text-slate-800">元氣皮克敏</span>
+          <span class="text-[10px] text-slate-500">輕快活潑・精靈萌感</span>
+        </button>
+        <button type="button" onclick="setVoicePersona('story')" id="persona-btn-story" class="persona-card p-3 rounded-2xl border-2 border-slate-200 bg-white text-left transition flex flex-col gap-1 hover:border-amber-300">
+          <span class="text-2xl">🎒</span>
+          <span class="text-xs font-black text-slate-800">說故事老師</span>
+          <span class="text-[10px] text-slate-500">生動清晰・繪本風格</span>
+        </button>
+        <button type="button" onclick="setVoicePersona('captain')" id="persona-btn-captain" class="persona-card p-3 rounded-2xl border-2 border-slate-200 bg-white text-left transition flex flex-col gap-1 hover:border-amber-300">
+          <span class="text-2xl">💎</span>
+          <span class="text-xs font-black text-slate-800">沉穩安心隊長</span>
+          <span class="text-[10px] text-slate-500">厚實安定・情緒鎮定</span>
+        </button>
+      </div>
+
+      <!-- Advanced: System Voice Selector -->
+      <div class="space-y-1.5 pt-2 border-t border-slate-100">
+        <label class="block text-xs font-bold text-slate-600">系統中文發音角色 (選填)：</label>
+        <select id="system-voice-select" onchange="onSystemVoiceChange(this.value)" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+          <option value="">自動推薦最佳中文發音</option>
+        </select>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="testCurrentVoice()" class="flex-1 py-2.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+          <span>▶️</span> 試聽這把聲音
+        </button>
+        <button type="button" onclick="closeVoiceModal()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition">
+          確認套用
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Floating Audio / Custom Notification Modal -->
   <div id="custom-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -3244,6 +3328,8 @@
       {
         title: '1. 課本與習作本的翻找混亂',
         icon: '📚',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '抽屜裡塞滿各科課本、習作本，每到上課都要翻箱倒櫃，書角都折爛了...',
         options: [
           { text: '依今日課表或科目放入立體分層書架，將書背朝外擺放方便一眼辨識與拿取', correct: true, note: '正確！「書背朝外＋依科目分類」是課本收納的黃金法則！' },
@@ -3254,6 +3340,8 @@
       {
         title: '2. 散落抽屜的小考考卷與評量單',
         icon: '📝',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '抽屜塞滿考卷，考 100 分的想留，寫錯的堆在一起，丟掉時上面還有姓名座號...',
         options: [
           { text: '剪貼錯題整理成專屬錯題本複習，廢棄考卷將姓名座號遮蔽剪碎以防個資外流', correct: true, note: '太棒了！這是《收納圖鑑》推薦的精準整理術：錯題發揮價值，廢棄注意個資！' },
@@ -3264,6 +3352,8 @@
       {
         title: '3. 重要的家長通知單與回條',
         icon: '📑',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '老師今天發了戶外教學同意書，如果不小心壓在書包最底下忘記簽名就不能去了...',
         options: [
           { text: '固定收進專屬透明回條夾，回家立刻請家長簽名後妥善放回書包外層拉鍊袋', correct: true, note: '完全正確！建立「固定位置＋固定時間」的流程，是負責任決策的好習慣！' },
@@ -3274,6 +3364,8 @@
       {
         title: '4. 鉛筆盒內的美工與書寫用具',
         icon: '✏️',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '鉛筆盒塞了 20 支筆、剪刀、膠水蓋沒蓋緊弄得黏踢踢，筆芯一直斷掉...',
         options: [
           { text: '實施定量管理（削好鉛筆三至五支與橡皮擦一個），筆尖套筆帽並定期清理碎屑', correct: true, note: '答對了！「定量精簡＋妥善防護」能大幅提升課堂書寫效率！' },
@@ -3284,6 +3376,8 @@
       {
         title: '5. 桌面橡皮擦屑與小紙屑',
         icon: '🧹',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '寫完生字本後，桌面滿滿都是橡皮擦碎屑，快下課了該怎麼辦？',
         options: [
           { text: '用桌上小刷具或手心將碎屑掃成小堆，下課時隨手捧至教室垃圾桶倒乾淨', correct: true, note: '答對了！養成「隨手收納擦屑」的常規，保持桌面清爽好專注。' },
@@ -3294,6 +3388,8 @@
       {
         title: '6. 桌墊與桌墊下的夾層小物',
         icon: '🗂️',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '桌墊下塞滿了朋友給的卡片、貼紙、備忘紙條，桌面高低不平寫字容易戳破紙張...',
         options: [
           { text: '桌墊下僅保留當週課表與重要備忘便條，其餘卡片貼紙移至個人專屬收藏資料夾', correct: true, note: '沒錯！桌墊的主要功能是平整書寫，保持簡潔才能寫出漂亮字體！' },
@@ -3304,6 +3400,8 @@
       {
         title: '7. 勞作材料與美勞半成品作品',
         icon: '🎨',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '美勞課結束了，黏土作品還沒乾，工具箱又重又大，一個人快拿不動了...',
         options: [
           { text: '禮貌邀請同學一起合力搬運重工具箱，未乾的黏土作品先放在通風展示櫃陰乾', correct: true, note: '太讚了！結合了紫皮克敏的合力概念與適當求助技巧！' },
@@ -3314,6 +3412,8 @@
       {
         title: '8. 午餐餐具袋與潔牙用具',
         icon: '🍱',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '吃完午餐後餐具油膩膩，牙刷濕答答，如果直接悶在書包裡容易發霉發臭...',
         options: [
           { text: '先用紙巾把餐盤大油漬擦拭乾淨，裝入透氣網袋中，放學回家立刻拿出來清洗晾乾', correct: true, note: '衛生滿分！保持透氣與每日清潔，是健康生活的負責任好習慣！' },
@@ -3324,6 +3424,8 @@
       {
         title: '9. 運動後流汗換下來的體育服與外套',
         icon: '👕',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '大下課跑完步滿身大汗，換下的衣服和外套常常亂堆在椅子上掉在地上被踩...',
         options: [
           { text: '將衣服整齊摺疊掛於個人專屬椅背掛鉤，流汗髒衣裝入透氣換洗袋中帶回家清洗', correct: true, note: '非常棒！衛生習慣與空間管理一次到位，真是收納達人！' },
@@ -3334,11 +3436,85 @@
       {
         title: '10. 課堂榮譽獎勵點數卡與小貼紙',
         icon: '⭐',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'STORAGE',
         desc: '老師上課發的集點貼紙與榮譽卡隨手塞在口袋，到學期末兌換時常找不到...',
         options: [
           { text: '在聯絡簿內頁建立專屬集點收納袋，課堂一拿到榮譽貼紙便立刻入袋歸位妥善保存', correct: true, note: '太聰明了！養成「即時歸位」習慣，每一分努力都不會遺失！' },
           { text: '把老師獎勵的貼紙通通撕下來，趁著同學不注意時貼在教室牆壁或同學背後惡作劇', correct: false, note: '這是不尊重他人與班級環境的行為。' },
           { text: '把辛苦收集到的榮譽集點卡剪成細碎的彩色紙條，當成慶祝下課的彩帶朝空中亂撒', correct: false, note: '浪費老師的獎勵心意。' }
+        ]
+      },
+      {
+        title: '11. 班上來了一位新轉學生感到社交焦慮',
+        icon: '👥',
+        selTag: 'SEL 3 · 社會知覺',
+        categoryType: 'REAL',
+        desc: '看見新來的轉學生自己坐在座位上，我想跟他說話但內心感到緊張害怕...',
+        options: [
+          { text: '換位思考對方一定更孤單緊張，主動微笑說哈囉並介紹洗手間在哪裡', correct: true, note: '太棒了！展現溫暖同理心，主動釋出微小善意能化解彼此的陌生與緊張！' },
+          { text: '跟著大家圍在旁邊指指點點竊竊私語，故意大聲討論對方的長相與打扮', correct: false, note: '這樣會讓新同學感到被孤立與敵意，缺乏同理心喔！' },
+          { text: '既然覺得內心很緊張尷尬，那就整個學期都當作沒看見他也不要跟他說話', correct: false, note: '逃避互動只會讓焦慮加深，也錯失結交新朋友的好機會！' }
+        ]
+      },
+      {
+        title: '12. 最近連日大雨覺得外面的雨聲太吵雜',
+        icon: '🌧️',
+        selTag: 'SEL 2 · 自我管理',
+        categoryType: 'REAL',
+        desc: '窗外雨一直下個不停，嘩啦啦的下雨聲讓我心浮氣躁、上課無法專心聽講...',
+        options: [
+          { text: '做三次深長腹部呼吸放鬆肩膀，把雨聲想成大自然送來的安定白噪音', correct: true, note: '很棒的自我調節！轉念將外界噪音視為平靜背景音，能迅速重拾專注！' },
+          { text: '用雙手緊緊摀住耳朵對窗外大聲尖叫咆哮，生氣抱怨為什麼每天都下雨', correct: false, note: '大叫會打擾課堂秩序，也無法改變下雨的自然現象。' } ,
+          { text: '把桌上的課本鉛筆盒全部用力摔在地上發脾氣，趴在桌上拒絕聽老師上課', correct: false, note: '摔東西是危險且不成熟的情緒宣洩方式。' }
+        ]
+      },
+      {
+        title: '13. 從安親班轉換到學校課後班很不熟悉',
+        icon: '🎒',
+        selTag: 'SEL 1 · 自我覺察',
+        categoryType: 'REAL',
+        desc: '剛換到學校課後照顧班，老師和同學都不一樣，環境陌生讓我放學很不適應...',
+        options: [
+          { text: '接納自己需要適應過渡期，將每日作息記錄下來並主動認識身旁新同學', correct: true, note: '具備高度自我覺察！接納適應需要時間，用清單與主動互動建立安全感！' },
+          { text: '放學鐘聲一響就直接背起書包偷偷跑出校門，自己一個人搭公車溜回家', correct: false, note: '擅自離校非常危險，會讓家長和老師非常擔憂著急！' },
+          { text: '從第一節課開始一直哭鬧抗議到放學，趴在桌上不寫功課也不吃任何點心', correct: false, note: '抗拒面對只會讓自己更難受，無法解決適應難題。' }
+        ]
+      },
+      {
+        title: '14. 學校洗手間傳出連續怪異的嗶嗶聲響',
+        icon: '🚽',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'REAL',
+        desc: '走進廁所聽見隔間一直發出急促的嗶嗶聲，心裡覺得毛毛的、很想轉頭就跑...',
+        options: [
+          { text: '冷靜判斷這是感應沖水器沒電的提示聲，安心如廁並回班級請老師報修', correct: true, note: '負責任的決策！理性破除未知恐懼，並主動告知通報，成為班級守護者！' },
+          { text: '嚇得立刻大聲尖叫狂奔回教室，跟全班同學宣傳廁所裡面有可怕的大怪獸', correct: false, note: '散播不實謠言會引發其他同學不必要的恐慌。' },
+          { text: '找來長木棍用力敲打猛戳感應器，試圖用暴力敲打讓沖水機器停止發出聲音', correct: false, note: '破壞公物是違規行為，且可能造成機械損壞！' }
+        ]
+      },
+      {
+        title: '15. 本土語言台語課聽不懂老師在說什麼',
+        icon: '🗣️',
+        selTag: 'SEL 4 · 人際合作',
+        categoryType: 'REAL',
+        desc: '台語課老師全閩南語授課，好多生詞語句我都聽不懂，心裡著急又想放棄...',
+        options: [
+          { text: '勇敢舉手請老師放慢語速或多給圖片提示，課後向身邊熟練的同學請教', correct: true, note: '非常積極！懂得主動求助是成熟的學習態度，多聽多問自然能進步！' },
+          { text: '覺得反正大家都聽不懂無所謂，直接趴在桌上睡覺或把課本撕爛折成紙飛機', correct: false, note: '放棄學習與破壞課本不僅浪費課堂時間，也是不尊重老師。' },
+          { text: '在台語課堂上大聲用別的話語打斷老師講課，嘲笑本土語言課程沒有用處', correct: false, note: '不尊重不同語言文化是非常不禮貌的言行。' }
+        ]
+      },
+      {
+        title: '16. 新學年調整了課程內容與作息時間表',
+        icon: '⏰',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'REAL',
+        desc: '升上新學年，下課時間縮短、科任課變多、回家功課變重，節奏完全亂掉...',
+        options: [
+          { text: '將全新時間表貼在書桌前，每天睡前對照聯絡簿收書包並提早入睡調整', correct: true, note: '優秀的時間管理！善用視覺工具與規律習慣，能幫助自己從容應對新挑戰！' },
+          { text: '每天故意拖延到深夜才寫作業，隔天上課精神不濟遲到再來責怪課表太滿', correct: false, note: '作息不良會傷害身體健康，也讓學習效率更加低落。' },
+          { text: '把新的課表聯絡簿偷偷藏在抽屜最底層，假裝學校完全沒有更換過時間表', correct: false, note: '逃避現實無法改變新學期的常規，只會讓自己更容易漏帶學用品。' }
         ]
       }
     ];
@@ -3357,6 +3533,7 @@
 
     let currentQuizIndex = 0;
     let quizScore = 0;
+    let currentQuizCategory = 'ALL';
     let breathingInterval = null;
 
     let isSpeechRecording = false;
@@ -3382,13 +3559,34 @@
     }
 
     function initShuffledQuiz() {
-      // Shuffle question order, and shuffle options inside each question
-      activeQuizList = shuffleArray(QUIZ_DATA).map(item => ({
+      let baseList = QUIZ_DATA;
+      if (currentQuizCategory === 'REAL') {
+        baseList = QUIZ_DATA.filter(q => q.categoryType === 'REAL');
+      } else if (currentQuizCategory === 'STORAGE') {
+        baseList = QUIZ_DATA.filter(q => q.categoryType === 'STORAGE');
+      }
+
+      activeQuizList = shuffleArray(baseList).map(item => ({
         ...item,
         shuffledOptions: shuffleArray(item.options)
       }));
       currentQuizIndex = 0;
       quizScore = 0;
+    }
+
+    function filterQuizCategory(cat) {
+      playSound('pop');
+      currentQuizCategory = cat;
+      ['all', 'real', 'storage'].forEach(c => {
+        const btn = document.getElementById(`quiz-filter-${c}`);
+        if (btn) {
+          btn.className = c === cat.toLowerCase()
+            ? 'px-3 py-1.5 rounded-xl text-xs font-black border-2 border-blue-500 bg-blue-50 text-blue-900 shadow-sm transition'
+            : 'px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 transition';
+        }
+      });
+      initShuffledQuiz();
+      loadQuizQuestion(0);
     }
 
     function initShuffledEmpathy() {
@@ -3443,6 +3641,117 @@
       lucide.createIcons();
     }
 
+    let availableVoices = [];
+    let selectedVoiceUri = null;
+    let currentVoicePersona = 'gentle';
+
+    const VOICE_PERSONAS = {
+      gentle: { name: '溫柔夥伴', rate: 0.95, pitch: 1.25, icon: '🌸' },
+      pikmin: { name: '元氣皮克敏', rate: 1.15, pitch: 1.55, icon: '🌟' },
+      story: { name: '說故事老師', rate: 0.9, pitch: 1.05, icon: '🎒' },
+      captain: { name: '沉穩安心隊長', rate: 0.85, pitch: 0.82, icon: '💎' }
+    };
+
+    function initVoiceSystem() {
+      if (!('speechSynthesis' in window)) return;
+
+      function populateVoiceList() {
+        const allVoices = window.speechSynthesis.getVoices();
+        if (!allVoices || allVoices.length === 0) return;
+
+        // 嚴格過濾：僅保留台灣繁體國語發音（排除 zh-CN 中國普通話與 zh-HK/yue 粵語）
+        availableVoices = allVoices.filter(v => {
+          const lang = v.lang.toLowerCase();
+          const name = v.name.toLowerCase();
+
+          // 嚴格排除中國普通話與香港/粵語
+          const isChina = lang.includes('cn') || lang.includes('hans') || name.includes('mainland') || name.includes('china') || name.includes('mandarin (simplified)');
+          const isCantonese = lang.includes('hk') || lang.includes('yue') || name.includes('cantonese') || name.includes('hong kong');
+          if (isChina || isCantonese) return false;
+
+          // 嚴格納入台灣繁體國語發音
+          const isTaiwan = lang.includes('tw') || lang.includes('hant') || name.includes('taiwan') || name.includes('hanyutw') || name.includes('yating') || name.includes('hsiaochen') || name.includes('meijia') || name.includes('tingting');
+          return isTaiwan;
+        });
+
+        // 若系統完全無特定標記 zh-TW 的發音，則安全保留預設
+        if (availableVoices.length === 0) {
+          availableVoices = allVoices.filter(v => {
+            const lang = v.lang.toLowerCase();
+            return !lang.includes('cn') && !lang.includes('hk') && !lang.includes('yue');
+          });
+        }
+
+        const select = document.getElementById('system-voice-select');
+        if (select) {
+          select.innerHTML = '';
+          availableVoices.forEach((v) => {
+            const opt = document.createElement('option');
+            opt.value = v.voiceURI;
+            opt.textContent = `${v.name} (${v.lang})`;
+            if (!selectedVoiceUri && (v.lang.toLowerCase().includes('tw') || v.name.includes('HsiaoChen') || v.name.includes('Yating') || v.name.includes('Mei-Jia') || v.name.includes('Ting-Ting'))) {
+              selectedVoiceUri = v.voiceURI;
+            }
+            select.appendChild(opt);
+          });
+          if (selectedVoiceUri) {
+            select.value = selectedVoiceUri;
+          }
+        }
+      }
+
+      populateVoiceList();
+      if (typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
+        window.speechSynthesis.onvoiceschanged = populateVoiceList;
+      }
+    }
+
+    function openVoiceModal() {
+      playSound('pop');
+      const modal = document.getElementById('voice-settings-modal');
+      if (modal) modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeVoiceModal() {
+      playSound('pop');
+      const modal = document.getElementById('voice-settings-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function setVoicePersona(personaKey) {
+      playSound('pop');
+      currentVoicePersona = personaKey;
+      const persona = VOICE_PERSONAS[personaKey] || VOICE_PERSONAS.gentle;
+
+      // Update persona card styling
+      ['gentle', 'pikmin', 'story', 'captain'].forEach(key => {
+        const btn = document.getElementById(`persona-btn-${key}`);
+        if (btn) {
+          if (key === personaKey) {
+            btn.className = 'persona-card p-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-left transition flex flex-col gap-1 shadow-sm';
+          } else {
+            btn.className = 'persona-card p-3 rounded-2xl border-2 border-slate-200 bg-white text-left transition flex flex-col gap-1 hover:border-amber-300';
+          }
+        }
+      });
+
+      // Update header button label and icon
+      const badgeIcon = document.getElementById('voice-persona-badge-icon');
+      const badgeLabel = document.getElementById('voice-persona-label');
+      if (badgeIcon) badgeIcon.textContent = persona.icon;
+      if (badgeLabel) badgeLabel.textContent = `語音：${persona.name}`;
+    }
+
+    function onSystemVoiceChange(voiceUri) {
+      selectedVoiceUri = voiceUri;
+    }
+
+    function testCurrentVoice() {
+      const persona = VOICE_PERSONAS[currentVoicePersona] || VOICE_PERSONAS.gentle;
+      speakText(`哈囉！我是${persona.name}，很高興和你一起在心靈花園探索！`);
+    }
+
     function speakText(text) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
@@ -3458,9 +3767,19 @@
       if (!cleanText) return;
 
       const utterance = new SpeechSynthesisUtterance(cleanText);
+      const persona = VOICE_PERSONAS[currentVoicePersona] || VOICE_PERSONAS.gentle;
+
+      // Apply persona rate and pitch
+      utterance.rate = persona.rate;
+      utterance.pitch = persona.pitch;
       utterance.lang = 'zh-TW';
-      utterance.rate = 0.95;
-      utterance.pitch = 1.1;
+
+      // Attach selected voice if available
+      if (selectedVoiceUri && availableVoices.length > 0) {
+        const found = availableVoices.find(v => v.voiceURI === selectedVoiceUri);
+        if (found) utterance.voice = found;
+      }
+
       window.speechSynthesis.speak(utterance);
     }
 
@@ -4628,8 +4947,11 @@
       }
       currentQuizIndex = idx;
       const q = activeQuizList[idx] || activeQuizList[0];
+      if (!q) return;
 
       const idxNum = document.getElementById('quiz-index-num');
+      const totalNum = document.getElementById('quiz-total-num');
+      const selTag = document.getElementById('quiz-sel-tag');
       const titleText = document.getElementById('quiz-title-text');
       const icon = document.getElementById('quiz-item-icon');
       const desc = document.getElementById('quiz-problem-desc');
@@ -4637,6 +4959,8 @@
       const feedbackBox = document.getElementById('quiz-feedback-box');
 
       if (idxNum) idxNum.textContent = idx + 1;
+      if (totalNum) totalNum.textContent = activeQuizList.length;
+      if (selTag) selTag.textContent = q.selTag || 'SEL 5 · 負責任決策';
       if (titleText) titleText.textContent = q.title;
       if (icon) icon.textContent = q.icon;
       if (desc) desc.textContent = q.desc;
@@ -4782,6 +5106,9 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      if (typeof initVoiceSystem === 'function') {
+        initVoiceSystem();
+      }
       renderPikminEncyclopedia();
       initCardCustomizer();
       switchSel2Tool('breathe');
