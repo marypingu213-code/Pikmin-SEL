@@ -213,16 +213,11 @@
           <span id="voice-persona-label" class="hidden md:inline font-bold">語音：溫柔夥伴</span>
         </button>
 
-        <!-- 項目 1 & 2: 頂部導覽列按鈕更新為「全班學生所有手帳」 -->
+        <!-- 頂部導覽列：全班學生所有手帳 -->
         <button onclick="filterHistoryByStudent('ALL'); switchTab('history');" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm" title="查看全班學生所有手帳">
           <i data-lucide="book-heart" class="w-4 h-4"></i>
           <span class="hidden sm:inline">全班學生所有手帳</span>
           <span id="history-badge-count" class="bg-emerald-700 text-emerald-100 text-xs px-2 py-0.5 rounded-full font-black">1</span>
-        </button>
-        <button onclick="switchTab('badges')" class="px-3.5 py-2 bg-amber-400/90 hover:bg-amber-400 text-amber-950 font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm">
-          <i data-lucide="award" class="w-4 h-4 text-amber-800"></i>
-          <span class="hidden sm:inline">榮譽勳章</span>
-          <span id="badge-count" class="bg-amber-100 text-amber-900 text-xs px-2 py-0.5 rounded-full font-black">0/6</span>
         </button>
       </div>
     </div>
@@ -1328,32 +1323,6 @@
           </div>
         </div>
 
-      </div>
-    </section>
-
-    <!-- TAB 6: BADGES (榮譽勳章館) -->
-    <section id="tab-badges" class="tab-content hidden space-y-6">
-      <div class="flex items-center justify-between">
-        <button onclick="switchTab('home')" class="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-emerald-600 transition">
-          <i data-lucide="chevron-left" class="w-4 h-4"></i> 回基地總部
-        </button>
-        <span class="text-xs font-black bg-amber-100 text-amber-800 px-3 py-1 rounded-full">榮譽陳列室</span>
-      </div>
-
-      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-amber-100 space-y-6">
-        <div class="text-center max-w-md mx-auto space-y-2">
-          <div class="text-4xl">🏆</div>
-          <h3 class="text-2xl font-black text-slate-800">皮克敏 SEL 冒險勳章館</h3>
-          <p class="text-xs text-slate-500">完成各個模組的自主探索與修煉，點亮你的專屬冒險成就！</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="badges-container">
-          <!-- Dynamically Injected -->
-        </div>
-
-        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-center text-xs text-amber-900 font-bold">
-          ✨ 持續在班級中實踐皮克敏精神：認同自己、同理他人、合力合作、整理生活！
-        </div>
       </div>
     </section>
 
@@ -3133,15 +3102,6 @@
       '🎒 常常忘記帶齊學用品，需要每日檢查清單'
     ];
 
-    const BADGES = [
-      { id: 'self-card', title: '自我覺察徽章', icon: '🪪', desc: '完成皮克敏專屬屬性卡製作', unlocked: false },
-      { id: 'calm-whistle', title: '冷靜急救金哨', icon: '🪈', desc: '完成 4-7-8 呼吸與情緒急救演練', unlocked: false },
-      { id: 'empathy-radar', title: '同理心探測儀', icon: '🤝', desc: '完成 9 大皮克敏同理心雷達探索', unlocked: false },
-      { id: 'team-fruit', title: '校園合作神隊友', icon: '🏆', desc: '通關 8 大校園生活合力搬運與協作任務', unlocked: false },
-      { id: 'organize-hero', title: '校園 10 大收納王', icon: '🗂️', desc: '通過 10 項校園物品收納決策測驗', unlocked: false },
-      { id: 'sel-master', title: '全能 Diamond 隊長', icon: '💎', desc: '集滿所有 CASEL 5 大能力成就榮譽！', unlocked: false }
-    ];
-
     const EMPATHY_SCENARIOS = [
       {
         title: '🔴 紅皮克敏遇到了小水坑！',
@@ -3535,6 +3495,7 @@
     let clickTimerMap = new Map();
 
     // Student filter for the multi-student classroom setting
+    let currentActiveStudentName = '小勇士';
     let selectedStudentFilter = 'ALL';
     let isTeacherMode = false; // Teacher edit/delete permission flag
 
@@ -3993,10 +3954,15 @@
           const isSelected = selectedStrengths.includes(s);
           const tag = document.createElement('button');
           tag.type = 'button';
-          tag.className = `px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1 ${
-            isSelected ? 'bg-emerald-500 text-white shadow-sm ring-2 ring-emerald-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          tag.className = `w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between gap-2 border ${
+            isSelected ? 'bg-emerald-500 text-white border-emerald-600 shadow-sm ring-2 ring-emerald-300' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
           }`;
-          tag.textContent = s;
+          tag.innerHTML = `
+            <span class="truncate">${s}</span>
+            <span class="text-[10px] font-black px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-emerald-700/60 text-white' : 'bg-slate-200/80 text-slate-500'}">
+              ${isSelected ? '✓ 已選' : '選取'}
+            </span>
+          `;
           tag.onclick = () => handleTagSmartClick('strength', s, tag);
           sCont.appendChild(tag);
         });
@@ -4008,10 +3974,15 @@
           const isSelected = selectedWeaknesses.includes(w);
           const tag = document.createElement('button');
           tag.type = 'button';
-          tag.className = `px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1 ${
-            isSelected ? 'bg-amber-500 text-white shadow-sm ring-2 ring-amber-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          tag.className = `w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between gap-2 border ${
+            isSelected ? 'bg-amber-500 text-white border-amber-600 shadow-sm ring-2 ring-amber-300' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
           }`;
-          tag.textContent = w;
+          tag.innerHTML = `
+            <span class="truncate">${w}</span>
+            <span class="text-[10px] font-black px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-amber-700/60 text-white' : 'bg-slate-200/80 text-slate-500'}">
+              ${isSelected ? '✓ 已選' : '選取'}
+            </span>
+          `;
           tag.onclick = () => handleTagSmartClick('weakness', w, tag);
           wCont.appendChild(tag);
         });
@@ -4387,11 +4358,13 @@
     function finishCustomCard(isNew = false) {
       playSound('success');
       confetti({ particleCount: 50, spread: 50 });
-      unlockBadge('self-card');
 
       const nameInput = document.getElementById('custom-name');
       const noteInput = document.getElementById('custom-note');
       const studentName = nameInput ? nameInput.value.trim() || '小勇士' : '小勇士';
+
+      // Lock currentActiveStudentName to newly saved student
+      currentActiveStudentName = studentName;
 
       // Preserve existing student's SEL 2-5 scores if already in progress
       const existingRec = growthHistoryRecords.find(r => r.name === studentName);
@@ -4419,11 +4392,19 @@
       updateHistorySelectDropdown();
       updateStudentFilterDropdown();
       renderGrowthHistory();
-      showModal('🪪', `已儲存【${studentName}】的心靈卡片！`, `已為【${studentName}】建立了專屬成長紀錄！<br>可以在「成長手帳」中隨時按學生姓名篩選或查看歷程喔！`);
+      syncActiveStudentDisplay();
+      showModal('🪪', `已儲存【${studentName}】的心靈卡片！`, `已為【${studentName}】建立了專屬成長紀錄！<br>現在已設定為目前操作探險家，所有闖關進度將記錄在手帳中！`);
     }
 
     function saveAsNewHistoryRecord() {
       finishCustomCard(true);
+    }
+
+    function syncActiveStudentDisplay() {
+      const customNameInput = document.getElementById('custom-name');
+      if (customNameInput && currentActiveStudentName) {
+        customNameInput.value = currentActiveStudentName;
+      }
     }
 
     function updateHistorySelectDropdown() {
@@ -4433,151 +4414,77 @@
       growthHistoryRecords.forEach((rec, idx) => {
         const opt = document.createElement('option');
         opt.value = idx;
-        const timeLabel = rec.timeStr ? ` ${rec.timeStr}` : '';
-        opt.textContent = `${rec.dateStr}${timeLabel} - ${rec.name} (${rec.spirit})`;
+        const stageIcon = rec.stage === 'leaf' ? '🌱' : (rec.stage === 'bud' ? '🌿' : '🌸');
+        opt.textContent = `${rec.name} (${rec.dateStr || ''} ${stageIcon})`;
         sel.appendChild(opt);
       });
     }
 
     function updateStudentFilterDropdown() {
-      const filterSel = document.getElementById('student-filter-select');
-      if (!filterSel) return;
-      const currentVal = selectedStudentFilter || 'ALL';
-      
-      // Get unique student names
-      const names = Array.from(new Set(growthHistoryRecords.map(r => r.name))).filter(Boolean);
-      
-      filterSel.innerHTML = '<option value="ALL">🌟 全班所有學生手帳 (全部)</option>';
-      names.forEach(name => {
+      const sel = document.getElementById('student-filter-select');
+      if (!sel) return;
+      const studentNames = Array.from(new Set(growthHistoryRecords.map(r => r.name))).filter(Boolean);
+      sel.innerHTML = '<option value="ALL">🌟 全班所有學生手帳 (全部)</option>';
+      studentNames.forEach(name => {
         const opt = document.createElement('option');
         opt.value = name;
-        opt.textContent = `👤 ${name} 的專屬成長手帳`;
-        if (name === currentVal) opt.selected = true;
-        filterSel.appendChild(opt);
+        opt.textContent = `👤 ${name}`;
+        if (selectedStudentFilter === name) opt.selected = true;
+        sel.appendChild(opt);
       });
+      if (selectedStudentFilter === 'ALL') sel.value = 'ALL';
     }
 
     function filterHistoryByStudent(studentName) {
-      playSound('pop');
       selectedStudentFilter = studentName;
       const sel = document.getElementById('student-filter-select');
-      if (sel && sel.value !== studentName) {
-        sel.value = studentName;
-      }
-
-      // Update header banner text based on filter
-      const headerTitle = document.getElementById('history-header-title');
-      const headerSubtitle = document.getElementById('history-header-subtitle');
-      const listCaption = document.getElementById('history-list-caption');
-
-      if (studentName === 'ALL') {
-        if (headerTitle) headerTitle.textContent = '全班學生成長軌跡資料庫';
-        if (headerSubtitle) headerSubtitle.textContent = '記錄每一位同學的心情代幣、優勢發現與需要支持的地方，看見班級互助的蛻變！';
-        if (listCaption) listCaption.textContent = '全班學生歷次成長紀錄';
-      } else {
-        if (headerTitle) headerTitle.textContent = `【${studentName}】的專屬心靈手帳`;
-        if (headerSubtitle) headerSubtitle.textContent = `專注於 ${studentName} 的個人心情變化、優勢發掘與隊友互助需求！`;
-        if (listCaption) listCaption.textContent = `【${studentName}】的個人專屬紀錄`;
-      }
-
+      if (sel) sel.value = studentName;
       renderGrowthHistory();
     }
 
-    // View strictly current student's own records from Self-Card
     function viewMyPersonalHistory() {
       const nameInput = document.getElementById('custom-name');
-      const currentStudent = nameInput ? nameInput.value.trim() || '小勇士' : '小勇士';
-
-      // Check if this student has any records
-      const hasRecords = growthHistoryRecords.some(r => r.name === currentStudent);
-      if (!hasRecords) {
-        // Automatically save current card as first record if none exists
-        finishCustomCard(false);
-      }
-
+      const name = nameInput ? nameInput.value.trim() || currentActiveStudentName : currentActiveStudentName;
+      filterHistoryByStudent(name);
       switchTab('history');
-      filterHistoryByStudent(currentStudent);
     }
 
-    // Teacher Management Mode Toggle
     function toggleTeacherMode() {
-      playSound('pop');
       isTeacherMode = !isTeacherMode;
+      playSound('pop');
       const btn = document.getElementById('teacher-mode-btn');
-      const icon = document.getElementById('teacher-mode-icon');
       const label = document.getElementById('teacher-mode-label');
       const banner = document.getElementById('teacher-notice-banner');
 
       if (isTeacherMode) {
-        if (btn) {
-          btn.className = 'px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition';
-        }
-        if (icon) {
-          icon.className = 'w-3.5 h-3.5 text-white';
-        }
-        if (label) label.textContent = '教師管理模式 (已開啟)';
+        if (btn) btn.className = 'px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 border border-amber-600 transition shadow-sm';
+        if (label) label.textContent = '教師管理模式 (開啟中)';
         if (banner) banner.classList.remove('hidden');
       } else {
-        if (btn) {
-          btn.className = 'px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-slate-300 transition';
-        }
-        if (icon) {
-          icon.className = 'w-3.5 h-3.5 text-slate-500';
-        }
+        if (btn) btn.className = 'px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-slate-300 transition';
         if (label) label.textContent = '教師管理模式 (關閉)';
         if (banner) banner.classList.add('hidden');
       }
-      lucide.createIcons();
       renderGrowthHistory();
+      lucide.createIcons();
     }
 
-    // Delete single record function for teacher
-    function deleteStudentHistoryRecord(recordId, studentName) {
+    function deleteStudentHistoryRecord(recId, studentName) {
       playSound('pop');
-      const idx = growthHistoryRecords.findIndex(r => r.id === recordId);
-      if (idx === -1) return;
-
-      // Remove the targeted record
-      growthHistoryRecords.splice(idx, 1);
-
-      // If no records left, provide a default fresh record
-      if (growthHistoryRecords.length === 0) {
-        growthHistoryRecords.push({
-          id: 'rec_' + Date.now(),
-          dateStr: new Date().toLocaleDateString('zh-TW'),
-          timeStr: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }),
-          name: '小勇士',
-          spirit: 'red',
-          stage: 'leaf',
-          strengths: [STRENGTH_OPTIONS[0]],
-          weaknesses: [WEAKNESS_OPTIONS[0]],
-          note: '新起點：開始撰寫第一張皮克敏成長卡！',
-          sel2: 0,
-          sel3: 0,
-          sel4: 0,
-          sel5: 0
-        });
+      const idx = growthHistoryRecords.findIndex(r => r.id === recId);
+      if (idx > -1) {
+        growthHistoryRecords.splice(idx, 1);
+        saveRecordsToStorage();
+        updateHistorySelectDropdown();
+        updateStudentFilterDropdown();
+        renderGrowthHistory();
+        showModal('🗑️', '已刪除紀錄', `已為教師刪除【${studentName}】的該筆卡片手帳紀錄。`);
       }
-
-      saveRecordsToStorage();
-      updateHistorySelectDropdown();
-      updateStudentFilterDropdown();
-
-      // If current filtered student no longer exists, reset to ALL
-      if (selectedStudentFilter !== 'ALL' && !growthHistoryRecords.some(r => r.name === selectedStudentFilter)) {
-        selectedStudentFilter = 'ALL';
-        const filterSel = document.getElementById('student-filter-select');
-        if (filterSel) filterSel.value = 'ALL';
-      }
-
-      renderGrowthHistory();
-      showModal('🗑️', '已刪除手帳紀錄', `已成功移除【${studentName}】的此筆紀錄！`);
     }
 
     // Helper: update active student's quantitative SEL 2-5 progress
     function updateActiveStudentRecord(selNumber, count) {
-      const nameInput = document.getElementById('custom-name');
-      const studentName = nameInput ? nameInput.value.trim() || '小勇士' : '小勇士';
+      const studentName = currentActiveStudentName || '小勇士';
 
       let targetRec = growthHistoryRecords.find(r => r.name === studentName);
       if (!targetRec && growthHistoryRecords.length > 0) {
@@ -4851,7 +4758,6 @@
       if (currentEmpathyIndex < activeEmpathyList.length - 1) {
         loadEmpathyScenario(currentEmpathyIndex + 1);
       } else {
-        unlockBadge('empathy-radar');
         showModal('🤝', '同理心夥伴雷達全探索通關！', '恭喜你完成 9 大皮克敏夥伴同理心探索！你已經掌握了尊重差異與同理支持的最高心法！');
         initShuffledEmpathy();
         loadEmpathyScenario(0);
@@ -4860,7 +4766,6 @@
 
     function startWhistleBreathing() {
       playSound('whistle');
-      unlockBadge('calm-whistle');
       const stage = document.getElementById('breathing-stage');
       const btn = document.getElementById('whistle-button');
       const actionText = document.getElementById('breathe-action-text');
@@ -5077,7 +4982,6 @@
             currentFruitLevel++;
             resetTeamworkLevel();
           } else {
-            unlockBadge('team-fruit');
             showModal(
               '🏆',
               '校園合作神隊友 8 大任務全通關！',
@@ -5087,12 +4991,6 @@
             resetTeamworkLevel();
           }
         }, 600);
-      } else {
-        if (powerStatusMsg) {
-          const diff = target - currentTeamPower;
-          powerStatusMsg.textContent = `還差 ${diff} 力量即可安全搬動！`;
-          powerStatusMsg.className = 'text-amber-700 font-bold bg-white/90 px-3 py-1 rounded-full border shadow-sm text-xs';
-        }
       }
     }
 
@@ -5192,55 +5090,14 @@
       if (currentQuizIndex < activeQuizList.length - 1) {
         loadQuizQuestion(currentQuizIndex + 1);
       } else {
-        unlockBadge('organize-hero');
         showModal('🗂️', '校園 10 大收納王達成！', '恭喜你完成 10 大校園收納決策挑戰！你已經是具備負責任決策（Responsible Decision-Making）的收納高手！');
         initShuffledQuiz();
         loadQuizQuestion(0);
       }
     }
 
-    function renderBadges() {
-      const cont = document.getElementById('badges-container');
-      if (!cont) return;
-      cont.innerHTML = '';
-      let unlockedCount = 0;
-
-      BADGES.forEach(b => {
-        if (b.unlocked) unlockedCount++;
-        const card = document.createElement('div');
-        card.className = `p-4 rounded-2xl border-2 flex items-center gap-3 transition ${
-          b.unlocked
-            ? 'bg-gradient-to-r from-amber-50 to-yellow-100/70 border-amber-300 shadow-md'
-            : 'bg-slate-50 border-slate-200 opacity-60'
-        }`;
-        card.innerHTML = `
-          <div class="text-3xl">${b.icon}</div>
-          <div>
-            <h4 class="font-black text-sm ${b.unlocked ? 'text-amber-950' : 'text-slate-600'}">${b.title}</h4>
-            <p class="text-[11px] text-slate-500 mt-0.5">${b.desc}</p>
-            <span class="text-[10px] font-bold mt-1 inline-block ${b.unlocked ? 'text-emerald-600' : 'text-slate-400'}">
-              ${b.unlocked ? '✨ 已解鎖榮譽' : '🔒 待探索解鎖'}
-            </span>
-          </div>
-        `;
-        cont.appendChild(card);
-      });
-
-      const badgeCount = document.getElementById('badge-count');
-      if (badgeCount) badgeCount.textContent = `${unlockedCount}/${BADGES.length}`;
-
-      if (unlockedCount === BADGES.length - 1 && !BADGES[5].unlocked) {
-        unlockBadge('sel-master');
-      }
-    }
-
-    function unlockBadge(id) {
-      const badge = BADGES.find(b => b.id === id);
-      if (badge && !badge.unlocked) {
-        badge.unlocked = true;
-        renderBadges();
-      }
-    }
+    function renderBadges() {}
+    function unlockBadge() {}
 
     function showModal(icon, title, message) {
       const mIcon = document.getElementById('modal-icon');
@@ -5272,12 +5129,12 @@
       loadEmpathyScenario(0);
       initTeamworkLevels();
       updateTeamworkVisuals();
-      renderBadges();
       initShuffledQuiz();
       loadQuizQuestion(0);
       updateHistorySelectDropdown();
       updateStudentFilterDropdown();
       renderGrowthHistory();
+      syncActiveStudentDisplay();
       lucide.createIcons();
 
       // Preload Pikmin SVG Sprites safely now that PIKMIN_ROSTER & getDynamicPikminSvg are ready
