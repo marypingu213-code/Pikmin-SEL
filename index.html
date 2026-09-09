@@ -168,15 +168,37 @@
         display: none !important;
       }
     }
+
+    /* --- Fit entire app to viewport (full-bleed both directions), no page/mouse scrolling needed --- */
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden !important;
+    }
+    #fit-stage {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
+      will-change: transform;
+    }
+    /* The header/main wrappers were capped at max-w-6xl (centered with big side gutters).
+       Let them use the full width of #fit-stage so the visible design truly reaches the
+       screen edges instead of floating in a narrow centered column. */
+    #fit-stage .max-w-6xl {
+      max-width: 100% !important;
+    }
   </style>
 </head>
 
 <body class="min-h-screen text-slate-800 flex flex-col justify-between overflow-x-hidden">
 
+  <div id="fit-stage">
+
   <!-- Top Navigation Header -->
   <header class="bg-white/85 backdrop-blur-md sticky top-0 z-40 border-b border-emerald-100 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+      <div class="flex items-center space-x-3 cursor-pointer focus-lock-target" onclick="switchTab('home')">
         <div class="w-11 h-11 bg-gradient-to-tr from-emerald-400 to-amber-300 rounded-2xl flex items-center justify-center shadow-md shadow-emerald-200">
           <span class="text-2xl">🌱</span>
         </div>
@@ -208,13 +230,13 @@
         </button>
 
         <!-- Voice Persona Switcher Button -->
-        <button id="voice-settings-btn" onclick="openVoiceModal()" class="px-2.5 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 text-xs border border-emerald-300" title="切換語音朗讀助手風格">
+        <button id="voice-settings-btn" onclick="openVoiceModal()" class="focus-lock-target px-2.5 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 text-xs border border-emerald-300" title="切換語音朗讀助手風格">
           <span id="voice-persona-badge-icon" class="text-sm">🌸</span>
           <span id="voice-persona-label" class="hidden md:inline font-bold">語音：溫柔夥伴</span>
         </button>
 
         <!-- 頂部導覽列：全班學生所有手帳 -->
-        <button onclick="filterHistoryByStudent('ALL'); switchTab('history');" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm" title="查看全班學生所有手帳">
+        <button onclick="filterHistoryByStudent('ALL'); switchTab('history');" class="focus-lock-target px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 text-sm" title="查看全班學生所有手帳">
           <i data-lucide="book-heart" class="w-4 h-4"></i>
           <span class="hidden sm:inline">全班學生所有手帳</span>
           <span id="history-badge-count" class="bg-emerald-700 text-emerald-100 text-xs px-2 py-0.5 rounded-full font-black">1</span>
@@ -337,7 +359,7 @@
             </div>
           </div>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600">
-            <span>挑戰 10 題</span>
+            <span>挑戰 20 題</span>
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </div>
         </div>
@@ -1265,10 +1287,10 @@
         <!-- Category Filter Tabs -->
         <div class="flex items-center justify-center gap-2 flex-wrap pb-2 border-b border-blue-100">
           <button type="button" id="quiz-filter-all" onclick="filterQuizCategory('ALL')" class="px-3 py-1.5 rounded-xl text-xs font-black border-2 border-blue-500 bg-blue-50 text-blue-900 shadow-sm transition">
-            🌟 全部 16 題完整挑戰
+            🌟 全部 20 題完整挑戰
           </button>
           <button type="button" id="quiz-filter-real" onclick="filterQuizCategory('REAL')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 transition">
-            🎒 近期 6 大生活與學習適應
+            🎒 近期 10 大生活與學習適應
           </button>
           <button type="button" id="quiz-filter-storage" onclick="filterQuizCategory('STORAGE')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 transition">
             📦 10 大校園收納圖鑑
@@ -1332,6 +1354,8 @@
   <footer class="bg-white/60 border-t border-slate-200 py-4 mt-8 text-center text-xs text-slate-400 font-medium">
     <p>皮克敏心靈探索小隊 · 依據 CASEL SEL 核心素養與校園生活常規設計</p>
   </footer>
+
+  </div><!-- /#fit-stage -->
 
   <!-- Voice Assistant Selector Modal -->
   <div id="voice-settings-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -1405,6 +1429,92 @@
   </div>
 
   <script>
+    // --- Fit entire app to fill the viewport in BOTH directions (true full-bleed, bigger text),
+    //     with no page/mouse scrolling ever needed, no matter which tab/level is showing.
+    // Strategy: binary-search a "design width" for #fit-stage so that, once reflowed at that
+    // width, its natural aspect ratio (height/width) matches the viewport's aspect ratio.
+    // Then scaling that design width up/down to exactly match the viewport width also makes
+    // the resulting height exactly match the viewport height — filling the screen edge to
+    // edge with no distortion and no empty margins, while maximizing font/element size.
+    let isFitting = false;
+    let fitDebounceTimer = null;
+
+    function computeAndApplyFit() {
+      const stage = document.getElementById('fit-stage');
+      if (!stage) return;
+      isFitting = true;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const targetAspect = vh / vw;
+
+      const measureAspect = (w) => {
+        stage.style.width = w + 'px';
+        const h = stage.scrollHeight || 1;
+        return h / w;
+      };
+
+      let lo = Math.max(320, Math.round(vw * 0.35));
+      let hi = Math.max(lo + 200, Math.round(vw * 3.5));
+
+      let loAspect = measureAspect(lo);
+      let guard = 0;
+      while (loAspect < targetAspect && lo > 240 && guard < 8) {
+        lo = Math.max(240, Math.round(lo * 0.7));
+        loAspect = measureAspect(lo);
+        guard++;
+      }
+
+      let hiAspect = measureAspect(hi);
+      guard = 0;
+      while (hiAspect > targetAspect && hi < 6000 && guard < 8) {
+        hi = Math.min(6000, Math.round(hi * 1.4));
+        hiAspect = measureAspect(hi);
+        guard++;
+      }
+
+      let bestW = hi;
+      for (let i = 0; i < 12; i++) {
+        const mid = Math.round((lo + hi) / 2);
+        const midAspect = measureAspect(mid);
+        if (midAspect > targetAspect) {
+          lo = mid;
+        } else {
+          hi = mid;
+          bestW = mid;
+        }
+      }
+
+      stage.style.width = bestW + 'px';
+      const naturalHeight = stage.scrollHeight || 1;
+      let scale = vw / bestW;
+      if (naturalHeight * scale > vh) {
+        scale = vh / naturalHeight;
+      }
+      const offsetX = (vw - bestW * scale) / 2;
+      const offsetY = (vh - naturalHeight * scale) / 2;
+      stage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+
+      requestAnimationFrame(() => { isFitting = false; });
+    }
+
+    function fitStageToViewport() {
+      if (fitDebounceTimer) clearTimeout(fitDebounceTimer);
+      fitDebounceTimer = setTimeout(computeAndApplyFit, 30);
+    }
+
+    window.addEventListener('resize', fitStageToViewport);
+    window.addEventListener('load', fitStageToViewport);
+    document.addEventListener('DOMContentLoaded', () => {
+      fitStageToViewport();
+      const stageEl = document.getElementById('fit-stage');
+      if (stageEl && window.MutationObserver) {
+        const fitObserver = new MutationObserver(() => {
+          if (!isFitting) fitStageToViewport();
+        });
+        fitObserver.observe(stageEl, { childList: true, subtree: true, attributes: true, characterData: true });
+      }
+    });
     // Lucide safety guard fallback in case CDN loads with latency
     if (typeof window.lucide === 'undefined') {
       window.lucide = { createIcons: () => {} };
@@ -3470,6 +3580,54 @@
           { text: '每天故意拖延到深夜才寫作業，隔天上課精神不濟遲到再來責怪課表太滿', correct: false, note: '作息不良會傷害身體健康，也讓學習效率更加低落。' },
           { text: '把新的課表聯絡簿偷偷藏在抽屜最底層，假裝學校完全沒有更換過時間表', correct: false, note: '逃避現實無法改變新學期的常規，只會讓自己更容易漏帶學用品。' }
         ]
+      },
+      {
+        title: '17. 體育課或下課時被撞到哭泣',
+        icon: '🤕',
+        selTag: 'SEL 2 · 自我管理',
+        categoryType: 'REAL',
+        desc: '上體育課或下課跑跳時，不小心和同學相撞，膝蓋或手臂痛得哭了出來，不知道該怎麼辦...',
+        options: [
+          { text: '先做幾次深呼吸讓自己冷靜下來，告訴老師受傷的情形並讓保健室老師檢查傷口', correct: true, note: '正確反應！先冷靜評估傷勢並主動告知老師，才能得到適當的照顧！' },
+          { text: '忍著痛意立刻回頭用力推撞回去對方，覺得一定要討回公道才甘心', correct: false, note: '用暴力報復只會讓場面更混亂，也可能讓雙方都受傷更嚴重。' },
+          { text: '覺得丟臉不敢讓任何人知道，自己躲到操場角落一個人偷偷擦眼淚', correct: false, note: '隱瞞傷勢可能讓傷口惡化，適時求助才是照顧自己的方法。' }
+        ]
+      },
+      {
+        title: '18. 流鼻血不想塞止血棉條',
+        icon: '🩸',
+        selTag: 'SEL 5 · 負責任決策',
+        categoryType: 'REAL',
+        desc: '上課上到一半突然流鼻血，老師拿了止血棉條要我塞，可是我覺得很不舒服不想用...',
+        options: [
+          { text: '雖然有點不舒服，還是配合老師低頭捏住鼻樑並用衛生紙或棉條止血，等血止住再說', correct: true, note: '正確做法！暫時的不適是為了健康著想，配合正確止血方式才能盡快恢復！' },
+          { text: '因為不喜歡塞棉條的感覺，用力甩頭想把鼻血甩掉，結果讓血滴得到處都是', correct: false, note: '甩頭或抬頭反而會讓血液倒流，也會弄髒環境喔。' },
+          { text: '覺得很丟臉，偷偷跑去廁所把整包衛生紙一次塞進鼻孔深處直到看不到為止', correct: false, note: '塞太深或用不衛生的方式可能造成感染或呼吸不順，要用正確方法處理。' }
+        ]
+      },
+      {
+        title: '19. 上課時突然有人走近來坐在我旁邊',
+        icon: '🧑‍🤝‍🧑',
+        selTag: 'SEL 1 · 自我覺察',
+        categoryType: 'REAL',
+        desc: '老師臨時調整座位，原本習慣自己一個人坐，突然有新同學坐到我旁邊，讓我覺得不太自在...',
+        options: [
+          { text: '覺察自己只是還不習慣改變，深呼吸試著保持微笑，主動跟新同學打聲招呼', correct: true, note: '很棒的自我覺察！先接納自己的不習慣，用微笑破冰更能讓彼此都自在！' },
+          { text: '直接把課本立起來擋在兩人中間當作一道牆，完全不看也不理會旁邊的同學', correct: false, note: '這樣的態度容易讓對方感到被排斥，也無法真正解決不自在的感覺。' },
+          { text: '立刻舉手大聲跟老師抗議說不要跟這位同學坐在一起，要求老師馬上換位子', correct: false, note: '還沒真正認識對方就直接排斥，可能會傷了同學的心喔。' }
+        ]
+      },
+      {
+        title: '20. 上課時突然有人在打噴嚏',
+        icon: '🤧',
+        selTag: 'SEL 2 · 自我管理',
+        categoryType: 'REAL',
+        desc: '正在專心寫作業時，旁邊同學突然「哈啾！」大聲打了一個噴嚏，嚇了我一大跳也讓我分心...',
+        options: [
+          { text: '深呼吸讓自己的心跳穩定下來，重新把注意力拉回到作業上，並禮貌地遞衛生紙關心同學', correct: true, note: '太成熟了！穩定自己的情緒後再展現對他人的關心，是自我管理與同理心的最佳展現！' },
+          { text: '立刻轉頭生氣地瞪著對方，並大聲責罵同學為什麼要嚇人打噴嚏很沒禮貌', correct: false, note: '打噴嚏是不由自主的生理反應，生氣責罵並不恰當喔。' },
+          { text: '從此以後上課都刻意搬到教室最角落，只因為害怕再聽到有人打噴嚏的聲音', correct: false, note: '過度逃避反而讓自己損失了正常學習與人際互動的機會。' }
+        ]
       }
     ];
 
@@ -3671,9 +3829,45 @@
         loadEmpathyScenario(0);
       }
 
+      // --- SEL2 專注模式：進入「情緒調節·心靈平靜基地」時，鎖定會開啟其他視窗
+      // 或切換離開頁面的按鈕（語音設定燈窗、Logo回首頁、全班手帳），讓學生不管用
+      // 滑鼠點擊或手指觸碰螢幕，都只會停留、專注在 8 大平靜工具活動本身。
+      setCalmFocusMode(tabId === 'calm-down');
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
       lucide.createIcons();
     }
+
+    let calmFocusModeActive = false;
+
+    function setCalmFocusMode(active) {
+      calmFocusModeActive = active;
+      document.querySelectorAll('.focus-lock-target').forEach(el => {
+        el.classList.toggle('opacity-40', active);
+        el.classList.toggle('pointer-events-none', active);
+        if (active) {
+          el.setAttribute('aria-disabled', 'true');
+        } else {
+          el.removeAttribute('aria-disabled');
+        }
+      });
+    }
+
+    // 在「捕獲階段」攔截滑鼠點擊與手指觸碰，只要專注模式開啟，
+    // 任何會開啟視窗（語音設定）或切換離開本頁的動作都會被完全擋下，
+    // 事件根本不會傳到按鈕本身，確保學生只能專心在平靜基地的活動裡。
+    ['click', 'touchstart', 'pointerdown'].forEach(evtName => {
+      document.addEventListener(evtName, function (e) {
+        if (!calmFocusModeActive) return;
+        const lockedEl = e.target.closest && e.target.closest('.focus-lock-target');
+        if (lockedEl) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+        }
+      }, true);
+    });
+
 
     let availableVoices = [];
     let selectedVoiceUri = null;
@@ -4499,7 +4693,7 @@
       } else if (selNumber === 4) {
         targetRec.sel4 = Math.min(8, Math.max(targetRec.sel4 || 0, count));
       } else if (selNumber === 5) {
-        targetRec.sel5 = Math.min(10, Math.max(targetRec.sel5 || 0, count));
+        targetRec.sel5 = Math.min(20, Math.max(targetRec.sel5 || 0, count));
       }
 
       saveRecordsToStorage();
@@ -4648,7 +4842,7 @@
             ${generateProgressStrip('SEL2', s2, 2, 'bg-amber-300')}
             ${generateProgressStrip('SEL3', s3, 9, 'bg-amber-300')}
             ${generateProgressStrip('SEL4', s4, 8, 'bg-amber-300')}
-            ${generateProgressStrip('SEL5', s5, 10, 'bg-amber-300')}
+            ${generateProgressStrip('SEL5', s5, 20, 'bg-amber-300')}
           </div>
 
           <!-- Right: Action Buttons (Kept clear, button-styled, aligned right) -->
@@ -5137,10 +5331,10 @@
       syncActiveStudentDisplay();
       lucide.createIcons();
 
-      // Preload Pikmin SVG Sprites safely now that PIKMIN_ROSTER & getDynamicPikminSvg are ready
+      // Preload Pikmin SVG Sprites safely
       preloadPikminSprites();
 
-      // Autostart BGM on first user interaction anywhere on the page (comply with browser audio policy)
+      // Autostart BGM on first user interaction anywhere on the page
       const autoStartHandler = () => {
         if (!isBgmPlaying) {
           startBgm();
