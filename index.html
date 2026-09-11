@@ -182,10 +182,12 @@
       transform-origin: top left;
       will-change: transform;
     }
-    /* The header/main wrappers were capped at max-w-6xl (centered with big side gutters).
-       Let them use the full width of #fit-stage so the visible design truly reaches the
-       screen edges instead of floating in a narrow centered column. */
-    #fit-stage .max-w-6xl {
+    /* The header/main wrappers were capped at max-w-6xl, and each SEL activity's own card
+       (breathing, muscle relax, teamwork, quiz, cleanup game, etc.) was separately capped at
+       max-w-3xl — both created big empty side gutters. Let them use the full width of
+       #fit-stage so every screen truly reaches the edges, not just the outer wrapper. */
+    #fit-stage .max-w-6xl,
+    #fit-stage .max-w-3xl {
       max-width: 100% !important;
     }
     @keyframes cleanupShake {
