@@ -188,6 +188,14 @@
     #fit-stage .max-w-6xl {
       max-width: 100% !important;
     }
+    @keyframes cleanupShake {
+      0%, 100% { transform: translate(-50%,-50%) rotate(0deg); }
+      25% { transform: translate(-50%,-50%) rotate(-6deg); }
+      75% { transform: translate(-50%,-50%) rotate(6deg); }
+    }
+    .animate-shake-cleanup {
+      animation: cleanupShake 0.4s ease-in-out;
+    }
   </style>
 </head>
 
@@ -1295,8 +1303,12 @@
           <button type="button" id="quiz-filter-storage" onclick="filterQuizCategory('STORAGE')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 transition">
             📦 10 大校園收納圖鑑
           </button>
+          <button type="button" id="quiz-filter-cleanup" onclick="filterQuizCategory('CLEANUP')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 transition">
+            🧹 三大情境收納冒險
+          </button>
         </div>
 
+        <div id="quiz-mode-content">
         <!-- Quiz Header -->
         <div class="flex items-center justify-between border-b pb-4">
           <div>
@@ -1344,6 +1356,45 @@
             </button>
           </div>
         </div>
+        </div><!-- /#quiz-mode-content -->
+
+        <!-- CLEANUP GAME MODE: 三大情境收納冒險 -->
+        <div id="cleanup-mode-content" class="hidden space-y-4">
+          <!-- Scene Switcher -->
+          <div class="flex items-center justify-center gap-2 flex-wrap">
+            <button type="button" onclick="switchCleanupScene('playground')" id="cleanup-nav-playground" class="px-3.5 py-2 rounded-2xl text-xs font-black border-2 border-blue-500 bg-blue-50 text-blue-900 shadow-sm flex items-center gap-1.5 transition">
+              <span class="text-lg">🏟️</span><span>校園操場</span>
+            </button>
+            <button type="button" onclick="switchCleanupScene('classroom')" id="cleanup-nav-classroom" class="px-3.5 py-2 rounded-2xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 flex items-center gap-1.5 transition">
+              <span class="text-lg">🏫</span><span>校園教室</span>
+            </button>
+            <button type="button" onclick="switchCleanupScene('bedroom')" id="cleanup-nav-bedroom" class="px-3.5 py-2 rounded-2xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 flex items-center gap-1.5 transition">
+              <span class="text-lg">🛏️</span><span>我的房間</span>
+            </button>
+          </div>
+
+          <!-- Instructions + Progress -->
+          <div class="bg-blue-50/70 rounded-2xl p-3 border border-blue-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+            <p id="cleanup-hint-text" class="font-bold text-blue-900">👉 點一下散落的物品，派遣你的皮克敏去撿起來！</p>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span id="cleanup-progress-text" class="font-black text-blue-700 bg-white px-3 py-1 rounded-full border border-blue-200 shadow-sm">已收拾 0 / 0</span>
+              <button onclick="resetCleanupScene()" class="text-slate-500 hover:text-red-500 text-xs font-bold px-2.5 py-1.5 rounded-xl hover:bg-red-50 transition flex items-center gap-1 border border-slate-200">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置本場景
+              </button>
+            </div>
+          </div>
+
+          <!-- Scene Stage -->
+          <div id="cleanup-scene-label" class="text-sm font-black text-slate-700 px-1"></div>
+          <div id="cleanup-stage" class="relative w-full h-[380px] rounded-3xl border-2 border-slate-200 overflow-hidden shadow-inner">
+            <div id="cleanup-items-layer" class="absolute inset-0"></div>
+            <div id="cleanup-zones-layer" class="absolute inset-0"></div>
+            <div id="cleanup-pikmin" class="absolute w-14 h-16 transition-all duration-500 ease-in-out z-20" style="left:6%; top:92%; transform: translate(-50%,-50%);">
+              <div id="cleanup-pikmin-held-badge" class="absolute -top-6 left-1/2 -translate-x-1/2 text-2xl hidden animate-bounce"></div>
+              <div id="cleanup-pikmin-svg"></div>
+            </div>
+          </div>
+        </div><!-- /#cleanup-mode-content -->
 
       </div>
     </section>
@@ -3643,6 +3694,260 @@
     let currentTeamPower = 0;
     let assignedPikminList = [];
 
+    // ============ 三大情境收納冒險：資料與邏輯 ============
+    const CLEANUP_SCENES = {
+      playground: {
+        label: '校園操場',
+        icon: '🏟️',
+        bgClass: 'from-sky-200 via-emerald-100 to-lime-100',
+        zones: [
+          { id: 'trash', name: '一般垃圾桶', icon: '🗑️', x: 88, y: 20 },
+          { id: 'recycle', name: '資源回收桶', icon: '♻️', x: 88, y: 50 },
+          { id: 'compost', name: '落葉堆肥區', icon: '🍃', x: 88, y: 80 }
+        ],
+        items: [
+          { id: 'pg1', emoji: '🍂', name: '乾枯落葉', x: 12, y: 30, zone: 'compost' },
+          { id: 'pg2', emoji: '🍁', name: '飄落楓葉', x: 25, y: 65, zone: 'compost' },
+          { id: 'pg3', emoji: '🥤', name: '喝完的飲料罐', x: 40, y: 20, zone: 'recycle' },
+          { id: 'pg4', emoji: '🧃', name: '喝完的紙盒飲料', x: 55, y: 55, zone: 'recycle' },
+          { id: 'pg5', emoji: '🥫', name: '空罐頭', x: 30, y: 80, zone: 'recycle' },
+          { id: 'pg6', emoji: '📄', name: '隨風飄的紙屑', x: 48, y: 75, zone: 'trash' },
+          { id: 'pg7', emoji: '🍬', name: '糖果包裝紙', x: 18, y: 55, zone: 'trash' },
+          { id: 'pg8', emoji: '🧻', name: '用過的衛生紙', x: 62, y: 30, zone: 'trash' },
+          { id: 'pg9', emoji: '🍂', name: '一堆枯葉', x: 65, y: 68, zone: 'compost' }
+        ]
+      },
+      classroom: {
+        label: '校園教室',
+        icon: '🏫',
+        bgClass: 'from-amber-50 via-orange-50 to-slate-100',
+        zones: [
+          { id: 'bookshelf', name: '班級書櫃', icon: '📚', x: 88, y: 18 },
+          { id: 'locker', name: '個人置物櫃', icon: '🗄️', x: 88, y: 45 },
+          { id: 'hook', name: '外套掛勾', icon: '🧷', x: 88, y: 72 },
+          { id: 'recycle', name: '廢紙回收箱', icon: '♻️', x: 88, y: 94 }
+        ],
+        items: [
+          { id: 'cr1', emoji: '📖', name: '一本攤開的課本', x: 15, y: 25, zone: 'bookshelf' },
+          { id: 'cr2', emoji: '📓', name: '用完的練習簿', x: 35, y: 60, zone: 'bookshelf' },
+          { id: 'cr3', emoji: '🧥', name: '脫下的外套', x: 55, y: 20, zone: 'hook' },
+          { id: 'cr4', emoji: '🧣', name: '忘了戴的圍巾', x: 68, y: 55, zone: 'hook' },
+          { id: 'cr5', emoji: '📝', name: '揉成一團的廢紙', x: 22, y: 78, zone: 'recycle' },
+          { id: 'cr6', emoji: '📄', name: '寫完的考卷', x: 45, y: 40, zone: 'recycle' },
+          { id: 'cr7', emoji: '🎨', name: '彩色筆盒', x: 60, y: 78, zone: 'locker' },
+          { id: 'cr8', emoji: '🍱', name: '空便當盒', x: 30, y: 45, zone: 'locker' }
+        ]
+      },
+      bedroom: {
+        label: '我的房間',
+        icon: '🛏️',
+        bgClass: 'from-purple-50 via-pink-50 to-sky-50',
+        zones: [
+          { id: 'closet', name: '衣櫃', icon: '🚪', x: 88, y: 18 },
+          { id: 'toybox', name: '玩具箱', icon: '🧸', x: 88, y: 45 },
+          { id: 'bookshelf', name: '書架', icon: '📚', x: 88, y: 72 },
+          { id: 'laundry', name: '洗衣籃', icon: '🧺', x: 88, y: 94 }
+        ],
+        items: [
+          { id: 'br1', emoji: '👕', name: '脫下的上衣', x: 15, y: 22, zone: 'closet' },
+          { id: 'br2', emoji: '🧢', name: '隨手丟的帽子', x: 38, y: 55, zone: 'closet' },
+          { id: 'br3', emoji: '🧦', name: '一隻襪子', x: 60, y: 25, zone: 'laundry' },
+          { id: 'br4', emoji: '🩳', name: '待洗的短褲', x: 20, y: 78, zone: 'laundry' },
+          { id: 'br5', emoji: '🧸', name: '掉在地上的玩偶', x: 50, y: 75, zone: 'toybox' },
+          { id: 'br6', emoji: '🚗', name: '散落的玩具車', x: 68, y: 60, zone: 'toybox' },
+          { id: 'br7', emoji: '📚', name: '疊在地上的故事書', x: 30, y: 40, zone: 'bookshelf' },
+          { id: 'br8', emoji: '✏️', name: '沒收好的鉛筆盒', x: 72, y: 38, zone: 'bookshelf' }
+        ]
+      }
+    };
+
+    let currentCleanupScene = 'playground';
+    let cleanupCollectedItems = {};
+    let cleanupHeldItem = null;
+    let cleanupBusy = false;
+
+    function switchCleanupScene(sceneId) {
+      playSound('pop');
+      currentCleanupScene = sceneId;
+      cleanupHeldItem = null;
+      cleanupBusy = false;
+
+      ['playground', 'classroom', 'bedroom'].forEach(s => {
+        const btn = document.getElementById(`cleanup-nav-${s}`);
+        if (btn) {
+          btn.className = s === sceneId
+            ? 'px-3.5 py-2 rounded-2xl text-xs font-black border-2 border-blue-500 bg-blue-50 text-blue-900 shadow-sm flex items-center gap-1.5 transition'
+            : 'px-3.5 py-2 rounded-2xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 flex items-center gap-1.5 transition';
+        }
+      });
+
+      const pikmin = document.getElementById('cleanup-pikmin');
+      if (pikmin) {
+        pikmin.style.left = '6%';
+        pikmin.style.top = '92%';
+      }
+      const badge = document.getElementById('cleanup-pikmin-held-badge');
+      if (badge) {
+        badge.classList.add('hidden');
+        badge.textContent = '';
+      }
+      const svgHolder = document.getElementById('cleanup-pikmin-svg');
+      if (svgHolder && typeof getDynamicPikminSvg === 'function') {
+        svgHolder.innerHTML = getDynamicPikminSvg(selectedSpirit, currentStage);
+      }
+      const hint = document.getElementById('cleanup-hint-text');
+      if (hint) hint.textContent = '👉 點一下散落的物品，派遣你的皮克敏去撿起來！';
+
+      renderCleanupScene();
+    }
+
+    function renderCleanupScene() {
+      const scene = CLEANUP_SCENES[currentCleanupScene];
+      const itemsLayer = document.getElementById('cleanup-items-layer');
+      const zonesLayer = document.getElementById('cleanup-zones-layer');
+      const sceneLabel = document.getElementById('cleanup-scene-label');
+      const stage = document.getElementById('cleanup-stage');
+      if (!scene || !itemsLayer || !zonesLayer) return;
+
+      if (sceneLabel) sceneLabel.innerHTML = `${scene.icon} ${scene.label}`;
+      if (stage) stage.className = `relative w-full h-[380px] rounded-3xl border-2 border-slate-200 overflow-hidden shadow-inner bg-gradient-to-br ${scene.bgClass}`;
+
+      const collected = cleanupCollectedItems[currentCleanupScene] || new Set();
+
+      zonesLayer.innerHTML = scene.zones.map(z => `
+        <button type="button" onclick="handleCleanupZoneClick('${z.id}')"
+          class="absolute flex flex-col items-center gap-1 px-3 py-2 rounded-2xl border-2 bg-white/90 backdrop-blur-sm shadow-md transition-all duration-300 ${cleanupHeldItem ? 'border-blue-400 ring-4 ring-blue-200 scale-105' : 'border-slate-200'}"
+          style="left:${z.x}%; top:${z.y}%; transform: translate(-50%,-50%);">
+          <span class="text-2xl">${z.icon}</span>
+          <span class="text-[10px] font-black text-slate-700 whitespace-nowrap">${z.name}</span>
+        </button>
+      `).join('');
+
+      itemsLayer.innerHTML = scene.items.filter(it => !collected.has(it.id)).map(it => `
+        <button type="button" onclick="handleCleanupItemClick('${it.id}')" id="cleanup-item-${it.id}"
+          class="absolute text-3xl sm:text-4xl leading-none drop-shadow hover:scale-125 active:scale-95 transition-transform duration-200 animate-bounce ${cleanupHeldItem === it.id ? 'invisible' : ''}"
+          style="left:${it.x}%; top:${it.y}%; transform: translate(-50%,-50%); animation-duration: 2s;"
+          title="${it.name}">${it.emoji}</button>
+      `).join('');
+
+      updateCleanupProgress();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function updateCleanupProgress() {
+      const scene = CLEANUP_SCENES[currentCleanupScene];
+      if (!scene) return;
+      const collected = cleanupCollectedItems[currentCleanupScene] || new Set();
+      const progText = document.getElementById('cleanup-progress-text');
+      if (progText) progText.textContent = `已收拾 ${collected.size} / ${scene.items.length}`;
+    }
+
+    function handleCleanupItemClick(itemId) {
+      if (cleanupBusy || cleanupHeldItem) return;
+      const scene = CLEANUP_SCENES[currentCleanupScene];
+      const item = scene.items.find(i => i.id === itemId);
+      if (!item) return;
+      const collected = cleanupCollectedItems[currentCleanupScene] || new Set();
+      if (collected.has(itemId)) return;
+
+      cleanupBusy = true;
+      playSound('pop');
+
+      const pikmin = document.getElementById('cleanup-pikmin');
+      if (pikmin) {
+        pikmin.style.left = item.x + '%';
+        pikmin.style.top = item.y + '%';
+      }
+      const itemBtn = document.getElementById(`cleanup-item-${itemId}`);
+      if (itemBtn) itemBtn.classList.add('invisible');
+
+      setTimeout(() => {
+        cleanupHeldItem = itemId;
+        cleanupBusy = false;
+        const badge = document.getElementById('cleanup-pikmin-held-badge');
+        if (badge) {
+          badge.textContent = item.emoji;
+          badge.classList.remove('hidden');
+        }
+        const hint = document.getElementById('cleanup-hint-text');
+        if (hint) hint.innerHTML = `🎯 撿到「${item.name}」了！點一下正確的收納區把它放進去吧！`;
+        renderCleanupScene();
+      }, 550);
+    }
+
+    function handleCleanupZoneClick(zoneId) {
+      if (!cleanupHeldItem || cleanupBusy) return;
+      const scene = CLEANUP_SCENES[currentCleanupScene];
+      const item = scene.items.find(i => i.id === cleanupHeldItem);
+      const zone = scene.zones.find(z => z.id === zoneId);
+      if (!item || !zone) return;
+
+      if (item.zone === zoneId) {
+        cleanupBusy = true;
+        playSound('correct');
+        const pikmin = document.getElementById('cleanup-pikmin');
+        if (pikmin) {
+          pikmin.style.left = zone.x + '%';
+          pikmin.style.top = zone.y + '%';
+        }
+        setTimeout(() => {
+          if (!cleanupCollectedItems[currentCleanupScene]) cleanupCollectedItems[currentCleanupScene] = new Set();
+          cleanupCollectedItems[currentCleanupScene].add(item.id);
+          cleanupHeldItem = null;
+          cleanupBusy = false;
+
+          const badge = document.getElementById('cleanup-pikmin-held-badge');
+          if (badge) {
+            badge.classList.add('hidden');
+            badge.textContent = '';
+          }
+          const hint = document.getElementById('cleanup-hint-text');
+          if (hint) hint.textContent = '👉 點一下散落的物品，派遣你的皮克敏去撿起來！';
+          renderCleanupScene();
+
+          const collected = cleanupCollectedItems[currentCleanupScene];
+          if (collected.size >= scene.items.length) {
+            setTimeout(() => {
+              playSound('success');
+              if (typeof confetti === 'function') {
+                confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+              }
+              showModal(scene.icon, `${scene.label}整理完成！`, `太棒了！你已經把「${scene.label}」的物品全部收拾整齊，這就是負責任決策（Responsible Decision-Making）最棒的實踐！`);
+            }, 300);
+          }
+        }, 500);
+      } else {
+        playSound('pop');
+        const pikmin = document.getElementById('cleanup-pikmin');
+        if (pikmin) {
+          pikmin.classList.add('animate-shake-cleanup');
+          setTimeout(() => pikmin.classList.remove('animate-shake-cleanup'), 400);
+        }
+        const hint = document.getElementById('cleanup-hint-text');
+        if (hint) hint.innerHTML = `❌「${item.name}」不是放這裡喔，再想想看它應該收到哪一區？`;
+      }
+    }
+
+    function resetCleanupScene() {
+      playSound('pop');
+      cleanupCollectedItems[currentCleanupScene] = new Set();
+      cleanupHeldItem = null;
+      cleanupBusy = false;
+      const pikmin = document.getElementById('cleanup-pikmin');
+      if (pikmin) {
+        pikmin.style.left = '6%';
+        pikmin.style.top = '92%';
+      }
+      const badge = document.getElementById('cleanup-pikmin-held-badge');
+      if (badge) {
+        badge.classList.add('hidden');
+        badge.textContent = '';
+      }
+      const hint = document.getElementById('cleanup-hint-text');
+      if (hint) hint.textContent = '👉 點一下散落的物品，派遣你的皮克敏去撿起來！';
+      renderCleanupScene();
+    }
+
     let currentQuizIndex = 0;
     let quizScore = 0;
     let currentQuizCategory = 'ALL';
@@ -3768,7 +4073,7 @@
     function filterQuizCategory(cat) {
       playSound('pop');
       currentQuizCategory = cat;
-      ['all', 'real', 'storage'].forEach(c => {
+      ['all', 'real', 'storage', 'cleanup'].forEach(c => {
         const btn = document.getElementById(`quiz-filter-${c}`);
         if (btn) {
           btn.className = c === cat.toLowerCase()
@@ -3776,8 +4081,20 @@
             : 'px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-blue-300 transition';
         }
       });
-      initShuffledQuiz();
-      loadQuizQuestion(0);
+
+      const quizContent = document.getElementById('quiz-mode-content');
+      const cleanupContent = document.getElementById('cleanup-mode-content');
+
+      if (cat === 'CLEANUP') {
+        if (quizContent) quizContent.classList.add('hidden');
+        if (cleanupContent) cleanupContent.classList.remove('hidden');
+        switchCleanupScene(currentCleanupScene);
+      } else {
+        if (cleanupContent) cleanupContent.classList.add('hidden');
+        if (quizContent) quizContent.classList.remove('hidden');
+        initShuffledQuiz();
+        loadQuizQuestion(0);
+      }
     }
 
     function initShuffledEmpathy() {
