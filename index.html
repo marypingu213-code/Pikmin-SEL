@@ -195,9 +195,19 @@
       25% { transform: translate(-50%,-50%) rotate(-6deg); }
       75% { transform: translate(-50%,-50%) rotate(6deg); }
     }
-    .animate-shake-cleanup {
-      animation: cleanupShake 0.4s ease-in-out;
-    }
+    .animate-shake-cleanup { animation: cleanupShake 0.4s ease-in-out; }
+    #cleanup-stage { touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+    #cleanup-scene-art { overflow: hidden; }
+    .cleanup-item-static { cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+    .cleanup-scene-art-playground { background: radial-gradient(circle at 12% 18%, rgba(255,255,255,.75) 0 7%, transparent 8%), radial-gradient(circle at 78% 12%, rgba(255,255,255,.7) 0 6%, transparent 7%), linear-gradient(to bottom, #9ddcff 0 48%, #78c85b 49% 100%); }
+    .cleanup-scene-art-playground::after { content: '🏀   🛝        ⚽   🏃        🌳'; position:absolute; left:4%; right:4%; bottom:8%; font-size:clamp(28px,5vw,52px); letter-spacing:.18em; opacity:.7; white-space:nowrap; }
+    .cleanup-scene-art-classroom { background: linear-gradient(#dff2ff 0 58%, #d6b27a 59% 100%); }
+    .cleanup-scene-art-classroom::before { content:'▣  📚  🪟        🧑‍🏫        🪑 🪑 🪑'; position:absolute; left:5%; top:10%; right:5%; font-size:clamp(26px,4.5vw,48px); letter-spacing:.08em; opacity:.65; white-space:nowrap; }
+    .cleanup-scene-art-classroom::after { content:''; position:absolute; left:8%; right:8%; bottom:18%; height:18%; background:repeating-linear-gradient(90deg,rgba(120,72,35,.18) 0 9%,transparent 9% 18%); border-radius:18px; }
+    .cleanup-scene-art-bedroom { background: radial-gradient(circle at 78% 17%, #fff3a8 0 7%, transparent 8%), linear-gradient(#d9c8f5 0 62%, #c99367 63% 100%); }
+    .cleanup-scene-art-bedroom::before { content:'🖼️        🛏️  🧸        🚪'; position:absolute; left:6%; top:13%; right:6%; font-size:clamp(30px,5vw,54px); white-space:nowrap; opacity:.72; }
+    .cleanup-scene-art-bedroom::after { content:'▰ ▰ ▰'; position:absolute; right:9%; bottom:16%; font-size:clamp(34px,5vw,56px); opacity:.45; }
+    #cleanup-pikmin { touch-action:none; pointer-events:none; z-index:40; }
   </style>
 </head>
 
@@ -1389,10 +1399,11 @@
           <!-- Scene Stage -->
           <div id="cleanup-scene-label" class="text-sm font-black text-slate-700 px-1"></div>
           <div id="cleanup-stage" class="relative w-full h-[380px] rounded-3xl border-2 border-slate-200 overflow-hidden shadow-inner">
-            <div id="cleanup-items-layer" class="absolute inset-0"></div>
-            <div id="cleanup-zones-layer" class="absolute inset-0"></div>
+            <div id="cleanup-scene-art" class="absolute inset-0 pointer-events-none z-0"></div>
+            <div id="cleanup-items-layer" class="absolute inset-0 z-10"></div>
+            <div id="cleanup-zones-layer" class="absolute inset-0 z-30"></div>
             <div id="cleanup-pikmin" class="absolute w-14 h-16 transition-all duration-500 ease-in-out z-20" style="left:6%; top:92%; transform: translate(-50%,-50%);">
-              <div id="cleanup-pikmin-held-badge" class="absolute -top-6 left-1/2 -translate-x-1/2 text-2xl hidden animate-bounce"></div>
+              <div id="cleanup-pikmin-held-badge" class="absolute top-8 left-1/2 -translate-x-1/2 text-xl hidden z-30 pointer-events-none drop-shadow-md"></div>
               <div id="cleanup-pikmin-svg"></div>
             </div>
           </div>
@@ -3801,6 +3812,7 @@
       if (hint) hint.textContent = '👉 點一下散落的物品，派遣你的皮克敏去撿起來！';
 
       renderCleanupScene();
+      initCleanupTouchControls();
     }
 
     function renderCleanupScene() {
@@ -3812,7 +3824,9 @@
       if (!scene || !itemsLayer || !zonesLayer) return;
 
       if (sceneLabel) sceneLabel.innerHTML = `${scene.icon} ${scene.label}`;
-      if (stage) stage.className = `relative w-full h-[380px] rounded-3xl border-2 border-slate-200 overflow-hidden shadow-inner bg-gradient-to-br ${scene.bgClass}`;
+      if (stage) stage.className = 'relative w-full h-[380px] rounded-3xl border-2 border-slate-200 overflow-hidden shadow-inner bg-white';
+      const sceneArt = document.getElementById('cleanup-scene-art');
+      if (sceneArt) { sceneArt.className = `absolute inset-0 pointer-events-none z-0 cleanup-scene-art-${currentCleanupScene}`; sceneArt.setAttribute('aria-label', scene.label + '背景'); }
 
       const collected = cleanupCollectedItems[currentCleanupScene] || new Set();
 
@@ -3827,8 +3841,8 @@
 
       itemsLayer.innerHTML = scene.items.filter(it => !collected.has(it.id)).map(it => `
         <button type="button" onclick="handleCleanupItemClick('${it.id}')" id="cleanup-item-${it.id}"
-          class="absolute text-3xl sm:text-4xl leading-none drop-shadow hover:scale-125 active:scale-95 transition-transform duration-200 animate-bounce ${cleanupHeldItem === it.id ? 'invisible' : ''}"
-          style="left:${it.x}%; top:${it.y}%; transform: translate(-50%,-50%); animation-duration: 2s;"
+          class="absolute text-3xl sm:text-4xl leading-none drop-shadow hover:scale-110 active:scale-95 transition-transform duration-150 cleanup-item-static ${cleanupHeldItem === it.id ? 'invisible' : ''}"
+          style="left:${it.x}%; top:${it.y}%; transform: translate(-50%,-50%);"
           title="${it.name}">${it.emoji}</button>
       `).join('');
 
@@ -3844,6 +3858,35 @@
       if (progText) progText.textContent = `已收拾 ${collected.size} / ${scene.items.length}`;
     }
 
+    function moveCleanupPikminToPercent(x, y, onArrive) {
+      const pikmin = document.getElementById('cleanup-pikmin');
+      if (!pikmin) return;
+      const clampedX = Math.max(5, Math.min(94, x));
+      const clampedY = Math.max(10, Math.min(91, y));
+      pikmin.style.left = clampedX + '%';
+      pikmin.style.top = clampedY + '%';
+      if (typeof onArrive === 'function') setTimeout(onArrive, 520);
+    }
+
+    function handleCleanupStagePointer(event) {
+      if (cleanupBusy || cleanupHeldItem) return;
+      const stage = document.getElementById('cleanup-stage');
+      if (!stage) return;
+      const target = event.target;
+      if (target.closest && (target.closest('button') || target.closest('#cleanup-pikmin'))) return;
+      const rect = stage.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+      const scene = CLEANUP_SCENES[currentCleanupScene];
+      const collected = cleanupCollectedItems[currentCleanupScene] || new Set();
+      const nearest = scene.items.filter(it => !collected.has(it.id)).map(it => ({it, d: Math.hypot(it.x-x,it.y-y)})).sort((a,b)=>a.d-b.d)[0];
+      if (nearest && nearest.d <= 8) { handleCleanupItemClick(nearest.it.id); return; }
+      playSound('pop');
+      moveCleanupPikminToPercent(x, y);
+      const hint = document.getElementById('cleanup-hint-text');
+      if (hint) hint.textContent = '👆 你可以再點一下物品，讓皮克敏走過去把它撿起來！';
+    }
+
     function handleCleanupItemClick(itemId) {
       if (cleanupBusy || cleanupHeldItem) return;
       const scene = CLEANUP_SCENES[currentCleanupScene];
@@ -3857,8 +3900,7 @@
 
       const pikmin = document.getElementById('cleanup-pikmin');
       if (pikmin) {
-        pikmin.style.left = item.x + '%';
-        pikmin.style.top = item.y + '%';
+        moveCleanupPikminToPercent(item.x, item.y);
       }
       const itemBtn = document.getElementById(`cleanup-item-${itemId}`);
       if (itemBtn) itemBtn.classList.add('invisible');
@@ -3889,8 +3931,7 @@
         playSound('correct');
         const pikmin = document.getElementById('cleanup-pikmin');
         if (pikmin) {
-          pikmin.style.left = zone.x + '%';
-          pikmin.style.top = zone.y + '%';
+          moveCleanupPikminToPercent(zone.x, zone.y);
         }
         setTimeout(() => {
           if (!cleanupCollectedItems[currentCleanupScene]) cleanupCollectedItems[currentCleanupScene] = new Set();
@@ -3928,6 +3969,13 @@
         const hint = document.getElementById('cleanup-hint-text');
         if (hint) hint.innerHTML = `❌「${item.name}」不是放這裡喔，再想想看它應該收到哪一區？`;
       }
+    }
+
+    function initCleanupTouchControls() {
+      const stage = document.getElementById('cleanup-stage');
+      if (!stage || stage.dataset.touchBound === '1') return;
+      stage.dataset.touchBound = '1';
+      stage.addEventListener('pointerdown', handleCleanupStagePointer);
     }
 
     function resetCleanupScene() {
@@ -4091,6 +4139,7 @@
         if (quizContent) quizContent.classList.add('hidden');
         if (cleanupContent) cleanupContent.classList.remove('hidden');
         switchCleanupScene(currentCleanupScene);
+        initCleanupTouchControls();
       } else {
         if (cleanupContent) cleanupContent.classList.add('hidden');
         if (quizContent) quizContent.classList.remove('hidden');
@@ -5665,5 +5714,6 @@
       window.addEventListener('touchstart', autoStartHandler, { once: true });
     });
   </script>
+<!-- SEL5_CLEANUP_FIX_20260914 -->
 </body>
 </html>
