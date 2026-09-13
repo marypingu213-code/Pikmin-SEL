@@ -1,0 +1,97 @@
+name: Fix SEL1 display size
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  enlarge-sel1:
+    if: ${{ !contains(github.event.head_commit.message, '修正 SEL1 顯示大小') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enlarge SEL1 interface
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '/* SEL1_DISPLAY_SIZE_FIX_20260914 */'
+          if marker in s:
+              print('SEL1 display fix already applied')
+              raise SystemExit(0)
+
+          css = '''
+          /* SEL1_DISPLAY_SIZE_FIX_20260914 */
+          /* SEL1 自我覺察：放大主要內容，讓學生更容易閱讀與操作 */
+          #tab-self-card {
+            font-size: 1.08rem;
+          }
+          #tab-self-card .text-xs {
+            font-size: 0.95rem !important;
+            line-height: 1.55 !important;
+          }
+          #tab-self-card .text-sm {
+            font-size: 1.05rem !important;
+            line-height: 1.55 !important;
+          }
+          #tab-self-card .text-base {
+            font-size: 1.18rem !important;
+            line-height: 1.5 !important;
+          }
+          #tab-self-card .text-lg {
+            font-size: 1.35rem !important;
+          }
+          #tab-self-card .text-xl {
+            font-size: 1.55rem !important;
+          }
+          #tab-self-card button {
+            font-size: 1rem !important;
+            min-height: 44px;
+          }
+          #tab-self-card input,
+          #tab-self-card select,
+          #tab-self-card textarea {
+            font-size: 1rem !important;
+            min-height: 44px;
+          }
+          /* 放大屬性卡主要視覺，不改列印版尺寸 */
+          #tab-self-card #physical-card-preview {
+            transform: scale(1.04);
+            transform-origin: center top;
+          }
+          @media (max-width: 640px) {
+            #tab-self-card {
+              font-size: 1.05rem;
+            }
+            #tab-self-card .text-xs {
+              font-size: 0.9rem !important;
+            }
+            #tab-self-card #physical-card-preview {
+              transform: none;
+            }
+          }
+          '''
+          style_end = s.find('</style>')
+          if style_end < 0:
+              raise SystemExit('style closing tag not found')
+          s = s[:style_end] + css + '\n' + s[style_end:]
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "修正 SEL1 顯示大小"
+          git push
