@@ -1,4 +1,4 @@
-name: Fix SEL1 student workspace
+name: Patch SEL4 yellow Pikmin power
 
 on:
   push:
@@ -8,160 +8,98 @@ permissions:
   contents: write
 
 jobs:
-  fix-sel1-workspace:
+  patch-sel4-yellow-power:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Patch SEL1 workspace
+      - name: Patch yellow Pikmin to +2 power
         shell: python
         run: |
           from pathlib import Path
+          import re
+
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          marker = 'SEL1_STUDENT_WORKSPACE_20260914'
+          marker = 'SEL4_YELLOW_PIKMIN_POWER_2_20260914'
+
           if marker in s:
-              print('SEL1 workspace patch already present')
+              print('SEL4 yellow Pikmin +2 power patch already present')
               raise SystemExit(0)
 
-          css = r'''
-          /* SEL1_STUDENT_WORKSPACE_20260914 */
-          /* SEL1：不要把整個長工作區縮成小縮圖；改成自然尺寸＋可滾動學生工作區。 */
-          @media screen {
-            #fit-stage.sel1-student-mode {
-              transform: none !important;
-              width: 100vw !important;
-              min-width: 100vw !important;
-              max-width: none !important;
-              height: 100vh !important;
-              min-height: 100vh !important;
-              overflow-x: hidden !important;
-              overflow-y: auto !important;
-            }
+          original = s
+          changed = 0
+          power_keys = r"(?:power|strength|force|carryPower|搬運力|力量|力)"
+          yellow_re = re.compile(r"yellow|黃皮克敏|黃色皮克敏", re.I)
 
-            #fit-stage.sel1-student-mode #tab-self-card {
-              width: 100% !important;
-              max-width: 1500px !important;
-              margin-left: auto !important;
-              margin-right: auto !important;
-              font-size: 1rem;
-            }
+          # 找到包含黃色皮克敏名稱/代號的物件，優先只修改該物件內的力值，
+          # 避免誤改到旁邊的紅色皮克敏數值。
+          for m in list(yellow_re.finditer(s)):
+              pos = m.start()
+              candidates = []
+              cursor = pos - 1
+              for _ in range(6):
+                  start = s.rfind('{', 0, cursor + 1)
+                  if start < 0:
+                      break
+                  depth = 0
+                  end = None
+                  for i in range(start, min(len(s), pos + 1600)):
+                      if s[i] == '{':
+                          depth += 1
+                      elif s[i] == '}':
+                          depth -= 1
+                          if depth == 0:
+                              end = i + 1
+                              break
+                  if end and start < pos < end:
+                      candidates.append((start, end))
+                  cursor = start - 1
 
-            #fit-stage.sel1-student-mode #tab-self-card .text-xs {
-              font-size: 0.95rem !important;
-              line-height: 1.5 !important;
-            }
-            #fit-stage.sel1-student-mode #tab-self-card .text-sm {
-              font-size: 1.02rem !important;
-              line-height: 1.5 !important;
-            }
-            #fit-stage.sel1-student-mode #tab-self-card .text-base {
-              font-size: 1.12rem !important;
-              line-height: 1.5 !important;
-            }
-            #fit-stage.sel1-student-mode #tab-self-card .text-lg {
-              font-size: 1.28rem !important;
-            }
-            #fit-stage.sel1-student-mode #tab-self-card .text-xl {
-              font-size: 1.45rem !important;
-            }
+              candidates.sort(key=lambda x: (x[1]-x[0], -x[0]))
+              done = False
+              for start, end in candidates:
+                  block = s[start:end]
+                  km = re.search(rf"({power_keys}\s*[:=]\s*)([-+]?\d+(?:\.\d+)?)", block, re.I)
+                  if not km:
+                      continue
+                  old = km.group(2)
+                  a = start + km.start(2)
+                  b = start + km.end(2)
+                  s = s[:a] + '2' + s[b:]
+                  print(f'Changed yellow Pikmin power {old} -> 2 near offset {pos}')
+                  changed += 1
+                  done = True
+                  break
+              if done:
+                  # 重新定位後面的 match 可能會偏移，因此只需要找到一個主要資料定義即可。
+                  break
 
-            #fit-stage.sel1-student-mode #tab-self-card button,
-            #fit-stage.sel1-student-mode #tab-self-card select,
-            #fit-stage.sel1-student-mode #tab-self-card input,
-            #fit-stage.sel1-student-mode #tab-self-card textarea {
-              min-height: 44px;
-            }
+          # 常見的靜態顯示文字也同步修正，讓學生在闖關時看得到差異。
+          s = re.sub(r'(黃(?:色)?皮克敏[^\n]{0,80}?\+)\s*1\s*(力|力量)', r'\g<1>2\2', s)
+          s = re.sub(r'(黃(?:色)?皮克敏[^\n]{0,80}?)(?:1)(\s*力)', r'\g<1>2\2', s)
 
-            #fit-stage.sel1-student-mode #tab-self-card button {
-              font-size: 1rem !important;
-            }
+          if changed == 0:
+              # 若資料不是以物件格式呈現，至少尋找黃色分支附近的力值。
+              fallback = re.search(r"((?:case\s*['\"]yellow['\"]|yellow)[\s\S]{0,500}?)(" + power_keys + r"\s*[:=]\s*)([-+]?\d+(?:\.\d+)?)", s, re.I)
+              if fallback:
+                  a = fallback.start(3)
+                  b = fallback.end(3)
+                  s = s[:a] + '2' + s[b:]
+                  changed = 1
+                  print('Fallback changed yellow Pikmin power to 2')
 
-            #fit-stage.sel1-student-mode #tab-self-card input,
-            #fit-stage.sel1-student-mode #tab-self-card select,
-            #fit-stage.sel1-student-mode #tab-self-card textarea {
-              font-size: 1rem !important;
-            }
+          if changed == 0:
+              raise SystemExit('找不到黃色皮克敏的力值資料，為避免誤改其他皮克敏，未提交修改。')
 
-            #fit-stage.sel1-student-mode #tab-self-card #physical-card-preview {
-              transform: none !important;
-              transform-origin: center top !important;
-            }
-
-            #fit-stage.sel1-student-mode #tab-self-card > .grid {
-              gap: 2rem !important;
-              align-items: start !important;
-            }
-
-            @media (min-width: 1024px) {
-              #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-7 {
-                min-width: 0;
-              }
-              #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-5 {
-                min-width: 360px;
-              }
-              #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-5 > div:last-child {
-                position: sticky;
-                top: 92px;
-              }
-            }
-
-            @media (max-width: 1023px) {
-              #fit-stage.sel1-student-mode #tab-self-card > .grid {
-                grid-template-columns: minmax(0, 1fr) !important;
-              }
-              #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-7,
-              #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-5 {
-                grid-column: 1 / -1 !important;
-              }
-              #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-5 > div:last-child {
-                position: static;
-              }
-            }
-          }
-          '''
-
+          # 把清楚的版本標記寫進 index，避免 workflow 重複修改。
           style_end = s.find('</style>')
-          if style_end < 0:
-              raise SystemExit('style closing tag not found')
-          s = s[:style_end] + css + '\n' + s[style_end:]
+          if style_end >= 0:
+              note = '''\n/* SEL4_YELLOW_PIKMIN_POWER_2_20260914 */\n/* SEL4 校園任務：黃色皮克敏固定為 +2 力，與紅色皮克敏形成不同的數字組合。 */\n'''
+              s = s[:style_end] + note + s[style_end:]
 
-          js = r'''
-          <script>
-          // SEL1_STUDENT_WORKSPACE_20260914
-          (function(){
-            function updateSEL1WorkspaceMode(){
-              const stage = document.getElementById('fit-stage');
-              const tab = document.getElementById('tab-self-card');
-              if(!stage || !tab) return;
-              const visible = getComputedStyle(tab).display !== 'none' && !tab.classList.contains('hidden');
-              stage.classList.toggle('sel1-student-mode', visible);
-            }
-            function initSEL1WorkspaceMode(){
-              updateSEL1WorkspaceMode();
-              const tab = document.getElementById('tab-self-card');
-              if(tab){
-                new MutationObserver(updateSEL1WorkspaceMode).observe(tab,{attributes:true,attributeFilter:['class','style']});
-              }
-              const stage = document.getElementById('fit-stage');
-              if(stage){
-                new MutationObserver(updateSEL1WorkspaceMode).observe(stage,{childList:true,subtree:true});
-              }
-              window.addEventListener('resize',updateSEL1WorkspaceMode,{passive:true});
-              setTimeout(updateSEL1WorkspaceMode,100);
-              setTimeout(updateSEL1WorkspaceMode,500);
-            }
-            if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded',initSEL1WorkspaceMode);
-            else initSEL1WorkspaceMode();
-          })();
-          </script>
-          '''
-          body_end = s.rfind('</body>')
-          if body_end < 0:
-              raise SystemExit('body closing tag not found')
-          s = s[:body_end] + js + '\n' + s[body_end:]
-          p.write_text(s,encoding='utf-8')
+          p.write_text(s, encoding='utf-8')
 
       - name: Commit patched index.html
         shell: bash
@@ -173,5 +111,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "修正 SEL1 工作區縮放與學生操作介面"
+          git commit -m "修正 SEL4 黃色皮克敏為 +2 力"
           git push
