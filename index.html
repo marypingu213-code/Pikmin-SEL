@@ -308,7 +308,7 @@
 /* SEL4_YELLOW_PIKMIN_POWER_2_20260914 */
 /* SEL4 校園任務：黃色皮克敏固定為 +2 力，與紅色皮克敏 +1 力形成不同的數字組合。 */
 </style>
-</head>
+<style>#sel3-real-interaction button{min-height:68px}#sel3-real-interaction button:focus{outline:4px solid rgba(16,185,129,.25)}</style></head>
 
 <body class="min-h-screen text-slate-800 flex flex-col justify-between overflow-x-hidden">
 
@@ -1143,7 +1143,26 @@
     </section>
 
     <!-- TAB 3.5: EMPATHY RADAR (社會知覺：同理心夥伴雷達) -->
-    <section id="tab-empathy" class="tab-content hidden space-y-6">
+    <section id="tab-empathy" class="tab-content hidden space-y-6"><!-- SEL3_REAL_FOUR_STAGE_20260914 -->
+<div id="sel3-real-interaction" class="mt-4 rounded-3xl border-2 border-emerald-200 bg-white shadow-lg p-5 md:p-7">
+<div class="text-3xl md:text-4xl font-black text-emerald-800 mb-2">❤️ 同理心夥伴雷達｜四階段任務</div>
+<div class="text-xl md:text-2xl font-bold text-slate-700 leading-relaxed mb-5"><b>同理心不是猜對別人的心情。</b><br>我們可以：<b>先看見 → 再猜想 → 問問看 → 最後行動</b></div>
+<div class="rounded-2xl bg-amber-50 border-2 border-amber-200 p-4 mb-5 text-xl md:text-2xl font-bold">🌱 <b>小提醒：</b>不知道也沒關係！先觀察、再問問看，就是一種同理心。</div>
+<div id="s3-stage-bar" class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
+<div data-s3-stage="0" class="s3-stage rounded-2xl p-3 text-center bg-emerald-100 text-emerald-900">👀<div class="text-lg font-black">① 看見</div></div>
+<div data-s3-stage="1" class="s3-stage rounded-2xl p-3 text-center bg-slate-100 text-slate-500">💭<div class="text-lg font-black">② 猜想</div></div>
+<div data-s3-stage="2" class="s3-stage rounded-2xl p-3 text-center bg-slate-100 text-slate-500">💬<div class="text-lg font-black">③ 問問看</div></div>
+<div data-s3-stage="3" class="s3-stage rounded-2xl p-3 text-center bg-slate-100 text-slate-500">🤝<div class="text-lg font-black">④ 行動</div></div></div>
+<div class="rounded-3xl bg-slate-50 border border-slate-200 p-5 md:p-7">
+<div id="s3-progress" class="text-lg font-black text-slate-500 mb-2"></div>
+<div id="s3-scenario" class="text-2xl md:text-3xl font-black text-slate-900 leading-relaxed mb-4">小美站在教室門口，其他同學正在一起玩。</div>
+<div id="s3-question" class="text-2xl md:text-3xl font-black text-emerald-800 leading-relaxed mb-5"></div>
+<div id="s3-options" class="grid gap-3"></div><div id="s3-feedback" class="hidden mt-4 rounded-2xl p-4 text-xl md:text-2xl font-black leading-relaxed"></div></div>
+<div id="s3-complete" class="hidden mt-5 rounded-3xl bg-emerald-50 border-2 border-emerald-300 p-6 text-center"><div class="text-3xl font-black text-emerald-800 mb-3">🌟 同理心雷達完成！</div><div class="text-xl md:text-2xl font-bold">我先看見 → 我不急著猜 → 我可以問 → 我再決定怎麼幫忙</div><button type="button" id="s3-restart" class="mt-5 px-7 py-4 rounded-2xl bg-emerald-600 text-white text-xl font-black">🔄 再玩一次</button></div>
+</div>
+<script>
+(function(){const r=document.getElementById('sel3-real-interaction');if(!r)return;const d=[{n:'第一步｜看見',q:'你「看得到」哪些事情？',o:[['小美一個人站著','good'],['其他同學正在一起玩','good'],['小美沒有加入遊戲','good'],['小美一定很難過','bad']]},{n:'第二步｜猜想',q:'你覺得小美「可能」怎麼了？（可以有很多答案）',o:[['可能有點難過','good'],['可能有點害羞','good'],['可能只是想休息','good'],['我不知道，我想先問問看','best']]},{n:'第三步｜問問看',q:'你可以怎麼問小美？',o:[['你還好嗎？要不要跟我們一起玩？','best'],['你為什麼不跟大家玩？','ok'],['你一定是不開心吧？','bad'],['我想先問問你：你現在想做什麼？','best']]},{n:'第四步｜行動',q:'小美說：「我有點害怕，不知道怎麼加入。」你會怎麼做？',o:[['沒關係，我陪你一起。','best'],['你可以先看我們玩，想加入時再來。','best'],['那你自己去玩啊。','bad'],['我可以陪你一起想一個加入的方法。','best']]}];let st=0;function render(){const x=d[st];r.querySelector('#s3-progress').textContent=x.n;r.querySelector('#s3-question').textContent=x.q;const b=r.querySelector('#s3-options');b.innerHTML='';r.querySelector('#s3-feedback').className='hidden';r.querySelectorAll('.s3-stage').forEach((e,i)=>{e.className='s3-stage rounded-2xl p-3 text-center '+(i<st?'bg-emerald-500 text-white':i===st?'bg-emerald-100 text-emerald-900':'bg-slate-100 text-slate-500')});x.o.forEach(([t,k])=>{const q=document.createElement('button');q.type='button';q.className='w-full text-left rounded-2xl border-2 border-slate-200 bg-white px-5 py-4 text-xl md:text-2xl font-black leading-relaxed';q.textContent=t;q.onclick=()=>pick(k);b.appendChild(q)})}function pick(k){const f=r.querySelector('#s3-feedback');f.className='mt-4 rounded-2xl p-4 text-xl md:text-2xl font-black leading-relaxed';if(k==='bad'){f.classList.add('bg-orange-50','text-orange-800');f.textContent=st===0?'🌱 這是猜想，不是直接看見的事情。換一個試試看！':'🌱 先停一下：不要替對方直接下結論，想想更尊重的做法。';return}f.classList.add('bg-emerald-50','text-emerald-800');f.textContent=st===1?'⭐ 很好！同一個情況可能有很多原因。':'⭐ 很棒！先了解，再決定怎麼幫忙。';setTimeout(()=>{if(st<3){st++;render()}else{r.querySelector('#s3-options').innerHTML='';r.querySelector('#s3-progress').textContent='完成任務 🎉';r.querySelector('#s3-question').textContent='你已完成真正的四階段同理心練習！';r.querySelector('#s3-complete').classList.remove('hidden');r.querySelectorAll('.s3-stage').forEach(e=>e.className='s3-stage rounded-2xl p-3 text-center bg-emerald-500 text-white')}},650)}r.querySelector('#s3-restart').onclick=()=>{st=0;r.querySelector('#s3-complete').classList.add('hidden');render()};render()})();
+</script>
       <div class="flex items-center justify-between">
         <button onclick="switchTab('home')" class="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-emerald-600 transition">
           <i data-lucide="chevron-left" class="w-4 h-4"></i> 回基地總部
