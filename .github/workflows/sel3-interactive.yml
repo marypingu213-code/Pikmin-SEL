@@ -1,0 +1,101 @@
+name: SEL3 Interactive Empathy
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch SEL3 interactive flow
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='SEL3_INTERACTIVE_EMPATHY_20260914'
+          if marker in s:
+              raise SystemExit(0)
+          m=re.search(r'(<[^>]+id=["\']tab-empathy["\'][^>]*>)',s,re.I)
+          if not m:
+              raise SystemExit('找不到 SEL3 tab-empathy')
+          block=r'''<!-- SEL3_INTERACTIVE_EMPATHY_20260914 -->
+<div id="sel3-interactive" class="mt-6 rounded-3xl border-2 border-emerald-200 bg-white shadow-lg p-5 md:p-7">
+  <div class="text-3xl md:text-4xl font-black text-emerald-800 mb-2">❤️ 同理心夥伴任務</div>
+  <div class="text-xl md:text-2xl font-bold text-slate-700 leading-relaxed mb-5">不是猜對別人的心情，而是：<b>先看見 → 再猜想 → 問問看 → 最後行動</b></div>
+  <div class="grid grid-cols-4 gap-2 mb-6" id="sel3-steps">
+    <div data-step="observe" class="sel3-step rounded-2xl p-3 text-center bg-emerald-100 text-emerald-900"><div class="text-2xl">👀</div><div class="text-lg font-black">① 看見</div></div>
+    <div data-step="guess" class="sel3-step rounded-2xl p-3 text-center bg-slate-100 text-slate-500"><div class="text-2xl">💭</div><div class="text-lg font-black">② 猜想</div></div>
+    <div data-step="ask" class="sel3-step rounded-2xl p-3 text-center bg-slate-100 text-slate-500"><div class="text-2xl">💬</div><div class="text-lg font-black">③ 問問看</div></div>
+    <div data-step="act" class="sel3-step rounded-2xl p-3 text-center bg-slate-100 text-slate-500"><div class="text-2xl">🤝</div><div class="text-lg font-black">④ 行動</div></div>
+  </div>
+  <div class="rounded-3xl bg-slate-50 border border-slate-200 p-5 md:p-6 mb-5">
+    <div class="text-xl font-black text-slate-500 mb-2" id="sel3-label">第一關｜看見</div>
+    <div class="text-2xl md:text-3xl font-black text-slate-900 leading-relaxed mb-4">小美站在教室門口，其他同學正在一起玩。</div>
+    <div id="sel3-question" class="text-2xl md:text-3xl font-black text-emerald-800 mb-4">你「看得到」哪些事情？</div>
+    <div id="sel3-options" class="grid gap-3"></div>
+    <div id="sel3-feedback" class="hidden mt-4 rounded-2xl p-4 text-xl md:text-2xl font-black leading-relaxed"></div>
+  </div>
+  <div id="sel3-teaching" class="rounded-2xl bg-amber-50 border-2 border-amber-200 p-5 text-xl md:text-2xl leading-relaxed">
+    🌱 <b>同理心小老師：</b><br>
+    <b>「我不知道」也可以。</b> 我們不能直接知道別人在想什麼，所以可以先觀察，再問問看。
+  </div>
+  <div id="sel3-result" class="hidden mt-5 rounded-3xl bg-emerald-50 border-2 border-emerald-300 p-6 text-center">
+    <div class="text-3xl md:text-4xl font-black text-emerald-800 mb-3">🌟 同理心雷達完成！</div>
+    <div class="text-xl md:text-2xl font-bold leading-relaxed">我先看見 → 我不急著猜 → 我可以問 → 我再決定怎麼幫忙</div>
+    <button type="button" id="sel3-restart" class="mt-5 px-7 py-4 rounded-2xl bg-emerald-600 text-white text-xl font-black">🔄 再玩一次</button>
+  </div>
+</div>
+<script>
+(function(){
+ const root=document.getElementById('sel3-interactive'); if(!root)return;
+ const data={
+  observe:{label:'第一關｜看見',q:'你「看得到」哪些事情？',opts:[['小美一個人站著','good'],['其他同學正在一起玩','good'],['小美沒有加入遊戲','good'],['小美一定很難過','bad']],next:'guess'},
+  guess:{label:'第二關｜猜想',q:'你覺得小美「可能」怎麼了？（可以有很多答案）',opts:[['可能有點難過','ok'],['可能有點害羞','ok'],['可能只是想休息','ok'],['我不知道，我想先問問看','best']],next:'ask'},
+  ask:{label:'第三關｜問問看',q:'你可以怎麼問小美？',opts:[['你還好嗎？要不要跟我們一起玩？','best'],['你為什麼不跟大家玩？','ok'],['你一定是不開心吧？','bad'],['我想先問問你：你現在想做什麼？','best']],next:'act'},
+  act:{label:'第四關｜行動',q:'小美說：「我有點害怕，不知道怎麼加入。」你會怎麼做？',opts:[['沒關係，我陪你一起。','best'],['你可以先看我們玩，想加入時再來。','best'],['那你自己去玩啊。','bad'],['我去找老師，叫老師處理。','ok']],next:null}
+ };
+ let stage='observe',picked={};
+ function render(){
+  const d=data[stage];
+  root.querySelector('#sel3-label').textContent=d.label;
+  root.querySelector('#sel3-question').textContent=d.q;
+  const box=root.querySelector('#sel3-options'); box.innerHTML='';
+  d.opts.forEach((o,i)=>{const b=document.createElement('button');b.type='button';b.className='sel3-choice w-full text-left rounded-2xl border-2 border-slate-200 bg-white px-5 py-4 text-xl md:text-2xl font-black leading-relaxed hover:border-emerald-400';b.textContent=o[0];b.onclick=()=>choose(o[1],o[0]);box.appendChild(b)});
+  root.querySelectorAll('.sel3-step').forEach(x=>{x.classList.remove('bg-emerald-100','text-emerald-900','bg-emerald-500','text-white');x.classList.add('bg-slate-100','text-slate-500');if(x.dataset.step===stage){x.classList.remove('bg-slate-100','text-slate-500');x.classList.add('bg-emerald-100','text-emerald-900')}});
+ }
+ function choose(kind,text){
+  picked[stage]=text;
+  const f=root.querySelector('#sel3-feedback');f.classList.remove('hidden');f.className='mt-4 rounded-2xl p-4 text-xl md:text-2xl font-black leading-relaxed';
+  if(kind==='bad'){f.classList.add('bg-orange-50','text-orange-800');f.textContent='🌱 先停一下想想：這是你「猜的」，還是你真的「看見」的？我們可以換一個答案。';return}
+  f.classList.add('bg-emerald-50','text-emerald-800');
+  f.textContent=kind==='best'?'⭐ 很棒！這是一個很有同理心的做法。':'👍 可以！同理心沒有只有一個答案，我們還可以繼續問問看。';
+  const d=data[stage];
+  setTimeout(()=>{f.classList.add('hidden');if(d.next){stage=d.next;render()}else{root.querySelector('#sel3-options').innerHTML='';root.querySelector('#sel3-question').textContent='你已經完成四個步驟！';root.querySelector('#sel3-label').textContent='完成任務 🎉';root.querySelector('#sel3-result').classList.remove('hidden');root.querySelectorAll('.sel3-step').forEach(x=>{x.classList.remove('bg-slate-100','text-slate-500','bg-emerald-100','text-emerald-900');x.classList.add('bg-emerald-500','text-white')})}},700);
+ }
+ root.querySelector('#sel3-restart').onclick=()=>{stage='observe';picked={};root.querySelector('#sel3-result').classList.add('hidden');render()};
+ render();
+})();
+</script>
+'''
+          s=s[:m.end()]+block+s[m.end():]
+          css='''
+<style>
+#sel3-interactive .sel3-choice{min-height:72px;transition:.15s ease;}
+#sel3-interactive .sel3-choice:focus{outline:4px solid rgba(16,185,129,.25);}
+@media(max-width:640px){#sel3-interactive{padding:1rem!important}#sel3-interactive .sel3-choice{min-height:64px;font-size:1.15rem;}}
+</style>
+'''
+          s=s.replace('</head>',css+'</head>',1)
+          p.write_text(s,encoding='utf-8')
+      - name: Commit
+        shell: bash
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html && git commit -m "讓 SEL3 變成四階段互動同理心任務" && git push
