@@ -304,6 +304,9 @@
   }
 }
 
+
+/* SEL4_YELLOW_PIKMIN_POWER_2_20260914 */
+/* SEL4 校園任務：黃色皮克敏固定為 +2 力，與紅色皮克敏 +1 力形成不同的數字組合。 */
 </style>
 </head>
 
@@ -1291,7 +1294,7 @@
         <div class="space-y-2">
           <div class="flex items-center justify-between text-xs font-black text-slate-700">
             <span>選擇派遣的皮克敏夥伴加入合作搬運：</span>
-            <span class="text-purple-600 font-bold">💡 試試不同組合：大力量靠紫皮克敏、靈活調度靠紅黃皮克敏！</span>
+            <span class="text-purple-600 font-bold">💡 試試不同組合：紅色 +1 力、黃色 +2 力、紫色 +10 力！</span>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -1352,7 +1355,7 @@
                   <div class="text-[10px] text-amber-600 font-medium">敏捷・高處作業</div>
                 </div>
               </div>
-              <span class="text-xs font-black text-amber-700 bg-white px-2.5 py-1 rounded-xl shadow-sm border border-amber-100">+1 力</span>
+              <span class="text-xs font-black text-amber-700 bg-white px-2.5 py-1 rounded-xl shadow-sm border border-amber-100">+2 力</span>
             </button>
 
             <button onclick="addPikminToTeam('rock')" class="game-card p-3 bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 rounded-2xl flex items-center justify-between transition active:scale-95 text-left shadow-sm">
@@ -3322,7 +3325,7 @@
       </svg>`;
     }
 
-    const PIKMIN_POWER_MAP = { red: 1, yellow: 1, purple: 10, rock: 3 };
+    const PIKMIN_POWER_MAP = { red: 1, yellow: 2, purple: 10, rock: 3 };
 
     const PIKMIN_ROSTER = [
       { id: 'red', name: '紅皮克敏', color: '#ef4444', bg: 'bg-red-500', svgKey: 'red', trait: '耐火・攻擊力高', selStrength: '勇敢主動、不怕挫折', selHelp: '遇到水和冷水時容易心急' },
