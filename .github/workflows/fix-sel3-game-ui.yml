@@ -1,0 +1,108 @@
+name: Fix SEL3 game UI
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rebuild SEL3 UI
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='SEL3_GAME_UI_FINAL_20260914'
+          if marker in s:
+              raise SystemExit(0)
+          css=r'''
+          <style id="sel3-game-ui-final">
+          #sel3-refined{width:100%;padding:12px 18px 28px;box-sizing:border-box}
+          .sel3-shell{display:grid;grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:14px;height:calc(100vh - 150px);min-height:620px}
+          .sel3-teach,.sel3-practice{border-radius:24px;border:3px solid #dbeafe;background:#fff;box-shadow:0 8px 20px rgba(15,23,42,.08);padding:18px;box-sizing:border-box;overflow:auto}
+          .sel3-teach{background:linear-gradient(135deg,#eff6ff,#ffffff)}
+          .sel3-practice{background:linear-gradient(135deg,#fff7ed,#ffffff)}
+          .sel3-scenario{font-size:clamp(22px,2.1vw,30px);font-weight:900;color:#1e3a8a;background:#dbeafe;border-radius:18px;padding:13px 18px;margin-bottom:10px}
+          .sel3-progress{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+          .sel3-step{border:3px solid #cbd5e1;border-radius:16px;padding:10px 8px;text-align:center;font-size:clamp(17px,1.6vw,22px);font-weight:900;background:#f8fafc;color:#64748b}
+          .sel3-step.active{border-color:#2563eb;background:#dbeafe;color:#1d4ed8}.sel3-step.done{border-color:#22c55e;background:#dcfce7;color:#166534}
+          .sel3-title{font-size:clamp(25px,2.5vw,34px);font-weight:900;margin:6px 0;color:#172554}.sel3-sub{font-size:clamp(17px,1.5vw,21px);font-weight:700;line-height:1.55;margin:0 0 12px;color:#475569}
+          .sel3-teach-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.sel3-teach-card{border:2px solid #bfdbfe;border-radius:18px;background:#fff;padding:12px;font-size:clamp(15px,1.3vw,18px);font-weight:600;line-height:1.45}.sel3-teach-card b{display:block;color:#1d4ed8;margin-bottom:4px}
+          .sel3-practice-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.sel3-practice-label{font-size:clamp(22px,2vw,28px);font-weight:900;color:#9a3412}.sel3-note{font-size:15px;font-weight:800;color:#64748b}
+          .sel3-stage{border:3px solid #fed7aa;border-radius:20px;background:#fff;padding:14px;margin-bottom:10px}.sel3-stage.sel3-locked{opacity:.48;pointer-events:none}.sel3-question{font-size:clamp(19px,1.7vw,25px);font-weight:900;color:#7c2d12;margin-bottom:10px}
+          .sel3-options{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.sel3-option{min-height:58px;border:3px solid #e2e8f0;border-radius:16px;background:#f8fafc;padding:10px 14px;text-align:left;font-size:clamp(17px,1.5vw,21px);font-weight:800;color:#1e293b;cursor:pointer;transition:.15s}.sel3-option:hover{transform:translateY(-2px);border-color:#60a5fa;background:#eff6ff}.sel3-option.selected{box-shadow:0 0 0 4px #facc15}.sel3-option.correct{border-color:#22c55e;background:#dcfce7}.sel3-option.wrong{border-color:#f97316;background:#ffedd5}.sel3-option:disabled{cursor:default}
+          .sel3-feedback{margin-top:8px;font-size:16px;font-weight:800;line-height:1.4}.sel3-complete{display:none;margin-top:10px;border:3px solid #86efac;border-radius:18px;background:#f0fdf4;padding:14px;text-align:center;font-size:20px;font-weight:900;color:#166534}.sel3-complete.show{display:block}
+          @media(max-width:800px){.sel3-shell{height:auto;min-height:0;grid-template-rows:auto auto}.sel3-teach,.sel3-practice{overflow:visible}.sel3-teach-grid,.sel3-options{grid-template-columns:1fr}.sel3-progress{grid-template-columns:repeat(2,1fr)}.sel3-practice-head{display:block}.sel3-note{margin-top:4px}}
+          </style>
+          '''
+          # Insert CSS before </head>.
+          s=s.replace('</head>',css+'</head>',1)
+          # Append a clean, independent renderer after all existing scripts. It intentionally replaces only SEL3.
+          js=r'''
+          <script>
+          (function(){
+            const build=()=>{
+              const tab=document.getElementById('tab-empathy');
+              if(!tab)return;
+              tab.innerHTML=`
+              <section id="sel3-refined">
+                <div class="sel3-shell">
+                  <div class="sel3-teach">
+                    <div class="sel3-scenario">情境：小美站在教室門口，其他同學正在一起玩。</div>
+                    <div class="sel3-progress"><div class="sel3-step active">① 看見</div><div class="sel3-step">② 猜想</div><div class="sel3-step">③ 問問看</div><div class="sel3-step">④ 行動</div></div>
+                    <h2 class="sel3-title">同理心不是猜對別人的心情</h2>
+                    <p class="sel3-sub">先看見 → 再猜想 → 問問看 → 最後行動。每一步都可以停下來和老師討論。</p>
+                    <div class="sel3-teach-grid">
+                      <div class="sel3-teach-card"><b>① 看見</b>找「真的看得到」的事情，不急著猜心情。</div>
+                      <div class="sel3-teach-card"><b>② 猜想</b>可以有不同可能，也可以回答「我不知道」。</div>
+                      <div class="sel3-teach-card"><b>③ 問問看</b>用尊重的方式確認對方真正的感受。</div>
+                      <div class="sel3-teach-card"><b>④ 行動</b>知道對方需要後，再選擇合適的幫助。</div>
+                    </div>
+                  </div>
+                  <div class="sel3-practice">
+                    <div class="sel3-practice-head"><div class="sel3-practice-label">🧭 同理心練習</div><div class="sel3-note">每一步答案都會留下來，方便老師檢討</div></div>
+                    <div id="sel3-stage-1" class="sel3-stage"><div class="sel3-question">① 看見：你看到了什麼？</div><div class="sel3-options">
+                      <button class="sel3-option" data-correct="1">小美一個人站著</button><button class="sel3-option" data-correct="1">同學正在一起玩</button><button class="sel3-option" data-correct="1">小美沒有加入</button><button class="sel3-option" data-correct="0">小美一定很難過</button>
+                    </div><div class="sel3-feedback"></div></div>
+                    <div id="sel3-stage-2" class="sel3-stage sel3-locked"><div class="sel3-question">② 猜想：你覺得她可能怎麼了？</div><div class="sel3-options">
+                      <button class="sel3-option" data-correct="1">可能有點難過</button><button class="sel3-option" data-correct="1">可能有點害羞</button><button class="sel3-option" data-correct="1">可能只是想休息</button><button class="sel3-option" data-correct="1">我不知道，我想先問問看</button>
+                    </div><div class="sel3-feedback"></div></div>
+                    <div id="sel3-stage-3" class="sel3-stage sel3-locked"><div class="sel3-question">③ 問問看：你可以怎麼問？</div><div class="sel3-options">
+                      <button class="sel3-option" data-correct="1">你還好嗎？</button><button class="sel3-option" data-correct="1">你想跟我們一起玩嗎？</button><button class="sel3-option" data-correct="0">你為什麼不跟大家玩？</button><button class="sel3-option" data-correct="0">你一定是不開心吧？</button>
+                    </div><div class="sel3-feedback"></div></div>
+                    <div id="sel3-stage-4" class="sel3-stage sel3-locked"><div class="sel3-question">④ 行動：小美說「我有點害怕，不知道怎麼加入。」你會怎麼做？</div><div class="sel3-options">
+                      <button class="sel3-option" data-correct="1">沒關係，我陪你一起。</button><button class="sel3-option" data-correct="1">你可以先看我們玩。</button><button class="sel3-option" data-correct="0">那你自己去玩啊。</button><button class="sel3-option" data-correct="0">我去找老師。</button>
+                    </div><div class="sel3-feedback"></div></div>
+                    <div id="sel3-complete" class="sel3-complete"><b>🌟 同理心雷達完成！</b><br>我先看見 → 我不急著猜 → 我可以問 → 我再決定怎麼幫忙。</div>
+                  </div>
+                </div>
+              </section>`;
+              const stages=[1,2,3,4].map(n=>document.getElementById('sel3-stage-'+n));
+              const steps=[...tab.querySelectorAll('.sel3-step')];
+              tab.querySelectorAll('.sel3-option').forEach(btn=>btn.addEventListener('click',()=>{
+                const stage=btn.closest('.sel3-stage'), n=stages.indexOf(stage); if(n<0||stage.classList.contains('sel3-locked')||stage.dataset.answered==='1')return;
+                stage.dataset.answered='1'; const ok=btn.dataset.correct==='1'; stage.querySelectorAll('.sel3-option').forEach(b=>b.disabled=true); btn.classList.add('selected',ok?'correct':'wrong');
+                stage.querySelector('.sel3-feedback').textContent=ok?'✓ 這個答案可以，我們把它留下來一起討論。':'△ 這個答案也留下來！想一想：為什麼它可能不是最適合的選擇？';
+                steps[n].classList.remove('active'); steps[n].classList.add('done');
+                if(n<3){stages[n+1].classList.remove('sel3-locked');steps[n+1].classList.add('active');}else document.getElementById('sel3-complete').classList.add('show');
+              }));
+            };
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+          })();
+          </script>
+          '''
+          s += '\n<!-- '+marker+' -->\n'+js
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "SEL3 恢復遊戲式區塊並保留四步答案"
+          git push
