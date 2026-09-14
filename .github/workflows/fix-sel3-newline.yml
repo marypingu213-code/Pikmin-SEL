@@ -1,0 +1,36 @@
+name: Fix SEL3 newline format
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix literal newline escapes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='SEL3_LAYOUT_AND_PERSISTENT_ANSWERS_20260914'
+          if marker not in s:
+              raise SystemExit('SEL3 marker not found')
+          start=s.find(marker)
+          head=s[:start]
+          tail=s[start:]
+          tail=tail.replace('\\n','\n')
+          s=head+tail
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "修正 SEL3 程式換行格式"
+          git push
