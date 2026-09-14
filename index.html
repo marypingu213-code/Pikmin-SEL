@@ -355,7 +355,47 @@
 .s3fc-tip{font-size:12px;color:#64748b;text-align:center;margin-top:5px;font-weight:700}
 @media(max-width:900px){#sel3-four-columns{height:auto;min-height:0;overflow:visible}.s3fc-wrap{grid-template-rows:auto auto}.s3fc-top,.s3fc-bottom{overflow:visible}.s3fc-lessons,.s3fc-columns{height:auto;grid-template-columns:repeat(2,1fr)}.s3fc-stage{min-height:360px}}
 </style>
-</head>
+
+<style id="sel3-direct-final-css">
+#sel3-direct-final{width:100%;height:calc(100vh - 116px);min-height:610px;padding:10px 16px 14px;box-sizing:border-box;overflow:hidden;background:linear-gradient(180deg,#f0fdf4 0%,#ffffff 33%,#fff7ed 100%)}
+#sel3-direct-final .s3-top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+#sel3-direct-final .s3-home{border:0;border-radius:15px;background:#0f766e;color:#fff;font-size:15px;font-weight:900;padding:11px 15px;cursor:pointer;box-shadow:0 5px 12px rgba(15,118,110,.2);flex:0 0 auto}
+#sel3-direct-final .s3-scene{flex:1;min-width:0;display:flex;align-items:center;gap:12px;background:#fff;border:3px solid #86efac;border-radius:20px;padding:10px 15px;box-shadow:0 6px 15px rgba(15,23,42,.08)}
+#sel3-direct-final .s3-art{width:62px;height:72px;flex:0 0 62px}
+#sel3-direct-final .s3-scene-copy{min-width:0;flex:1;text-align:left}
+#sel3-direct-final .s3-scene-title{font-size:clamp(27px,2.7vw,38px);font-weight:1000;line-height:1.1;color:#14532d;text-align:left}
+#sel3-direct-final .s3-scene-desc{font-size:clamp(14px,1.25vw,18px);font-weight:750;line-height:1.3;color:#475569;margin-top:4px;text-align:left}
+#sel3-direct-final .s3-count{flex:0 0 auto;background:#dcfce7;color:#166534;font-size:14px;font-weight:900;padding:8px 10px;border-radius:12px}
+#sel3-direct-final .s3-lesson-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:9px}
+#sel3-direct-final .s3-lesson{height:104px;border:3px solid #cbd5e1;border-radius:17px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 12px;box-sizing:border-box;overflow:visible}
+#sel3-direct-final .s3-lesson.active{border-color:#22c55e;background:#f0fdf4}
+#sel3-direct-final .s3-lesson.done{border-color:#16a34a;background:#dcfce7}
+#sel3-direct-final .s3-lesson-name{font-size:clamp(19px,1.75vw,25px);font-weight:1000;line-height:1.05;color:#0f172a}
+#sel3-direct-final .s3-lesson-desc{font-size:clamp(12px,1vw,14px);font-weight:800;line-height:1.28;color:#64748b;margin-top:7px;max-width:94%;display:flex;align-items:center;justify-content:center;text-align:center}
+#sel3-direct-final .s3-columns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;height:calc(100% - 206px);min-height:355px}
+#sel3-direct-final .s3-col{min-width:0;display:flex;flex-direction:column;border:3px solid #dbeafe;border-radius:20px;background:rgba(255,255,255,.97);padding:11px;box-sizing:border-box;box-shadow:0 6px 14px rgba(15,23,42,.06);overflow:hidden}
+#sel3-direct-final .s3-col.locked{opacity:.42;pointer-events:none;filter:saturate(.65)}
+#sel3-direct-final .s3-q{font-size:clamp(15px,1.35vw,19px);font-weight:1000;line-height:1.25;color:#1e3a8a;margin-bottom:8px;min-height:42px;display:flex;align-items:center}
+#sel3-direct-final .s3-options{display:flex;flex-direction:column;gap:7px;flex:1}
+#sel3-direct-final .s3-option{width:100%;min-height:49px;border:3px solid #e2e8f0;border-radius:14px;background:#f8fafc;padding:7px 9px;text-align:left;font-size:clamp(12px,1.08vw,15px);font-weight:850;line-height:1.24;color:#1e293b;cursor:pointer;transition:.15s;display:flex;align-items:center}
+#sel3-direct-final .s3-option:hover{border-color:#60a5fa;background:#eff6ff;transform:translateY(-1px)}
+#sel3-direct-final .s3-option.selected.correct{border-color:#16a34a;background:#dcfce7;box-shadow:0 0 0 3px rgba(34,197,94,.14)}
+#sel3-direct-final .s3-option.selected.wrong{border-color:#f97316;background:#ffedd5;box-shadow:0 0 0 3px rgba(249,115,22,.12)}
+#sel3-direct-final .s3-option:disabled{opacity:1;cursor:default}
+#sel3-direct-final .s3-feedback{min-height:39px;margin-top:7px;border:2px dashed #cbd5e1;border-radius:11px;background:#f8fafc;padding:6px 8px;font-size:clamp(11px,.95vw,13px);font-weight:850;line-height:1.25;color:#334155;display:flex;align-items:center}
+#sel3-direct-final .s3-actions{position:absolute;right:24px;bottom:14px;display:flex;gap:9px;z-index:30}
+#sel3-direct-final .s3-reset,#sel3-direct-final .s3-next{border:0;border-radius:15px;font-weight:950;cursor:pointer;padding:11px 15px}
+#sel3-direct-final .s3-reset{background:#e2e8f0;color:#334155;font-size:14px}
+#sel3-direct-final .s3-next{display:none;background:#7c3aed;color:#fff;font-size:16px;box-shadow:0 6px 14px rgba(124,58,237,.22)}
+#sel3-direct-final .s3-next.show{display:block}
+#tab-empathy{position:relative}
+@media(max-width:1050px){
+  #sel3-direct-final{height:auto;min-height:0;overflow:visible}
+  #sel3-direct-final .s3-lesson-row,#sel3-direct-final .s3-columns{grid-template-columns:repeat(2,minmax(0,1fr));height:auto}
+  #sel3-direct-final .s3-col{min-height:305px}
+  #sel3-direct-final .s3-actions{position:static;justify-content:flex-end;margin-top:10px}
+}
+</style></head>
 
 <body class="min-h-screen text-slate-800 flex flex-col justify-between overflow-x-hidden">
 
@@ -6136,5 +6176,105 @@
     })));
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',buildSEL3FourColumns);else setTimeout(buildSEL3FourColumns,0);
+})();
+</script>
+
+
+<!-- SEL3_DIRECT_FINAL_20260914 -->
+<script>
+(function(){
+  let sceneIndex=0;
+  const fallback=[{title:'🔴 紅皮克敏遇到了小水坑！',svgKey:'red',desc:'紅皮克敏站在水坑邊發抖，需要夥伴先理解牠的害怕。',options:[
+    {text:'請藍皮克敏陪牠走木橋繞過水坑',correct:true,note:'尊重弱點並善用夥伴優勢。'},
+    {text:'直接把牠推進水坑',correct:false,note:'這會讓牠受到傷害。'},
+    {text:'丟下牠自己回教室',correct:false,note:'忽略求助訊號不是好方法。'}
+  ]}];
+
+  function scenarios(){
+    try{if(typeof EMPATHY_SCENARIOS!=='undefined'&&Array.isArray(EMPATHY_SCENARIOS)&&EMPATHY_SCENARIOS.length)return EMPATHY_SCENARIOS;}catch(e){}
+    return fallback;
+  }
+  function art(sc){
+    try{if(typeof PIKMIN_SVGS!=='undefined'&&PIKMIN_SVGS[sc.svgKey])return PIKMIN_SVGS[sc.svgKey];}catch(e){}
+    return '<div style="font-size:52px">🌱</div>';
+  }
+  function stepData(sc){
+    return [
+      {q:'① 看見：先找真的看得到的事情',opts:[
+        ['先看牠現在的動作、位置和表情',1,'✓ 從看得到的線索開始。'],
+        ['先把情境中的事實說清楚',1,'✓ 很好，先觀察再下判斷。'],
+        ['牠一定是在故意找麻煩',0,'△ 這是在猜，不是直接看得到的事實。'],
+        ['不用觀察，直接猜牠怎麼想',0,'△ 第一步要先看見。']
+      ]},
+      {q:'② 猜想：牠可能怎麼了？',opts:[
+        ['牠可能有點不安或需要幫忙',1,'✓ 可以有這個可能。'],
+        ['我還不確定，我想先問問看',1,'✓ 不知道也沒關係，先問很好。'],
+        ['牠一定是在生氣',0,'△ 「一定」太快下結論了。'],
+        ['牠一定不想和大家相處',0,'△ 先不要替對方決定想法。']
+      ]},
+      {q:'③ 問問看：怎麼確認比較尊重？',opts:[
+        ['你還好嗎？需要我怎麼幫你？',1,'✓ 讓對方自己說出需要。'],
+        ['你想告訴我發生什麼事嗎？',1,'✓ 先聽再決定。'],
+        ['你怎麼這麼奇怪？',0,'△ 這個問法容易讓對方不舒服。'],
+        ['你一定又在生氣吧？',0,'△ 這是在替對方下結論。']
+      ]},
+      {q:'④ 行動：知道情況後，你會怎麼做？',opts:(sc.options||[]).map(o=>[o.text,o.correct?1:0,o.note||''])}
+    ];
+  }
+  function build(){
+    const tab=document.getElementById('tab-empathy'); if(!tab)return;
+    const list=scenarios(); if(sceneIndex>=list.length)sceneIndex=0;
+    const sc=list[sceneIndex],data=stepData(sc);
+    tab.innerHTML=`
+      <section id="sel3-direct-final">
+        <div class="s3-top">
+          <button type="button" class="s3-home" id="s3-home">🏠 回基地總部</button>
+          <div class="s3-scene">
+            <div class="s3-art">${art(sc)}</div>
+            <div class="s3-scene-copy">
+              <div class="s3-scene-title">${sc.title}</div>
+              <div class="s3-scene-desc">${sc.desc}</div>
+            </div>
+            <div class="s3-count">情境 ${sceneIndex+1} / ${list.length}</div>
+          </div>
+        </div>
+        <div class="s3-lesson-row">
+          <div class="s3-lesson active"><div class="s3-lesson-name">① 看見</div><div class="s3-lesson-desc">只說看得到的事，不急著猜心情</div></div>
+          <div class="s3-lesson"><div class="s3-lesson-name">② 猜想</div><div class="s3-lesson-desc">想幾種可能，也可以說「我不知道」</div></div>
+          <div class="s3-lesson"><div class="s3-lesson-name">③ 問問看</div><div class="s3-lesson-desc">用尊重的方式確認真正的感受</div></div>
+          <div class="s3-lesson"><div class="s3-lesson-name">④ 行動</div><div class="s3-lesson-desc">知道需要後，再選擇合適的幫助</div></div>
+        </div>
+        <div class="s3-columns">
+          ${data.map((st,i)=>`
+            <div class="s3-col ${i?'locked':''}" data-stage="${i}">
+              <div class="s3-q">${st.q}</div>
+              <div class="s3-options">
+                ${st.opts.map(o=>`<button type="button" class="s3-option" data-correct="${o[1]}" data-note="${String(o[2]||'').replace(/"/g,'&quot;')}">${o[0]}</button>`).join('')}
+              </div>
+              <div class="s3-feedback">${i===0?'請選一個答案。':'完成前一階段後就可以選。'}</div>
+            </div>`).join('')}
+        </div>
+        <div class="s3-actions">
+          <button type="button" class="s3-reset" id="s3-reset">🔄 重做本題</button>
+          <button type="button" class="s3-next" id="s3-next">下一個皮克敏情境 ➜</button>
+        </div>
+      </section>`;
+    document.getElementById('s3-home').onclick=()=>{if(typeof switchTab==='function')switchTab('home');};
+    document.getElementById('s3-reset').onclick=()=>build();
+    const cols=[...tab.querySelectorAll('.s3-col')],lessons=[...tab.querySelectorAll('.s3-lesson')];
+    cols.forEach((col,i)=>col.querySelectorAll('.s3-option').forEach(btn=>btn.addEventListener('click',()=>{
+      if(col.classList.contains('locked')||col.dataset.answered==='1')return;
+      col.dataset.answered='1'; const ok=btn.dataset.correct==='1';
+      col.querySelectorAll('.s3-option').forEach(b=>b.disabled=true);
+      btn.classList.add('selected',ok?'correct':'wrong');
+      col.querySelector('.s3-feedback').textContent=btn.dataset.note||(ok?'✓ 這個答案可以。':'△ 這個答案值得再想一想。');
+      lessons[i].classList.remove('active');lessons[i].classList.add('done');
+      if(i<3){cols[i+1].classList.remove('locked');lessons[i+1].classList.add('active');cols[i+1].querySelector('.s3-feedback').textContent='可以選答案了！';}
+      else document.getElementById('s3-next').classList.add('show');
+    })));
+    document.getElementById('s3-next').onclick=()=>{sceneIndex=(sceneIndex+1)%list.length;build();};
+  }
+  function init(){build();const tab=document.getElementById('tab-empathy');if(tab)new MutationObserver(()=>{if(tab.offsetParent!==null&&!document.getElementById('sel3-direct-final'))build();}).observe(tab,{attributes:true,attributeFilter:['class','style']});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
 })();
 </script>
