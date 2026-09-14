@@ -1,0 +1,76 @@
+name: Finalize SEL3 answer history
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch SEL3 answer persistence
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='SEL3_ANSWER_HISTORY_FINAL_20260914'
+          if marker in s:
+              raise SystemExit(0)
+
+          # Normalize only the newly added SEL3 style block.
+          a=s.find('<style id="sel3-refine-css">')
+          b=s.find('</style>',a)
+          if a>=0 and b>=0:
+              block=s[a:b+8].replace('\\n','\n')
+              s=s[:a]+block+s[b+8:]
+
+          # Replace the previous SEL3 click handler with a review-friendly handler.
+          start=s.find('    tab.querySelectorAll(\'.sel3-option\').forEach(btn=>{')
+          end=s.find('  }\n  if(document.readyState', start)
+          if start<0 or end<0:
+              raise SystemExit('SEL3 handler not found')
+          new_handler=r'''    tab.querySelectorAll('.sel3-option').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        const n=Number(this.dataset.stage), stage=steps[n-1];
+        if(stage.classList.contains('sel3-locked') || stage.dataset.answered==='1') return;
+        stage.dataset.answered='1';
+        const buttons=stage.querySelectorAll('.sel3-option');
+        buttons.forEach(b=>b.disabled=true);
+        this.classList.add('selected');
+        const fb=stage.querySelector('.sel3-feedback');
+        const ok=this.dataset.correct==='1';
+        if(ok){
+          this.classList.add('correct');
+          fb.textContent=n===2 ? '✓ 你選了：「'+this.textContent+'」。這是可以接受的猜想。' : n===3 ? '✓ 你選了：「'+this.textContent+'」。這樣問比較尊重對方。' : n===4 ? '✓ 你選了：「'+this.textContent+'」。這是一個支持對方的行動。' : '✓ 你選了：「'+this.textContent+'」。這是看得到的事實。';
+        }else{
+          this.classList.add('wrong');
+          fb.textContent=n===1 ? '△ 你選了：「'+this.textContent+'」。這是在猜心情，不是直接看得到的事實。老師可以一起討論：還有哪些是「看得到」的？' : n===3 ? '△ 你選了：「'+this.textContent+'」。這個問法容易替對方下結論，可以看看其他問法。' : '△ 你選了：「'+this.textContent+'」。這個行動可能不太符合對方的需要，可以一起想想更支持的方法。';
+        }
+        progress[n-1].classList.remove('active');
+        progress[n-1].classList.add('done');
+        if(n<4){
+          const next=steps[n];
+          next.classList.remove('sel3-locked');
+          progress[n].classList.add('active');
+          setTimeout(()=>next.scrollIntoView({behavior:'smooth',block:'nearest'}),150);
+        }else{
+          document.getElementById('sel3-complete').classList.add('show');
+        }
+      });
+    });
+'''
+          s=s[:start]+new_handler+s[end:]
+          s=s.replace('<!-- SEL3_LAYOUT_AND_PERSISTENT_ANSWERS_20260914 -->','<!-- SEL3_LAYOUT_AND_PERSISTENT_ANSWERS_20260914 -->\n<!-- SEL3_ANSWER_HISTORY_FINAL_20260914 -->',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "SEL3 四步作答保留並允許錯誤答案進入下一步"
+          git push
