@@ -208,7 +208,103 @@
     .cleanup-scene-art-bedroom::before { content:'🖼️        🛏️  🧸        🚪'; position:absolute; left:6%; top:13%; right:6%; font-size:clamp(30px,5vw,54px); white-space:nowrap; opacity:.72; }
     .cleanup-scene-art-bedroom::after { content:'▰ ▰ ▰'; position:absolute; right:9%; bottom:16%; font-size:clamp(34px,5vw,56px); opacity:.45; }
     #cleanup-pikmin { touch-action:none; pointer-events:none; z-index:40; }
-  </style>
+  
+/* SEL1_STUDENT_WORKSPACE_20260914 */
+/* SEL1：不要把整個長工作區縮成小縮圖；改成自然尺寸＋可滾動學生工作區。 */
+@media screen {
+  #fit-stage.sel1-student-mode {
+    transform: none !important;
+    width: 100vw !important;
+    min-width: 100vw !important;
+    max-width: none !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  #fit-stage.sel1-student-mode #tab-self-card {
+    width: 100% !important;
+    max-width: 1500px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    font-size: 1rem;
+  }
+
+  #fit-stage.sel1-student-mode #tab-self-card .text-xs {
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+  }
+  #fit-stage.sel1-student-mode #tab-self-card .text-sm {
+    font-size: 1.02rem !important;
+    line-height: 1.5 !important;
+  }
+  #fit-stage.sel1-student-mode #tab-self-card .text-base {
+    font-size: 1.12rem !important;
+    line-height: 1.5 !important;
+  }
+  #fit-stage.sel1-student-mode #tab-self-card .text-lg {
+    font-size: 1.28rem !important;
+  }
+  #fit-stage.sel1-student-mode #tab-self-card .text-xl {
+    font-size: 1.45rem !important;
+  }
+
+  #fit-stage.sel1-student-mode #tab-self-card button,
+  #fit-stage.sel1-student-mode #tab-self-card select,
+  #fit-stage.sel1-student-mode #tab-self-card input,
+  #fit-stage.sel1-student-mode #tab-self-card textarea {
+    min-height: 44px;
+  }
+
+  #fit-stage.sel1-student-mode #tab-self-card button {
+    font-size: 1rem !important;
+  }
+
+  #fit-stage.sel1-student-mode #tab-self-card input,
+  #fit-stage.sel1-student-mode #tab-self-card select,
+  #fit-stage.sel1-student-mode #tab-self-card textarea {
+    font-size: 1rem !important;
+  }
+
+  #fit-stage.sel1-student-mode #tab-self-card #physical-card-preview {
+    transform: none !important;
+    transform-origin: center top !important;
+  }
+
+  #fit-stage.sel1-student-mode #tab-self-card > .grid {
+    gap: 2rem !important;
+    align-items: start !important;
+  }
+
+  @media (min-width: 1024px) {
+    #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-7 {
+      min-width: 0;
+    }
+    #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-5 {
+      min-width: 360px;
+    }
+    #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-5 > div:last-child {
+      position: sticky;
+      top: 92px;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    #fit-stage.sel1-student-mode #tab-self-card > .grid {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+    #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-7,
+    #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-5 {
+      grid-column: 1 / -1 !important;
+    }
+    #fit-stage.sel1-student-mode #tab-self-card > .grid > .lg\:col-span-5 > div:last-child {
+      position: static;
+    }
+  }
+}
+
+</style>
 </head>
 
 <body class="min-h-screen text-slate-800 flex flex-col justify-between overflow-x-hidden">
@@ -5715,5 +5811,35 @@
     });
   </script>
 <!-- SEL5_CLEANUP_FIX_20260914 -->
+
+<script>
+// SEL1_STUDENT_WORKSPACE_20260914
+(function(){
+  function updateSEL1WorkspaceMode(){
+    const stage = document.getElementById('fit-stage');
+    const tab = document.getElementById('tab-self-card');
+    if(!stage || !tab) return;
+    const visible = getComputedStyle(tab).display !== 'none' && !tab.classList.contains('hidden');
+    stage.classList.toggle('sel1-student-mode', visible);
+  }
+  function initSEL1WorkspaceMode(){
+    updateSEL1WorkspaceMode();
+    const tab = document.getElementById('tab-self-card');
+    if(tab){
+      new MutationObserver(updateSEL1WorkspaceMode).observe(tab,{attributes:true,attributeFilter:['class','style']});
+    }
+    const stage = document.getElementById('fit-stage');
+    if(stage){
+      new MutationObserver(updateSEL1WorkspaceMode).observe(stage,{childList:true,subtree:true});
+    }
+    window.addEventListener('resize',updateSEL1WorkspaceMode,{passive:true});
+    setTimeout(updateSEL1WorkspaceMode,100);
+    setTimeout(updateSEL1WorkspaceMode,500);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded',initSEL1WorkspaceMode);
+  else initSEL1WorkspaceMode();
+})();
+</script>
+
 </body>
 </html>
