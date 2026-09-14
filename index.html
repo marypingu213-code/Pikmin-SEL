@@ -5863,5 +5863,108 @@
 })();
 </script>
 
-\n<!-- SEL3_LAYOUT_AND_PERSISTENT_ANSWERS_20260914 -->\n<script>\n(function(){\n  function init(){\n    const tab=document.getElementById('tab-empathy');\n    if(!tab || tab.dataset.sel3Refined==='1') return;\n    tab.dataset.sel3Refined='1';\n    tab.innerHTML=`\n      <section id="sel3-refined" aria-label="SEL3 同理心夥伴雷達">\n        <div class="sel3-shell">\n          <div class="sel3-teach">\n            <div class="sel3-scenario">情境：小美站在教室門口，其他同學正在一起玩。</div>\n            <div class="sel3-progress" aria-label="四階段進度">\n              <div class="sel3-step active" data-step="1">① 看見</div>\n              <div class="sel3-step" data-step="2">② 猜想</div>\n              <div class="sel3-step" data-step="3">③ 問問看</div>\n              <div class="sel3-step" data-step="4">④ 行動</div>\n            </div>\n            <h2 class="sel3-title">同理心不是猜對別人的心情</h2>\n            <p class="sel3-sub">我們可以：先看見 → 再猜想 → 問問看 → 最後行動。<br>不知道也沒關係！先觀察、再問問看，也是一種同理心。</p>\n            <div class="sel3-teach-grid">\n              <div class="sel3-teach-card"><b>① 看見｜找「真的看得到」的事</b>不要急著替別人下結論，只說你觀察到的行為或情況。</div>\n              <div class="sel3-teach-card"><b>② 猜想｜接受不只一種可能</b>別人的心情不能只靠猜；「我不知道」也是很好的答案。</div>\n              <div class="sel3-teach-card"><b>③ 問問看｜用尊重的方式確認</b>用「你還好嗎？」這類問題，而不是直接替對方決定感受。</div>\n              <div class="sel3-teach-card"><b>④ 行動｜知道後再決定怎麼幫</b>聽到對方的需要，再選擇陪伴、邀請或其他合適的行動。</div>\n            </div>\n          </div>\n          <div class="sel3-practice">\n            <div class="sel3-practice-head"><div class="sel3-practice-label">🧭 同理心練習</div><div class="sel3-note">你的每一步答案都會留下來，方便老師一起檢討</div></div>\n            <div id="sel3-stage-1" class="sel3-stage">\n              <div class="sel3-question">① 看見：你看到了什麼？</div>\n              <div class="sel3-options">\n                <button class="sel3-option" data-stage="1" data-correct="1">小美一個人站著</button>\n                <button class="sel3-option" data-stage="1" data-correct="1">同學正在一起玩</button>\n                <button class="sel3-option" data-stage="1" data-correct="1">小美沒有加入</button>\n                <button class="sel3-option" data-stage="1" data-correct="0">小美一定很難過</button>\n              </div><div class="sel3-feedback"></div>\n            </div>\n            <div id="sel3-stage-2" class="sel3-stage sel3-locked">\n              <div class="sel3-question">② 猜想：你覺得她可能怎麼了？</div>\n              <div class="sel3-options">\n                <button class="sel3-option" data-stage="2" data-correct="1">可能有點難過</button>\n                <button class="sel3-option" data-stage="2" data-correct="1">可能有點害羞</button>\n                <button class="sel3-option" data-stage="2" data-correct="1">可能只是想休息</button>\n                <button class="sel3-option" data-stage="2" data-correct="1">我不知道，我想先問問看</button>\n              </div><div class="sel3-feedback"></div>\n            </div>\n            <div id="sel3-stage-3" class="sel3-stage sel3-locked">\n              <div class="sel3-question">③ 問問看：你可以怎麼問？</div>\n              <div class="sel3-options">\n                <button class="sel3-option" data-stage="3" data-correct="1">你還好嗎？</button>\n                <button class="sel3-option" data-stage="3" data-correct="1">你想跟我們一起玩嗎？</button>\n                <button class="sel3-option" data-stage="3" data-correct="0">你為什麼不跟大家玩？</button>\n                <button class="sel3-option" data-stage="3" data-correct="0">你一定是不開心吧？</button>\n              </div><div class="sel3-feedback"></div>\n            </div>\n            <div id="sel3-stage-4" class="sel3-stage sel3-locked">\n              <div class="sel3-question">④ 行動：小美說「我有點害怕，不知道怎麼加入。」你會怎麼做？</div>\n              <div class="sel3-options">\n                <button class="sel3-option" data-stage="4" data-correct="1">沒關係，我陪你一起。</button>\n                <button class="sel3-option" data-stage="4" data-correct="1">你可以先看我們玩。</button>\n                <button class="sel3-option" data-stage="4" data-correct="0">那你自己去玩啊。</button>\n                <button class="sel3-option" data-stage="4" data-correct="0">我去找老師。</button>\n              </div><div class="sel3-feedback"></div>\n            </div>\n            <div id="sel3-complete" class="sel3-complete"><b>🌟 同理心雷達完成！</b><br>我先看見 → 我不急著猜 → 我可以問 → 我再決定怎麼幫忙。<br><span style="font-size:15px">老師可以回頭看四個步驟的答案，帶著大家一起討論「為什麼這樣選？」</span></div>\n          </div>\n        </div>\n      </section>`;\n\n    const steps=[1,2,3,4].map(n=>document.getElementById('sel3-stage-'+n));\n    const progress=[...tab.querySelectorAll('.sel3-step')];\n    tab.querySelectorAll('.sel3-option').forEach(btn=>{\n      btn.addEventListener('click',function(){\n        const n=Number(this.dataset.stage), stage=steps[n-1];\n        if(stage.classList.contains('sel3-locked')) return;\n        const buttons=stage.querySelectorAll('.sel3-option');\n        buttons.forEach(b=>b.classList.remove('selected','correct','wrong'));\n        this.classList.add('selected');\n        const fb=stage.querySelector('.sel3-feedback');\n        const ok=this.dataset.correct==='1';\n        if(ok){\n          this.classList.add('correct');\n          fb.textContent=n===2 ? '✓ 很好！這是「可能」的想法，不必急著確定。' : n===3 ? '✓ 很好！先問問看，才能知道對方真正的感受。' : n===4 ? '✓ 很好！先理解需要，再用行動支持對方。' : '✓ 這是看得到的事實。觀察得很仔細！';\n          progress[n-1].classList.remove('active'); progress[n-1].classList.add('done');\n          if(n<4){\n            const next=steps[n];\n            next.classList.remove('sel3-locked');\n            progress[n].classList.add('active');\n            setTimeout(()=>next.scrollIntoView({behavior:'smooth',block:'nearest'}),150);\n          }else{\n            document.getElementById('sel3-complete').classList.add('show');\n          }\n        }else{\n          this.classList.add('wrong');\n          fb.textContent=n===1 ? '再想想：這句話是在猜心情，不是你真正看得到的事情。' : '再想想：這個選擇太快替對方下結論或不夠支持，可以換一個看看。';\n        }\n      });\n    });\n  }\n  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();\n})();\n</script>\n</body>
+\n<!-- SEL3_LAYOUT_AND_PERSISTENT_ANSWERS_20260914 -->
+<script>
+(function(){
+  function init(){
+    const tab=document.getElementById('tab-empathy');
+    if(!tab || tab.dataset.sel3Refined==='1') return;
+    tab.dataset.sel3Refined='1';
+    tab.innerHTML=`
+      <section id="sel3-refined" aria-label="SEL3 同理心夥伴雷達">
+        <div class="sel3-shell">
+          <div class="sel3-teach">
+            <div class="sel3-scenario">情境：小美站在教室門口，其他同學正在一起玩。</div>
+            <div class="sel3-progress" aria-label="四階段進度">
+              <div class="sel3-step active" data-step="1">① 看見</div>
+              <div class="sel3-step" data-step="2">② 猜想</div>
+              <div class="sel3-step" data-step="3">③ 問問看</div>
+              <div class="sel3-step" data-step="4">④ 行動</div>
+            </div>
+            <h2 class="sel3-title">同理心不是猜對別人的心情</h2>
+            <p class="sel3-sub">我們可以：先看見 → 再猜想 → 問問看 → 最後行動。<br>不知道也沒關係！先觀察、再問問看，也是一種同理心。</p>
+            <div class="sel3-teach-grid">
+              <div class="sel3-teach-card"><b>① 看見｜找「真的看得到」的事</b>不要急著替別人下結論，只說你觀察到的行為或情況。</div>
+              <div class="sel3-teach-card"><b>② 猜想｜接受不只一種可能</b>別人的心情不能只靠猜；「我不知道」也是很好的答案。</div>
+              <div class="sel3-teach-card"><b>③ 問問看｜用尊重的方式確認</b>用「你還好嗎？」這類問題，而不是直接替對方決定感受。</div>
+              <div class="sel3-teach-card"><b>④ 行動｜知道後再決定怎麼幫</b>聽到對方的需要，再選擇陪伴、邀請或其他合適的行動。</div>
+            </div>
+          </div>
+          <div class="sel3-practice">
+            <div class="sel3-practice-head"><div class="sel3-practice-label">🧭 同理心練習</div><div class="sel3-note">你的每一步答案都會留下來，方便老師一起檢討</div></div>
+            <div id="sel3-stage-1" class="sel3-stage">
+              <div class="sel3-question">① 看見：你看到了什麼？</div>
+              <div class="sel3-options">
+                <button class="sel3-option" data-stage="1" data-correct="1">小美一個人站著</button>
+                <button class="sel3-option" data-stage="1" data-correct="1">同學正在一起玩</button>
+                <button class="sel3-option" data-stage="1" data-correct="1">小美沒有加入</button>
+                <button class="sel3-option" data-stage="1" data-correct="0">小美一定很難過</button>
+              </div><div class="sel3-feedback"></div>
+            </div>
+            <div id="sel3-stage-2" class="sel3-stage sel3-locked">
+              <div class="sel3-question">② 猜想：你覺得她可能怎麼了？</div>
+              <div class="sel3-options">
+                <button class="sel3-option" data-stage="2" data-correct="1">可能有點難過</button>
+                <button class="sel3-option" data-stage="2" data-correct="1">可能有點害羞</button>
+                <button class="sel3-option" data-stage="2" data-correct="1">可能只是想休息</button>
+                <button class="sel3-option" data-stage="2" data-correct="1">我不知道，我想先問問看</button>
+              </div><div class="sel3-feedback"></div>
+            </div>
+            <div id="sel3-stage-3" class="sel3-stage sel3-locked">
+              <div class="sel3-question">③ 問問看：你可以怎麼問？</div>
+              <div class="sel3-options">
+                <button class="sel3-option" data-stage="3" data-correct="1">你還好嗎？</button>
+                <button class="sel3-option" data-stage="3" data-correct="1">你想跟我們一起玩嗎？</button>
+                <button class="sel3-option" data-stage="3" data-correct="0">你為什麼不跟大家玩？</button>
+                <button class="sel3-option" data-stage="3" data-correct="0">你一定是不開心吧？</button>
+              </div><div class="sel3-feedback"></div>
+            </div>
+            <div id="sel3-stage-4" class="sel3-stage sel3-locked">
+              <div class="sel3-question">④ 行動：小美說「我有點害怕，不知道怎麼加入。」你會怎麼做？</div>
+              <div class="sel3-options">
+                <button class="sel3-option" data-stage="4" data-correct="1">沒關係，我陪你一起。</button>
+                <button class="sel3-option" data-stage="4" data-correct="1">你可以先看我們玩。</button>
+                <button class="sel3-option" data-stage="4" data-correct="0">那你自己去玩啊。</button>
+                <button class="sel3-option" data-stage="4" data-correct="0">我去找老師。</button>
+              </div><div class="sel3-feedback"></div>
+            </div>
+            <div id="sel3-complete" class="sel3-complete"><b>🌟 同理心雷達完成！</b><br>我先看見 → 我不急著猜 → 我可以問 → 我再決定怎麼幫忙。<br><span style="font-size:15px">老師可以回頭看四個步驟的答案，帶著大家一起討論「為什麼這樣選？」</span></div>
+          </div>
+        </div>
+      </section>`;
+
+    const steps=[1,2,3,4].map(n=>document.getElementById('sel3-stage-'+n));
+    const progress=[...tab.querySelectorAll('.sel3-step')];
+    tab.querySelectorAll('.sel3-option').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        const n=Number(this.dataset.stage), stage=steps[n-1];
+        if(stage.classList.contains('sel3-locked')) return;
+        const buttons=stage.querySelectorAll('.sel3-option');
+        buttons.forEach(b=>b.classList.remove('selected','correct','wrong'));
+        this.classList.add('selected');
+        const fb=stage.querySelector('.sel3-feedback');
+        const ok=this.dataset.correct==='1';
+        if(ok){
+          this.classList.add('correct');
+          fb.textContent=n===2 ? '✓ 很好！這是「可能」的想法，不必急著確定。' : n===3 ? '✓ 很好！先問問看，才能知道對方真正的感受。' : n===4 ? '✓ 很好！先理解需要，再用行動支持對方。' : '✓ 這是看得到的事實。觀察得很仔細！';
+          progress[n-1].classList.remove('active'); progress[n-1].classList.add('done');
+          if(n<4){
+            const next=steps[n];
+            next.classList.remove('sel3-locked');
+            progress[n].classList.add('active');
+            setTimeout(()=>next.scrollIntoView({behavior:'smooth',block:'nearest'}),150);
+          }else{
+            document.getElementById('sel3-complete').classList.add('show');
+          }
+        }else{
+          this.classList.add('wrong');
+          fb.textContent=n===1 ? '再想想：這句話是在猜心情，不是你真正看得到的事情。' : '再想想：這個選擇太快替對方下結論或不夠支持，可以換一個看看。';
+        }
+      });
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
+</body>
 </html>
