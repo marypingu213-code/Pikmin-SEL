@@ -1033,11 +1033,8 @@
 
         <!-- Visual Stage -->
         <div class="p-6 bg-purple-50/60 rounded-2xl border border-purple-200 space-y-3">
-          <div id="muscle-phase-card" class="mx-auto max-w-lg rounded-3xl bg-white border-2 border-slate-200 p-4 transition-all duration-500">
-            <div id="muscle-phase-big" class="text-3xl font-black text-slate-700">⚪ 準備</div>
-            <div id="muscle-body-visual" class="text-7xl transition-all duration-500 transform scale-100 my-2">✊</div>
-            <div id="muscle-action-cue" class="text-xl font-black text-purple-900 leading-relaxed">雙手慢慢握成拳頭，準備感受「緊 → 鬆」</div>
-          </div>
+          <div id="muscle-body-visual" class="text-7xl transition-all duration-500">✊</div>
+          <div id="muscle-action-cue" class="mx-auto max-w-lg rounded-2xl bg-white border-2 border-purple-200 px-5 py-3 text-lg font-black text-purple-900">先模仿圖示：雙手握拳，準備感受「緊 → 鬆」的差別</div>
           <h5 id="muscle-target-title" class="font-black text-slate-800 text-base">部位 1：雙手握緊拳頭</h5>
           <p id="muscle-guide-text" class="text-xs text-slate-600 max-w-md mx-auto">用盡全力將雙手握緊成結實的拳頭，感受指節的緊繃...</p>
           <div id="muscle-status-badge" class="inline-block text-xs font-black px-3 py-1 rounded-full bg-slate-100 text-slate-600">
@@ -1160,10 +1157,6 @@
           <button type="button" onclick="switchMandalaTemplate(1)" id="mandala-tpl-1" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">⭐ 十二芒星脈輪</button>
           <button type="button" onclick="switchMandalaTemplate(2)" id="mandala-tpl-2" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌻 太陽放射繁花</button>
           <button type="button" onclick="switchMandalaTemplate(3)" id="mandala-tpl-3" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">❄️ 冰晶幾何迷宮</button>
-          <button type="button" onclick="switchMandalaTemplate(4)" id="mandala-tpl-4" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌿 葉片圓舞</button>
-          <button type="button" onclick="switchMandalaTemplate(5)" id="mandala-tpl-5" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌊 波紋花環</button>
-          <button type="button" onclick="switchMandalaTemplate(6)" id="mandala-tpl-6" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">💎 寶石萬花筒</button>
-          <button type="button" onclick="switchMandalaTemplate(7)" id="mandala-tpl-7" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">☀️ 光芒同心圓</button>
         </div>
 
         <div id="mandala-palette" class="flex items-center justify-center gap-2 flex-wrap pt-1">
@@ -2012,27 +2005,85 @@
     }
 
     // --- TOOL 2: MUSCLE PMR CONTROLLER ---
-    const MUSCLE_TARGETS = [
-      {icon:'✊',name:'雙手握拳',ready:'雙手慢慢握成拳頭',tense:'把雙手握緊 → 停住 → 注意手掌和手指變緊',relax:'把手完全打開、放鬆 → 感受手掌變軟'},
-      {icon:'💪',name:'聳緊雙肩',ready:'坐好或站好，雙手自然垂下',tense:'肩膀往耳朵方向抬高 → 停住 → 注意肩頸變緊',relax:'肩膀慢慢放下 → 感受肩頸變鬆、變輕'},
-      {icon:'😬',name:'臉部五官',ready:'臉部先自然放鬆',tense:'眼睛輕輕閉緊、嘴巴抿起 → 停住 → 注意臉頰變緊',relax:'眼睛和嘴巴都放鬆 → 感受整張臉變柔軟'},
-      {icon:'🦶',name:'抓緊腳趾',ready:'雙腳踩穩地面',tense:'腳趾往內縮、抓緊 → 停住 → 注意腳底變緊',relax:'腳趾全部鬆開 → 感受腳底變平、變舒服'}
-    ];
     let currentMuscleTargetIndex = 0;
     function setMuscleTarget(idx) {
-      playSound('pop'); currentMuscleTargetIndex=idx; const target=MUSCLE_TARGETS[idx]; if(!target)return;
-      const visual=document.getElementById('muscle-body-visual'),title=document.getElementById('muscle-target-title'),guide=document.getElementById('muscle-guide-text'),badge=document.getElementById('muscle-status-badge'),bar=document.getElementById('muscle-timer-bar'),sec=document.getElementById('muscle-sec-label'),cue=document.getElementById('muscle-action-cue'),big=document.getElementById('muscle-phase-big'),card=document.getElementById('muscle-phase-card');
-      if(visual){visual.textContent=target.icon;visual.className='text-7xl transition-all duration-500 transform scale-100 my-2';}
-      if(title)title.textContent=`部位 ${idx+1}：${target.name}`; if(guide)guide.textContent='先照著動作做，再比較身體「緊」和「鬆」的感覺。'; if(cue)cue.textContent=target.ready+'，準備感受「緊 → 鬆」'; if(big)big.textContent='⚪ 準備'; if(card)card.className='mx-auto max-w-lg rounded-3xl bg-white border-2 border-slate-200 p-4 transition-all duration-500';
-      if(badge){badge.className='inline-block text-sm font-black px-4 py-2 rounded-full bg-slate-100 text-slate-700';badge.textContent='先準備好身體';}
-      if(bar)bar.style.width='0%'; if(sec)sec.textContent='準備'; const phase=document.getElementById('muscle-phase-label');if(phase)phase.textContent='現在：準備'; if(muscleCycleTimer)clearInterval(muscleCycleTimer);
+      playSound('pop');
+      currentMuscleTargetIndex = idx;
+      const target = MUSCLE_TARGETS[idx];
+      if (!target) return;
+
+      const visual = document.getElementById('muscle-body-visual');
+      const title = document.getElementById('muscle-target-title');
+      const guide = document.getElementById('muscle-guide-text');
+      const badge = document.getElementById('muscle-status-badge');
+      const timerBar = document.getElementById('muscle-timer-bar');
+      const secLabel = document.getElementById('muscle-sec-label');
+
+      if (visual) visual.textContent = target.icon;
+      if (title) title.textContent = `部位 ${idx + 1}：${target.name}`;
+      if (guide) guide.textContent = target.instruction;
+      if (badge) {
+        badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-slate-100 text-slate-600';
+        badge.textContent = '準備就緒';
+      }
+      if (timerBar) timerBar.style.width = '0%';
+      if (secLabel) secLabel.textContent = '5 秒';
+      if (muscleCycleTimer) clearInterval(muscleCycleTimer);
     }
-    function startMuscleCycle(){
-      initAudio();playSound('pop');const target=MUSCLE_TARGETS[currentMuscleTargetIndex],badge=document.getElementById('muscle-status-badge'),bar=document.getElementById('muscle-timer-bar'),sec=document.getElementById('muscle-sec-label'),btn=document.getElementById('start-muscle-btn'),visual=document.getElementById('muscle-body-visual'),cue=document.getElementById('muscle-action-cue'),big=document.getElementById('muscle-phase-big'),card=document.getElementById('muscle-phase-card'),phase=document.getElementById('muscle-phase-label');
-      if(muscleCycleTimer)clearInterval(muscleCycleTimer);if(btn)btn.disabled=true;
-      let n=5;if(big)big.textContent='🔴 緊';if(cue)cue.textContent=target.tense;if(visual)visual.className='text-7xl transition-all duration-500 transform scale-125 my-2';if(card)card.className='mx-auto max-w-lg rounded-3xl bg-red-50 border-2 border-red-300 p-4 transition-all duration-500';if(badge){badge.className='inline-block text-base font-black px-5 py-2 rounded-full bg-red-100 text-red-700';badge.textContent='🔴 緊：先注意身體哪裡變硬、變緊';}if(phase)phase.textContent='現在：🔴 緊';if(sec)sec.textContent='5 秒';
-      muscleCycleTimer=setInterval(()=>{n--;if(bar)bar.style.width=`${((5-n)/5)*100}%`;if(sec)sec.textContent=`${n} 秒`;if(n<=0){clearInterval(muscleCycleTimer);playSound('success');let r=8;if(big)big.textContent='🟢 鬆';if(cue)cue.textContent=target.relax;if(visual)visual.className='text-7xl transition-all duration-700 transform scale-90 my-2';if(card)card.className='mx-auto max-w-lg rounded-3xl bg-emerald-50 border-2 border-emerald-300 p-4 transition-all duration-500';if(badge){badge.className='inline-block text-base font-black px-5 py-2 rounded-full bg-emerald-100 text-emerald-800';badge.textContent='🟢 鬆：注意剛才緊的地方現在有什麼不同';}if(phase)phase.textContent='現在：🟢 鬆';if(sec)sec.textContent='8 秒';
-        muscleCycleTimer=setInterval(()=>{r--;if(bar)bar.style.width=`${(r/8)*100}%`;if(sec)sec.textContent=`${r} 秒`;if(r<=0){clearInterval(muscleCycleTimer);if(big)big.textContent='🤔 比一比';if(cue)cue.textContent='剛才「緊」，現在「鬆」——哪裡不一樣？摸摸看、動一動，再說說你的感覺。';if(visual)visual.className='text-7xl transition-all duration-500 transform scale-100 my-2';if(card)card.className='mx-auto max-w-lg rounded-3xl bg-amber-50 border-2 border-amber-300 p-4 transition-all duration-500';if(badge){badge.className='inline-block text-base font-black px-5 py-2 rounded-full bg-amber-100 text-amber-800';badge.textContent='💡 想一想：緊的時候？鬆的時候？';}if(phase)phase.textContent='完成：比較身體感覺';if(sec)sec.textContent='完成';if(btn)btn.disabled=false;updateActiveStudentRecord(2,2);}},1000);}},1000);
+
+    function startMuscleCycle() {
+      initAudio();
+      playSound('pop');
+      const target = MUSCLE_TARGETS[currentMuscleTargetIndex];
+      const badge = document.getElementById('muscle-status-badge');
+      const bar = document.getElementById('muscle-timer-bar');
+      const secLabel = document.getElementById('muscle-sec-label');
+      const startBtn = document.getElementById('start-muscle-btn');
+
+      if (muscleCycleTimer) clearInterval(muscleCycleTimer);
+      if (startBtn) startBtn.disabled = true;
+
+      // Phase 1: Tension for 5 seconds
+      let tenseSeconds = 5;
+      if (badge) {
+        badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-red-100 text-red-700 animate-pulse';
+        badge.textContent = '⚡ 用力緊繃！感受肌肉張力！';
+      }
+      if (secLabel) secLabel.textContent = `${tenseSeconds} 秒 (緊繃中)`;
+
+      muscleCycleTimer = setInterval(() => {
+        tenseSeconds--;
+        if (bar) bar.style.width = `${((5 - tenseSeconds) / 5) * 100}%`;
+        if (secLabel) secLabel.textContent = `${tenseSeconds} 秒 (緊繃中)`;
+
+        if (tenseSeconds <= 0) {
+          clearInterval(muscleCycleTimer);
+          // Phase 2: Complete Release for 8 seconds
+          playSound('success');
+          let releaseSeconds = 8;
+          if (badge) {
+            badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 animate-bounce';
+            badge.textContent = '🍃 瞬間完全放鬆！感受壓力卸下...';
+          }
+          if (secLabel) secLabel.textContent = `${releaseSeconds} 秒 (放鬆舒緩)`;
+
+          muscleCycleTimer = setInterval(() => {
+            releaseSeconds--;
+            if (bar) bar.style.width = `${(releaseSeconds / 8) * 100}%`;
+            if (secLabel) secLabel.textContent = `${releaseSeconds} 秒 (放鬆舒緩)`;
+
+            if (releaseSeconds <= 0) {
+              clearInterval(muscleCycleTimer);
+              if (badge) {
+                badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-purple-100 text-purple-800';
+                badge.textContent = '✨ 放鬆練習完成！身心很平靜';
+              }
+              if (startBtn) startBtn.disabled = false;
+              updateActiveStudentRecord(2, 2);
+            }
+          }, 1000);
+        }
+      }, 1000);
     }
 
     // --- TOOL 3: FIDGET POP GRID (Pure circles, disappear on click) ---
@@ -2187,7 +2238,7 @@
     function switchMandalaTemplate(idx) {
       playSound('pop');
       currentMandalaTemplate = idx;
-      [0, 1, 2, 3, 4, 5, 6, 7].forEach(i => {
+      [0, 1, 2, 3].forEach(i => {
         const btn = document.getElementById(`mandala-tpl-${i}`);
         if (btn) {
           btn.className = i === idx
@@ -2297,7 +2348,7 @@
             <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="10" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
           </svg>
         `;
-      } else if (currentMandalaTemplate === 3) {
+      } else {
         // Template 3: Crystal Snowflake & Sacred Geometry Rings
         let crystalWings = '';
         for (let i = 0; i < 8; i++) {
@@ -2325,23 +2376,6 @@
     function colorMandalaSegment(el) {
       playSound('pop');
       el.setAttribute('fill', selectedMandalaColor);
-      else if (currentMandalaTemplate === 4) {
-        let leaves = '';
-        for (let i=0;i<12;i++){const a=i*30*Math.PI/180,x=100+Math.cos(a)*60,y=100+Math.sin(a)*60,rot=i*30+90;leaves += `<ellipse class="mandala-piece" onclick="colorMandalaSegment(this)" cx="${x}" cy="${y}" rx="13" ry="30" transform="rotate(${rot} ${x} ${y})" fill="#fff" stroke="#64748b" stroke-width="1.4"/>`;}
-        wrapper.innerHTML = `<svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none"><circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>${leaves}<circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="42" fill="#fff" stroke="#64748b" stroke-width="1.5"/><circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="20" fill="#fff" stroke="#64748b" stroke-width="1.5"/></svg>`;
-      } else if (currentMandalaTemplate === 5) {
-        let waves='';
-        for(let r=88;r>=24;r-=16) waves += `<circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="${r}" fill="#fff" stroke="#64748b" stroke-width="2"/>`;
-        wrapper.innerHTML=`<svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none"><circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>${waves}<path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 18 Q118 42 100 58 Q82 42 100 18Z" fill="#fff" stroke="#64748b"/><path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M182 100 Q158 118 142 100 Q158 82 182 100Z" fill="#fff" stroke="#64748b"/><path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 182 Q82 158 100 142 Q118 158 100 182Z" fill="#fff" stroke="#64748b"/><path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M18 100 Q42 82 58 100 Q42 118 18 100Z" fill="#fff" stroke="#64748b"/></svg>`;
-      } else if (currentMandalaTemplate === 6) {
-        let gems='';
-        for(let i=0;i<16;i++){const a=i*22.5*Math.PI/180,b=(i+1)*22.5*Math.PI/180;gems+=`<polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="100,100 ${100+Math.cos(a)*45},${100+Math.sin(a)*45} ${100+Math.cos((a+b)/2)*92},${100+Math.sin((a+b)/2)*92} ${100+Math.cos(b)*45},${100+Math.sin(b)*45}" fill="#fff" stroke="#64748b" stroke-width="1.2"/>`;}
-        wrapper.innerHTML=`<svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none"><circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>${gems}<polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="100,68 132,100 100,132 68,100" fill="#fff" stroke="#475569" stroke-width="1.6"/></svg>`;
-      } else if (currentMandalaTemplate === 7) {
-        let rays='';
-        for(let i=0;i<24;i++){const a=i*15*Math.PI/180,b=(i+1)*15*Math.PI/180;rays+=`<path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M${100+Math.cos(a)*48} ${100+Math.sin(a)*48} L${100+Math.cos((a+b)/2)*94} ${100+Math.sin((a+b)/2)*94} L${100+Math.cos(b)*48} ${100+Math.sin(b)*48} Z" fill="#fff" stroke="#64748b" stroke-width="1.1"/>`;}
-        wrapper.innerHTML=`<svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none"><circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>${rays}<circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="48" fill="#fff" stroke="#64748b" stroke-width="1.5"/><circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="31" fill="#fff" stroke="#64748b" stroke-width="1.5"/><circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="14" fill="#fff" stroke="#64748b" stroke-width="1.5"/></svg>`;
-      }
     }
 
     function resetMandala() {
