@@ -980,10 +980,15 @@
             <div id="mindful-breath-ring" class="w-48 h-48 rounded-full bg-gradient-to-tr from-teal-300 via-emerald-300 to-cyan-400 opacity-90 flex items-center justify-center shadow-2xl transition-all duration-1000 ease-in-out">
               <span id="mindful-breath-icon" class="text-6xl drop-shadow-md">🌸</span>
             </div>
-            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span id="mindful-breath-state" class="text-base font-black text-teal-950">準備吸氣</span>
-              <span id="mindful-breath-counter" class="text-4xl font-black text-teal-950 mt-1">4</span>
-            </div>
+            <!-- 呼吸狀態文字獨立於會縮放的圓圈，避免與動畫重疊 -->
+          </div>
+          <div class="mt-4 min-w-[190px] px-5 py-2.5 rounded-2xl bg-white border-2 border-teal-200 shadow-sm flex items-center justify-center gap-3 pointer-events-none">
+            <span id="mindful-breath-state" class="text-lg font-black text-teal-900">準備吸氣</span>
+            <span class="h-6 w-px bg-teal-200"></span>
+            <span id="mindful-breath-counter" class="text-2xl font-black text-teal-700 tabular-nums">4</span>
+            <span class="text-sm font-bold text-slate-500">秒</span>
+          </div>
+          <div class="relative w-64 h-0">
           </div>
         </div>
 
