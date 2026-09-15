@@ -978,7 +978,7 @@
         <div class="py-6 flex flex-col items-center justify-center">
           <div class="relative w-64 h-64 flex items-center justify-center">
             <div id="mindful-breath-ring" class="w-48 h-48 rounded-full bg-gradient-to-tr from-teal-300 via-emerald-300 to-cyan-400 opacity-90 flex items-center justify-center shadow-2xl transition-all duration-1000 ease-in-out">
-              <span id="mindful-breath-icon" class="text-5xl">🌸</span>
+              <span id="mindful-breath-icon" class="text-6xl drop-shadow-md">🌸</span>
             </div>
             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span id="mindful-breath-state" class="text-base font-black text-teal-950">準備吸氣</span>
@@ -1024,7 +1024,8 @@
 
         <!-- Visual Stage -->
         <div class="p-6 bg-purple-50/60 rounded-2xl border border-purple-200 space-y-3">
-          <div id="muscle-body-visual" class="text-6xl transition-transform duration-500">✊</div>
+          <div id="muscle-body-visual" class="text-7xl transition-all duration-500">✊</div>
+          <div id="muscle-action-cue" class="mx-auto max-w-lg rounded-2xl bg-white border-2 border-purple-200 px-5 py-3 text-lg font-black text-purple-900">先模仿圖示：雙手握拳，準備感受「緊 → 鬆」的差別</div>
           <h5 id="muscle-target-title" class="font-black text-slate-800 text-base">部位 1：雙手握緊拳頭</h5>
           <p id="muscle-guide-text" class="text-xs text-slate-600 max-w-md mx-auto">用盡全力將雙手握緊成結實的拳頭，感受指節的緊繃...</p>
           <div id="muscle-status-badge" class="inline-block text-xs font-black px-3 py-1 rounded-full bg-slate-100 text-slate-600">
@@ -1034,7 +1035,7 @@
           <!-- Progress Bar & Timer -->
           <div class="w-full max-w-xs mx-auto space-y-1 pt-2">
             <div class="flex justify-between text-[11px] font-black text-purple-900">
-              <span>緊繃倒數</span>
+              <span id="muscle-phase-label">現在：準備</span>
               <span id="muscle-sec-label">5 秒</span>
             </div>
             <div class="w-full bg-white rounded-full h-3 p-0.5 overflow-hidden border border-purple-200">
@@ -1045,7 +1046,7 @@
 
         <div>
           <button id="start-muscle-btn" onclick="startMuscleCycle()" class="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black text-sm rounded-2xl shadow-md transition active:scale-95">
-            ⚡ 開始緊繃倒數
+            ▶️ 跟著我做「緊 5 秒 → 鬆 8 秒」
           </button>
         </div>
       </div>
@@ -1140,7 +1141,7 @@
           <p class="text-xs text-slate-500">選擇畫布與顏色後，點擊曼陀羅的幾何色塊填入顏色！</p>
         </div>
 
-        <!-- 4 Mandala Templates Switcher -->
+        <!-- 8 original geometric templates; all generated in code, no external copyrighted images -->
         <div class="flex items-center justify-center gap-2 flex-wrap pt-1">
           <span class="text-xs font-bold text-slate-500 mr-1">選擇畫布：</span>
           <button type="button" onclick="switchMandalaTemplate(0)" id="mandala-tpl-0" class="px-3 py-1.5 rounded-xl text-xs font-black border-2 border-pink-500 bg-pink-50 text-pink-900 transition">🌸 經典八瓣蓮</button>
@@ -2586,7 +2587,7 @@
       canvas.width = rect.width;
       canvas.height = rect.height;
 
-      slingshotBasePos = { x: 95, y: canvas.height - 95 };
+      slingshotBasePos = { x: Math.max(150, canvas.width * 0.18), y: canvas.height - 95 };
       slingshotDragPos = { ...slingshotBasePos };
 
       // Ensure active pikmin name indicator is updated
@@ -2596,9 +2597,11 @@
 
       // Generate Target Flowers sitting on natural brown rocky ledges (lower top flower so it's comfortably hit!)
       cliffTargets = [
-        { x: canvas.width - 55, y: 105, radius: 25, hit: false, color: '#f59e0b' },
-        { x: canvas.width - 85, y: 175, radius: 25, hit: false, color: '#ef4444' },
-        { x: canvas.width - 55, y: 245, radius: 25, hit: false, color: '#3b82f6' }
+        { x: canvas.width - 150, y: 62, radius: 25, hit: false, color: '#f59e0b' },
+        { x: canvas.width - 175, y: 112, radius: 25, hit: false, color: '#ef4444' },
+        { x: canvas.width - 145, y: 162, radius: 25, hit: false, color: '#3b82f6' },
+        { x: canvas.width - 175, y: 212, radius: 25, hit: false, color: '#a855f7' },
+        { x: canvas.width - 145, y: 262, radius: 25, hit: false, color: '#22c55e' }
       ];
 
       // Mouse & Touch events
@@ -2624,7 +2627,7 @@
         const dx = pt.x - slingshotBasePos.x;
         const dy = pt.y - slingshotBasePos.y;
         const dist = Math.hypot(dx, dy);
-        const maxDist = 80;
+        const maxDist = Math.min(150, canvas.width * 0.14);
         if (dist > maxDist) {
           slingshotDragPos = {
             x: slingshotBasePos.x + (dx / dist) * maxDist,
@@ -2640,8 +2643,8 @@
         isSlingshotDragging = false;
         // Fire Pikmin with enhanced velocity for easy reach
         playSound('pop');
-        const vx = (slingshotBasePos.x - slingshotDragPos.x) * 0.28;
-        const vy = (slingshotBasePos.y - slingshotDragPos.y) * 0.28;
+        const vx = (slingshotBasePos.x - slingshotDragPos.x) * 0.36;
+        const vy = (slingshotBasePos.y - slingshotDragPos.y) * 0.36;
         const firingPikmin = PIKMIN_ROSTER[slingshotPikminIndex] || PIKMIN_ROSTER[0];
 
         slingshotProjectile = {
@@ -2716,11 +2719,11 @@
 
         // 4. Visual Trajectory Dots (Predicted Parabolic Path when dragging)
         if (isSlingshotDragging) {
-          const simVx = (slingshotBasePos.x - slingshotDragPos.x) * 0.28;
-          const simVy = (slingshotBasePos.y - slingshotDragPos.y) * 0.28;
+          const simVx = (slingshotBasePos.x - slingshotDragPos.x) * 0.36;
+          const simVy = (slingshotBasePos.y - slingshotDragPos.y) * 0.36;
           let simX = slingshotDragPos.x;
           let simY = slingshotDragPos.y;
-          let simGravity = 0.28;
+          let simGravity = 0.22;
 
           ctx.fillStyle = '#f97316';
           for (let step = 0; step < 26; step++) {
@@ -2788,7 +2791,7 @@
         if (slingshotProjectile) {
           slingshotProjectile.x += slingshotProjectile.vx;
           slingshotProjectile.y += slingshotProjectile.vy;
-          slingshotProjectile.vy += 0.28; // balanced gentle gravity
+          slingshotProjectile.vy += 0.22; // balanced gentle gravity
           slingshotProjectile.angle = Math.atan2(slingshotProjectile.vy, slingshotProjectile.vx);
 
           const projImg = pikminSpriteImages[slingshotProjectile.type] || pikminSpriteImages.red;
@@ -6276,5 +6279,49 @@
   }
   function init(){build();const tab=document.getElementById('tab-empathy');if(tab)new MutationObserver(()=>{if(tab.offsetParent!==null&&!document.getElementById('sel3-direct-final'))build();}).observe(tab,{attributes:true,attributeFilter:['class','style']});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
+})();
+</script>
+
+<!-- SEL2_UX_REFINEMENT_20260915 -->
+<style>
+.sel2-bubble-icon{position:relative;width:32px;height:28px;display:inline-block}
+.sel2-bubble-icon i{position:absolute;border:2px solid #38bdf8;border-radius:999px;background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(125,211,252,.35));box-shadow:inset 2px 2px 3px rgba(255,255,255,.9)}
+.sel2-bubble-icon i:nth-child(1){width:18px;height:18px;left:1px;top:7px}
+.sel2-bubble-icon i:nth-child(2){width:12px;height:12px;right:1px;top:1px}
+.sel2-bubble-icon i:nth-child(3){width:8px;height:8px;right:3px;bottom:0}
+#mindful-breath-ring{will-change:transform}
+#muscle-action-cue{transition:all .25s ease}
+</style>
+<script>
+(function(){
+  const oldSet=window.setMuscleTarget;
+  window.setMuscleTarget=function(idx){
+    oldSet(idx);
+    const cues=[
+      '✊ 雙手放在身前 → 握緊拳頭 → 注意手掌變硬、指節有壓力',
+      '💪 肩膀往耳朵方向抬高 → 停住 → 注意肩頸變緊',
+      '😬 眼睛閉緊、鼻子皺起、嘴巴輕輕抿緊 → 感覺臉部縮起來',
+      '🦶 腳趾往下抓緊 → 小腿一起用力 → 注意腳底和小腿變緊'
+    ];
+    const el=document.getElementById('muscle-action-cue'); if(el) el.textContent=cues[idx]||'跟著圖示做動作';
+  };
+  const oldStart=window.startMuscleCycle;
+  window.startMuscleCycle=function(){
+    const cue=document.getElementById('muscle-action-cue'), phase=document.getElementById('muscle-phase-label'), visual=document.getElementById('muscle-body-visual');
+    if(cue) cue.textContent='🔴 現在用力！維持 5 秒，注意「緊緊的」感覺';
+    if(phase) phase.textContent='🔴 緊：身體用力';
+    if(visual){visual.style.transform='scale(1.18)';visual.style.filter='drop-shadow(0 0 12px rgba(239,68,68,.35))';}
+    oldStart();
+    setTimeout(()=>{
+      if(cue) cue.textContent='🟢 馬上全部放掉！讓手腳軟下來，注意「鬆鬆的」感覺';
+      if(phase) phase.textContent='🟢 鬆：身體放軟';
+      if(visual){visual.style.transform='scale(.92)';visual.style.filter='none';}
+    },5000);
+    setTimeout(()=>{
+      if(cue) cue.textContent='✨ 想一想：剛才「緊」和現在「鬆」，身體哪裡最不一樣？';
+      if(phase) phase.textContent='完成：比較緊與鬆';
+      if(visual) visual.style.transform='scale(1)';
+    },13000);
+  };
 })();
 </script>
