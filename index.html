@@ -943,7 +943,11 @@
             <span class="truncate">接飄落葉</span>
           </button>
           <button onclick="switchSel2Tool('bubbles')" id="sel2-nav-bubbles" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300">
-            <span class="text-2xl">🫧</span>
+            <span class="w-9 h-8 relative inline-block" aria-hidden="true">
+              <span class="absolute w-5 h-5 rounded-full border-2 border-sky-400 bg-sky-100/60 left-0 bottom-0 shadow-sm"></span>
+              <span class="absolute w-3.5 h-3.5 rounded-full border-2 border-cyan-400 bg-white/70 right-0 top-0 shadow-sm"></span>
+              <span class="absolute w-2 h-2 rounded-full border border-sky-300 bg-white right-1 bottom-0"></span>
+            </span>
             <span class="truncate">吹戳泡泡</span>
           </button>
           <button onclick="switchSel2Tool('slingshot')" id="sel2-nav-slingshot" class="sel2-tool-btn p-2.5 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-700 hover:border-amber-300">
@@ -1860,6 +1864,8 @@
 
     let bubblePoppedCount = 0;
     let bubbleSpawnInterval = null;
+    let bubbleSessionStart = 0;
+    let bubbleSpawnTimeout = null;
 
     let slingshotPikminAmmo = 'red';
     let slingshotHits = 0;
@@ -2508,12 +2514,30 @@
       const container = document.getElementById('bubble-container');
       if (!container) return;
       if (bubbleSpawnInterval) clearInterval(bubbleSpawnInterval);
+      if (bubbleSpawnTimeout) clearTimeout(bubbleSpawnTimeout);
+      bubbleSpawnInterval = null;
+      bubbleSessionStart = Date.now();
 
-      // Spawn initial bubbles
-      for (let i = 0; i < 6; i++) {
-        setTimeout(spawnOneBubble, i * 400);
-      }
-      bubbleSpawnInterval = setInterval(spawnOneBubble, 1400);
+      // 前 15 秒先慢慢熟悉；之後逐步增加泡泡出現頻率
+      for (let i = 0; i < 3; i++) setTimeout(spawnOneBubble, i * 1100);
+      scheduleNextBubble();
+    }
+
+    function getBubbleLevel() {
+      const elapsed = (Date.now() - bubbleSessionStart) / 1000;
+      if (elapsed < 15) return 0;   // 熟悉期
+      if (elapsed < 35) return 1;   // 穩定期
+      return 2;                     // 挑戰期
+    }
+
+    function scheduleNextBubble() {
+      if (currentSel2Tool !== 'bubbles') return;
+      const level = getBubbleLevel();
+      const delay = level === 0 ? 2200 : (level === 1 ? 1650 : 1250);
+      bubbleSpawnTimeout = setTimeout(() => {
+        spawnOneBubble();
+        scheduleNextBubble();
+      }, delay);
     }
 
     function spawnOneBubble() {
@@ -2523,7 +2547,13 @@
       const b = document.createElement('div');
       const size = Math.floor(Math.random() * 28) + 36; // 36px ~ 64px
       const startY = Math.floor(Math.random() * (container.clientHeight - size - 40)) + 20;
-      const duration = (Math.random() * 4 + 7); // 7s ~ 11s
+      // 學生先建立成功經驗，再逐步加快移動速度
+      const level = getBubbleLevel();
+      const duration = level === 0
+        ? (Math.random() * 3 + 12)   // 12~15 秒：熟悉節奏
+        : level === 1
+          ? (Math.random() * 3 + 9) // 9~12 秒：穩定練習
+          : (Math.random() * 3 + 7); // 7~10 秒：進階挑戰
 
       b.className = 'absolute rounded-full border-2 border-white/80 bg-gradient-to-tr from-cyan-200/50 via-sky-300/40 to-white/70 shadow-md cursor-pointer select-none transition-transform hover:scale-110';
       b.style.width = `${size}px`;
@@ -2578,6 +2608,10 @@
       if (bubbleSpawnInterval) {
         clearInterval(bubbleSpawnInterval);
         bubbleSpawnInterval = null;
+      }
+      if (bubbleSpawnTimeout) {
+        clearTimeout(bubbleSpawnTimeout);
+        bubbleSpawnTimeout = null;
       }
     }
 
