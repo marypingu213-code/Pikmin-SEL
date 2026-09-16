@@ -1157,6 +1157,10 @@
           <button type="button" onclick="switchMandalaTemplate(1)" id="mandala-tpl-1" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">⭐ 十二芒星脈輪</button>
           <button type="button" onclick="switchMandalaTemplate(2)" id="mandala-tpl-2" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌻 太陽放射繁花</button>
           <button type="button" onclick="switchMandalaTemplate(3)" id="mandala-tpl-3" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">❄️ 冰晶幾何迷宮</button>
+          <button type="button" onclick="switchMandalaTemplate(4)" id="mandala-tpl-4" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌿 葉片圓舞</button>
+          <button type="button" onclick="switchMandalaTemplate(5)" id="mandala-tpl-5" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌊 波紋花環</button>
+          <button type="button" onclick="switchMandalaTemplate(6)" id="mandala-tpl-6" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">💎 寶石萬花筒</button>
+          <button type="button" onclick="switchMandalaTemplate(7)" id="mandala-tpl-7" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">☀️ 光芒同心圓</button>
         </div>
 
         <div id="mandala-palette" class="flex items-center justify-center gap-2 flex-wrap pt-1">
@@ -2238,7 +2242,7 @@
     function switchMandalaTemplate(idx) {
       playSound('pop');
       currentMandalaTemplate = idx;
-      [0, 1, 2, 3].forEach(i => {
+      [0, 1, 2, 3, 4, 5, 6, 7].forEach(i => {
         const btn = document.getElementById(`mandala-tpl-${i}`);
         if (btn) {
           btn.className = i === idx
@@ -2348,7 +2352,7 @@
             <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="10" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
           </svg>
         `;
-      } else {
+      } else if (currentMandalaTemplate === 3) {
         // Template 3: Crystal Snowflake & Sacred Geometry Rings
         let crystalWings = '';
         for (let i = 0; i < 8; i++) {
@@ -2371,6 +2375,33 @@
           </svg>
         `;
       }
+      } else if (currentMandalaTemplate >= 4 && currentMandalaTemplate <= 7) {
+        // Templates 4-7 are original procedural SVG geometry; no external image assets.
+        const type = currentMandalaTemplate;
+        const counts = {4:12, 5:16, 6:16, 7:24};
+        const count = counts[type];
+        let pieces = '';
+        for (let i = 0; i < count; i++) {
+          const a = i * Math.PI * 2 / count;
+          const b = (i + 1) * Math.PI * 2 / count;
+          const mid = (a + b) / 2;
+          const inner = type === 7 ? 48 : 38;
+          const outer = type === 6 ? 92 : 88;
+          const x1 = 100 + Math.cos(a) * inner, y1 = 100 + Math.sin(a) * inner;
+          const x2 = 100 + Math.cos(mid) * outer, y2 = 100 + Math.sin(mid) * outer;
+          const x3 = 100 + Math.cos(b) * inner, y3 = 100 + Math.sin(b) * inner;
+          if (type === 4) {
+            pieces += `<path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M100 100 Q${x1} ${y1} ${x2} ${y2} Q${x3} ${y3} 100 100 Z" fill="#ffffff" stroke="#64748b" stroke-width="1.2"/>`;
+          } else if (type === 5) {
+            pieces += `<path class="mandala-piece" onclick="colorMandalaSegment(this)" d="M${x1} ${y1} Q${x2} ${y2} ${x3} ${y3} L100 100 Z" fill="#ffffff" stroke="#64748b" stroke-width="1.2"/>`;
+          } else {
+            pieces += `<polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="100,100 ${x1},${y1} ${x2},${y2} ${x3},${y3}" fill="#ffffff" stroke="#64748b" stroke-width="1.1"/>`;
+          }
+        }
+        const innerShape = type === 6
+          ? '<polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="100,65 135,100 100,135 65,100" fill="#ffffff" stroke="#475569" stroke-width="1.6"/>'
+          : '<circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="28" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/><circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="13" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>';
+        wrapper.innerHTML = `<svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none"><circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>${pieces}${innerShape}</svg>`;
     }
 
     function colorMandalaSegment(el) {
