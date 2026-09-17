@@ -27,67 +27,67 @@ jobs:
           if anchor not in s:
               raise SystemExit('Safety stop: </body> anchor not found')
           patch = r'''
-<!-- LOCALSTORAGE_BACKUP_20260917: non-destructive whole-site browser data backup -->
-<script>
-(function () {
-  function downloadLocalBackup() {
-    try {
-      const storage = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        storage[key] = localStorage.getItem(key);
-      }
-      const now = new Date();
-      const pad = n => String(n).padStart(2, '0');
-      const stamp = now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + '-' + pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds());
-      const backup = {
-        format: 'Pikmin-SEL-localStorage-backup',
-        version: 1,
-        exportedAt: now.toISOString(),
-        origin: location.origin,
-        pathname: location.pathname,
-        itemCount: Object.keys(storage).length,
-        localStorage: storage
-      };
-      const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json;charset=utf-8'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Pikmin-SEL-全班資料備份-' + stamp + '.json';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      const old = document.getElementById('pikmin-backup-toast');
-      if (old) old.remove();
-      const toast = document.createElement('div');
-      toast.id = 'pikmin-backup-toast';
-      toast.textContent = '✓ 全班資料已備份，請妥善保存下載的 JSON 檔';
-      Object.assign(toast.style, {position:'fixed',right:'22px',bottom:'82px',zIndex:'2147483647',background:'#064e3b',color:'#fff',padding:'12px 18px',borderRadius:'14px',boxShadow:'0 8px 24px rgba(0,0,0,.18)',fontSize:'14px',fontWeight:'700'});
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 4500);
-    } catch (err) {
-      alert('備份失敗：' + (err && err.message ? err.message : err));
-    }
-  }
+          <!-- LOCALSTORAGE_BACKUP_20260917: non-destructive whole-site browser data backup -->
+          <script>
+          (function () {
+            function downloadLocalBackup() {
+              try {
+                const storage = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                  const key = localStorage.key(i);
+                  storage[key] = localStorage.getItem(key);
+                }
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                const stamp = now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + '-' + pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds());
+                const backup = {
+                  format: 'Pikmin-SEL-localStorage-backup',
+                  version: 1,
+                  exportedAt: now.toISOString(),
+                  origin: location.origin,
+                  pathname: location.pathname,
+                  itemCount: Object.keys(storage).length,
+                  localStorage: storage
+                };
+                const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json;charset=utf-8'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Pikmin-SEL-全班資料備份-' + stamp + '.json';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                const old = document.getElementById('pikmin-backup-toast');
+                if (old) old.remove();
+                const toast = document.createElement('div');
+                toast.id = 'pikmin-backup-toast';
+                toast.textContent = '✓ 全班資料已備份，請妥善保存下載的 JSON 檔';
+                Object.assign(toast.style, {position:'fixed',right:'22px',bottom:'82px',zIndex:'2147483647',background:'#064e3b',color:'#fff',padding:'12px 18px',borderRadius:'14px',boxShadow:'0 8px 24px rgba(0,0,0,.18)',fontSize:'14px',fontWeight:'700'});
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 4500);
+              } catch (err) {
+                alert('備份失敗：' + (err && err.message ? err.message : err));
+              }
+            }
 
-  function installBackupButton() {
-    if (document.getElementById('pikmin-local-backup-btn')) return;
-    const btn = document.createElement('button');
-    btn.id = 'pikmin-local-backup-btn';
-    btn.type = 'button';
-    btn.textContent = '💾 備份全班資料';
-    btn.title = '將這台電腦目前的 Pikmin SEL 瀏覽器資料下載成 JSON 備份檔';
-    Object.assign(btn.style, {position:'fixed',right:'18px',bottom:'20px',zIndex:'2147483646',border:'1px solid #a7f3d0',background:'#ecfdf5',color:'#065f46',padding:'10px 15px',borderRadius:'9999px',boxShadow:'0 6px 18px rgba(0,0,0,.12)',fontSize:'14px',fontWeight:'800',cursor:'pointer'});
-    btn.addEventListener('click', downloadLocalBackup);
-    document.body.appendChild(btn);
-  }
+            function installBackupButton() {
+              if (document.getElementById('pikmin-local-backup-btn')) return;
+              const btn = document.createElement('button');
+              btn.id = 'pikmin-local-backup-btn';
+              btn.type = 'button';
+              btn.textContent = '💾 備份全班資料';
+              btn.title = '將這台電腦目前的 Pikmin SEL 瀏覽器資料下載成 JSON 備份檔';
+              Object.assign(btn.style, {position:'fixed',right:'18px',bottom:'20px',zIndex:'2147483646',border:'1px solid #a7f3d0',background:'#ecfdf5',color:'#065f46',padding:'10px 15px',borderRadius:'9999px',boxShadow:'0 6px 18px rgba(0,0,0,.12)',fontSize:'14px',fontWeight:'800',cursor:'pointer'});
+              btn.addEventListener('click', downloadLocalBackup);
+              document.body.appendChild(btn);
+            }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installBackupButton);
-  else installBackupButton();
-})();
-</script>
-'''
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installBackupButton);
+            else installBackupButton();
+          })();
+          </script>
+          '''
           s = s.replace(anchor, patch + '\n' + anchor, 1)
           p.write_text(s, encoding='utf-8')
           print('Installed backup tool successfully.')
