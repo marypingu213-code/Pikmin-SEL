@@ -4355,6 +4355,56 @@
       if (window.lucide) lucide.createIcons();
     }
 
+    // 從各種可能的 JSON 結構中，找出皮克敏手帳紀錄陣列
+    // 支援三種來源：
+    //   1) 本系統「匯出 JSON 備份」按鈕產生的純陣列
+    //   2) 瀏覽器「整個網站 localStorage」備份工具產生的物件
+    //      （因為 GitHub Pages 同網域下可能還有老師的其他工具，
+    //       所有 localStorage 資料會被打包在同一個檔案裡，
+    //       皮克敏的紀錄會藏在 localStorage.pikmin_sel_classroom_records_v1 這個字串欄位中）
+    //   3) 不小心少包一層陣列、只存了單筆紀錄物件的狀況
+    function extractHandbookArray(raw) {
+      // 情況 1：本來就是陣列
+      if (Array.isArray(raw)) return raw;
+
+      if (raw && typeof raw === 'object') {
+        // 情況 2：整站 localStorage 備份格式
+        if (raw.localStorage && typeof raw.localStorage === 'object') {
+          const candidateKeys = ['pikmin_sel_classroom_records_v1', 'growthHistoryRecords', 'pikminHandbook'];
+          for (const key of candidateKeys) {
+            const val = raw.localStorage[key];
+            if (val === undefined) continue;
+            if (Array.isArray(val)) return val;
+            if (typeof val === 'string') {
+              try {
+                const parsedVal = JSON.parse(val);
+                if (Array.isArray(parsedVal)) return parsedVal;
+              } catch (e) { /* 這個 key 不是 JSON，跳過 */ }
+            }
+          }
+          // 保險機制：如果 key 名稱以後改了，自動掃描每一個 localStorage 值，
+          // 找出「陣列 + 每筆物件都有 strengths 與 weaknesses」的那一份資料
+          for (const key in raw.localStorage) {
+            const val = raw.localStorage[key];
+            let parsedVal = val;
+            if (typeof val === 'string') {
+              try { parsedVal = JSON.parse(val); } catch (e) { continue; }
+            }
+            if (
+              Array.isArray(parsedVal) && parsedVal.length > 0 &&
+              parsedVal[0] && typeof parsedVal[0] === 'object' &&
+              'strengths' in parsedVal[0] && 'weaknesses' in parsedVal[0]
+            ) {
+              return parsedVal;
+            }
+          }
+        }
+        // 情況 3：只存了單筆紀錄物件，沒有包陣列
+        if (raw.name && (raw.strengths || raw.weaknesses)) return [raw];
+      }
+      return null;
+    }
+
     // 讀取並解析 JSON 備份檔
     function handleHandbookImport(event) {
       const file = event.target.files && event.target.files[0];
@@ -4362,16 +4412,25 @@
 
       const reader = new FileReader();
       reader.onload = function (e) {
-        let imported;
+        let raw;
         try {
-          imported = JSON.parse(e.target.result);
+          raw = JSON.parse(e.target.result);
         } catch (err) {
-          showModal('⚠️', '讀取失敗', '解析檔案時發生錯誤，請確認上傳的是本系統匯出的 JSON 備份檔。');
+          showModal('⚠️', '讀取失敗', '解析檔案時發生錯誤，請確認上傳的是正確的 JSON 備份檔。');
           return;
         }
 
+        const imported = extractHandbookArray(raw);
+
         if (!Array.isArray(imported) || imported.length === 0) {
-          showModal('⚠️', '檔案格式不符', '這個 JSON 檔案不是手帳紀錄陣列，無法讀取。');
+          showModal(
+            '⚠️',
+            '檔案格式不符',
+            '這個 JSON 檔案裡找不到皮克敏手帳紀錄。<br><br>' +
+            '如果這是「整站 localStorage 備份」工具產生的檔案，' +
+            '請確認裡面含有 <code>pikmin_sel_classroom_records_v1</code> 這個欄位；' +
+            '若是本系統「匯出 JSON 備份」按鈕產生的檔案，請確認檔案沒有被截斷或修改過。'
+          );
           return;
         }
 
