@@ -2598,7 +2598,7 @@
       canvas.width = rect.width;
       canvas.height = rect.height;
 
-      slingshotBasePos = { x: Math.max(150, canvas.width * 0.18), y: canvas.height - 95 };
+      slingshotBasePos = { x: Math.max(210, canvas.width * 0.28), y: canvas.height - 95 };
       slingshotDragPos = { ...slingshotBasePos };
 
       // Ensure active pikmin name indicator is updated
@@ -2607,12 +2607,14 @@
       if (nameEl) nameEl.textContent = `目前隊員：${activePikmin.name}`;
 
       // Generate Target Flowers sitting on natural brown rocky ledges (lower top flower so it's comfortably hit!)
+      const cliffX = canvas.width - Math.max(115, canvas.width * 0.12);
       cliffTargets = [
-        { x: canvas.width - 58, y: 62, radius: 25, hit: false, color: '#f59e0b' },
-        { x: canvas.width - 76, y: 112, radius: 25, hit: false, color: '#ef4444' },
-        { x: canvas.width - 96, y: 162, radius: 25, hit: false, color: '#3b82f6' },
-        { x: canvas.width - 72, y: 212, radius: 25, hit: false, color: '#a855f7' },
-        { x: canvas.width - 58, y: 262, radius: 25, hit: false, color: '#22c55e' }
+        { x: cliffX + 20, y: 50, radius: 28, hit: false, color: '#f59e0b' },
+        { x: cliffX - 8, y: 92, radius: 28, hit: false, color: '#ef4444' },
+        { x: cliffX + 12, y: 134, radius: 28, hit: false, color: '#3b82f6' },
+        { x: cliffX - 14, y: 176, radius: 28, hit: false, color: '#a855f7' },
+        { x: cliffX + 8, y: 218, radius: 28, hit: false, color: '#22c55e' },
+        { x: cliffX - 10, y: 260, radius: 28, hit: false, color: '#ec4899' }
       ];
 
       // Mouse & Touch events
@@ -2638,7 +2640,7 @@
         const dx = pt.x - slingshotBasePos.x;
         const dy = pt.y - slingshotBasePos.y;
         const dist = Math.hypot(dx, dy);
-        const maxDist = Math.min(150, canvas.width * 0.14);
+        const maxDist = Math.min(190, canvas.width * 0.22);
         if (dist > maxDist) {
           slingshotDragPos = {
             x: slingshotBasePos.x + (dx / dist) * maxDist,
@@ -2654,8 +2656,8 @@
         isSlingshotDragging = false;
         // Fire Pikmin with enhanced velocity for easy reach
         playSound('pop');
-        const vx = (slingshotBasePos.x - slingshotDragPos.x) * 0.36;
-        const vy = (slingshotBasePos.y - slingshotDragPos.y) * 0.36;
+        const vx = (slingshotBasePos.x - slingshotDragPos.x) * 0.42;
+        const vy = (slingshotBasePos.y - slingshotDragPos.y) * 0.42;
         const firingPikmin = PIKMIN_ROSTER[slingshotPikminIndex] || PIKMIN_ROSTER[0];
 
         slingshotProjectile = {
@@ -2686,11 +2688,11 @@
         ctx.lineTo(canvas.width - 35, 0);
         ctx.lineTo(canvas.width - 65, 80);
         ctx.lineTo(canvas.width - 35, 115); // Ledge 1 (lower top)
-        ctx.lineTo(canvas.width - 100, 155);
+        ctx.lineTo(canvas.width - 130, 155);
         ctx.lineTo(canvas.width - 70, 185); // Ledge 2
         ctx.lineTo(canvas.width - 65, 225);
         ctx.lineTo(canvas.width - 40, 255); // Ledge 3
-        ctx.lineTo(canvas.width - 95, canvas.height);
+        ctx.lineTo(canvas.width - 125, canvas.height);
         ctx.lineTo(canvas.width, canvas.height);
         ctx.closePath();
         ctx.fill();
@@ -2701,7 +2703,7 @@
         ctx.beginPath();
         ctx.moveTo(canvas.width - 65, 80);
         ctx.lineTo(canvas.width - 35, 115);
-        ctx.moveTo(canvas.width - 100, 155);
+        ctx.moveTo(canvas.width - 130, 155);
         ctx.lineTo(canvas.width - 70, 185);
         ctx.moveTo(canvas.width - 65, 225);
         ctx.lineTo(canvas.width - 40, 255);
@@ -2730,8 +2732,8 @@
 
         // 4. Visual Trajectory Dots (Predicted Parabolic Path when dragging)
         if (isSlingshotDragging) {
-          const simVx = (slingshotBasePos.x - slingshotDragPos.x) * 0.36;
-          const simVy = (slingshotBasePos.y - slingshotDragPos.y) * 0.36;
+          const simVx = (slingshotBasePos.x - slingshotDragPos.x) * 0.42;
+          const simVy = (slingshotBasePos.y - slingshotDragPos.y) * 0.42;
           let simX = slingshotDragPos.x;
           let simY = slingshotDragPos.y;
           let simGravity = 0.22;
@@ -2823,7 +2825,7 @@
           cliffTargets.forEach(target => {
             if (!target.hit) {
               const dist = Math.hypot(slingshotProjectile.x - target.x, slingshotProjectile.y - target.y);
-              if (dist < target.radius + 18) {
+              if (dist < target.radius + 24) {
                 target.hit = true;
                 playSound('correct');
                 confetti({ particleCount: 40, origin: { x: target.x / canvas.width, y: target.y / canvas.height } });
