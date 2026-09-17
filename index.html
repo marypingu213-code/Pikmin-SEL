@@ -2374,7 +2374,6 @@
             <circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="16" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
           </svg>
         `;
-      }
       } else if (currentMandalaTemplate >= 4 && currentMandalaTemplate <= 7) {
         // Templates 4-7 are original procedural SVG geometry; no external image assets.
         const type = currentMandalaTemplate;
@@ -2402,6 +2401,7 @@
           ? '<polygon class="mandala-piece" onclick="colorMandalaSegment(this)" points="100,65 135,100 100,135 65,100" fill="#ffffff" stroke="#475569" stroke-width="1.6"/>'
           : '<circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="28" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/><circle class="mandala-piece" onclick="colorMandalaSegment(this)" cx="100" cy="100" r="13" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>';
         wrapper.innerHTML = `<svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none"><circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>${pieces}${innerShape}</svg>`;
+      }
     }
 
     function colorMandalaSegment(el) {
