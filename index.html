@@ -819,7 +819,35 @@
         <button onclick="switchTab('home')" class="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-emerald-600 transition">
           <i data-lucide="chevron-left" class="w-4 h-4"></i> 回基地總部
         </button>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+          <!-- 隱藏的 JSON 檔案選擇器（匯入功能必要元件） -->
+          <input type="file" id="import-handbook-file" accept=".json,application/json"
+                 class="hidden" onchange="handleHandbookImport(event)">
+
+          <!-- 匯出 JSON 備份 -->
+          <button onclick="exportHandbookBackup()"
+                  class="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-emerald-300 transition"
+                  title="將全班手帳紀錄下載成 JSON 備份檔">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-700"></i>
+            <span>匯出 JSON 備份</span>
+          </button>
+
+          <!-- 合併匯入（安全，不會刪除現有紀錄） -->
+          <button onclick="triggerMergeHandbook()"
+                  class="px-3 py-1.5 bg-sky-100 hover:bg-sky-200 text-sky-900 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-sky-300 transition"
+                  title="把備份檔的紀錄加進來，重複的自動略過，不會刪掉現有資料">
+            <i data-lucide="file-plus-2" class="w-3.5 h-3.5 text-sky-700"></i>
+            <span>合併匯入</span>
+          </button>
+
+          <!-- 完整還原（會清空現有資料，需二次確認） -->
+          <button onclick="triggerReplaceHandbook()"
+                  class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-rose-300 transition"
+                  title="清空這台裝置的所有紀錄，完全以備份檔取代">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-rose-600"></i>
+            <span>完整還原</span>
+          </button>
+
           <!-- 教師管理模式切換按鈕 -->
           <button id="teacher-mode-btn" onclick="toggleTeacherMode()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-slate-300 transition">
             <i data-lucide="shield-alert" id="teacher-mode-icon" class="w-3.5 h-3.5 text-slate-500"></i>
@@ -4279,38 +4307,132 @@
       showModal('💾', '手帳備份成功！', `已下載全班共 ${growthHistoryRecords.length} 筆學生手帳資料檔！`);
     }
 
-    function triggerImportHandbook() {
-      playSound('pop');
+    // ===== 手帳 JSON 匯入：合併模式 / 完整還原模式 =====
+    let importHandbookMode = 'merge';
+
+    // 共用：開啟檔案選擇視窗
+    function openHandbookFilePicker(mode) {
+      importHandbookMode = (mode === 'replace') ? 'replace' : 'merge';
       const input = document.getElementById('import-handbook-file');
-      if (input) {
-        input.value = '';
-        input.click();
+      if (!input) {
+        showModal('⚠️', '找不到檔案選擇器', '頁面缺少 id="import-handbook-file" 的欄位，請確認 HTML 是否已加入。');
+        return;
       }
+      input.value = '';
+      input.click();
     }
 
-    // Import student records from JSON backup file
+    // 按鈕 A：合併匯入（安全，不會刪除現有紀錄）
+    function triggerMergeHandbook() {
+      playSound('pop');
+      openHandbookFilePicker('merge');
+    }
+
+    // 按鈕 B：完整還原（清空後取代，需二次確認）
+    function triggerReplaceHandbook() {
+      playSound('pop');
+      const ok = window.confirm(
+        '⚠️ 完整還原會「清空這台裝置上目前所有手帳紀錄」，再完全以備份檔取代。\n\n' +
+        '若今天已有學生新增紀錄，這些資料將會消失。\n' +
+        '建議先按「匯出 JSON 備份」留一份，再繼續。\n\n確定要完整還原嗎？'
+      );
+      if (!ok) return;
+      openHandbookFilePicker('replace');
+    }
+
+    // 保留舊名稱，避免其他地方仍呼叫 triggerImportHandbook()
+    function triggerImportHandbook(mode) {
+      playSound('pop');
+      openHandbookFilePicker(mode);
+    }
+
+    // 匯入後統一刷新各處畫面
+    function refreshHandbookViews() {
+      saveRecordsToStorage();
+      updateHistorySelectDropdown();
+      updateStudentFilterDropdown();
+      renderGrowthHistory();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // 讀取並解析 JSON 備份檔
     function handleHandbookImport(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
+
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
+        let imported;
         try {
-          const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported) && imported.length > 0) {
-            growthHistoryRecords = imported;
-            saveRecordsToStorage();
-            updateHistorySelectDropdown();
-            updateStudentFilterDropdown();
-            renderGrowthHistory();
-            playSound('success');
-            showModal('📥', '手帳還原成功！', `已成功還原全班共 ${growthHistoryRecords.length} 筆手帳資料！`);
-          } else {
-            showModal('⚠️', '檔案格式不符', '匯入的 JSON 檔案格式不正確，無法讀取手帳紀錄。');
-          }
+          imported = JSON.parse(e.target.result);
         } catch (err) {
-          showModal('⚠️', '讀取失敗', '解析檔案時發生錯誤，請確認上傳正確的備份檔。');
+          showModal('⚠️', '讀取失敗', '解析檔案時發生錯誤，請確認上傳的是本系統匯出的 JSON 備份檔。');
+          return;
+        }
+
+        if (!Array.isArray(imported) || imported.length === 0) {
+          showModal('⚠️', '檔案格式不符', '這個 JSON 檔案不是手帳紀錄陣列，無法讀取。');
+          return;
+        }
+
+        // 清洗資料：只保留有姓名的物件，並補上缺少的 id 與預設欄位
+        const cleaned = imported
+          .filter(r => r && typeof r === 'object' && r.name)
+          .map(r => ({
+            id: r.id || ('rec_imp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5)),
+            dateStr: r.dateStr || new Date().toLocaleDateString('zh-TW'),
+            timeStr: r.timeStr || '',
+            name: r.name,
+            spirit: r.spirit || 'red',
+            stage: r.stage || 'leaf',
+            strengths: Array.isArray(r.strengths) && r.strengths.length ? r.strengths : [STRENGTH_OPTIONS[0]],
+            weaknesses: Array.isArray(r.weaknesses) && r.weaknesses.length ? r.weaknesses : [WEAKNESS_OPTIONS[0]],
+            note: r.note || '（匯入的紀錄）',
+            sel2: Number(r.sel2) || 0,
+            sel3: Number(r.sel3) || 0,
+            sel4: Number(r.sel4) || 0,
+            sel5: Number(r.sel5) || 0
+          }));
+
+        if (cleaned.length === 0) {
+          showModal('⚠️', '沒有可用的紀錄', '檔案裡找不到含有學生姓名的手帳紀錄，請確認備份檔內容。');
+          return;
+        }
+
+        if (importHandbookMode === 'replace') {
+          // 完整還原：清空後取代
+          const oldCount = growthHistoryRecords.length;
+          growthHistoryRecords = cleaned;
+          refreshHandbookViews();
+          playSound('success');
+          showModal(
+            '♻️',
+            '完整還原成功！',
+            `已清除原本 ${oldCount} 筆紀錄，並以備份檔的 ${cleaned.length} 筆資料完整取代。`
+          );
+        } else {
+          // 合併匯入：以 id 去重，新資料排在最前面
+          const existingIds = new Set(growthHistoryRecords.map(r => r.id));
+          const newOnes = cleaned.filter(r => !existingIds.has(r.id));
+          const skipped = cleaned.length - newOnes.length;
+
+          if (newOnes.length === 0) {
+            playSound('pop');
+            showModal('📥', '沒有新增紀錄', `備份檔中的 ${cleaned.length} 筆資料都已經存在，沒有重複加入。`);
+            return;
+          }
+
+          growthHistoryRecords = [...newOnes, ...growthHistoryRecords];
+          refreshHandbookViews();
+          playSound('success');
+          showModal(
+            '📥',
+            '手帳合併匯入完成！',
+            `新增 <strong>${newOnes.length}</strong> 筆紀錄，略過 <strong>${skipped}</strong> 筆重複資料。<br>目前全班共 ${growthHistoryRecords.length} 筆。`
+          );
         }
       };
+
       reader.readAsText(file);
     }
 
