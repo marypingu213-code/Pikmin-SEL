@@ -1205,7 +1205,7 @@
         <div class="space-y-1">
           <span class="px-3 py-0.5 bg-cyan-100 text-cyan-800 text-xs font-black rounded-full">工具 7 · 吹泡泡與戳破</span>
           <h4 class="text-2xl font-black text-slate-800 mt-1">輕觸戳破泡泡，帶走沉重心事</h4>
-          <p class="text-xs text-slate-500">晶瑩泡泡正從左邊徐徐吹出，點擊泡泡戳破它！</p>
+          <p class="text-xs text-slate-500">先慢慢熟悉泡泡的移動，再逐漸加快。泡泡周圍也能輕觸戳破，放心試試看！</p>
         </div>
 
         <div class="flex items-center justify-between max-w-md mx-auto text-xs font-black text-slate-600 px-2">
@@ -2488,7 +2488,7 @@
       bubbleSessionStart = Date.now();
 
       // 前 15 秒先慢慢熟悉；之後逐步增加泡泡出現頻率
-      for (let i = 0; i < 3; i++) setTimeout(spawnOneBubble, i * 1100);
+      for (let i = 0; i < 2; i++) setTimeout(spawnOneBubble, i * 1800);
       scheduleNextBubble();
     }
 
@@ -2502,7 +2502,7 @@
     function scheduleNextBubble() {
       if (currentSel2Tool !== 'bubbles') return;
       const level = getBubbleLevel();
-      const delay = level === 0 ? 2200 : (level === 1 ? 1650 : 1250);
+      const delay = level === 0 ? 2800 : (level === 1 ? 1900 : 1350);
       bubbleSpawnTimeout = setTimeout(() => {
         spawnOneBubble();
         scheduleNextBubble();
@@ -2514,7 +2514,7 @@
       if (!container || currentSel2Tool !== 'bubbles') return;
 
       const b = document.createElement('div');
-      const size = Math.floor(Math.random() * 28) + 36; // 36px ~ 64px
+      const size = Math.floor(Math.random() * 24) + 48; // 48px ~ 72px：較大的視覺目標
       const startY = Math.floor(Math.random() * (container.clientHeight - size - 40)) + 20;
       // 學生先建立成功經驗，再逐步加快移動速度
       const level = getBubbleLevel();
@@ -2524,17 +2524,20 @@
           ? (Math.random() * 3 + 9) // 9~12 秒：穩定練習
           : (Math.random() * 3 + 7); // 7~10 秒：進階挑戰
 
-      b.className = 'absolute rounded-full border-2 border-white/80 bg-gradient-to-tr from-cyan-200/50 via-sky-300/40 to-white/70 shadow-md cursor-pointer select-none transition-transform hover:scale-110';
+      b.className = 'absolute rounded-full cursor-pointer select-none';
+      // 視覺泡泡本體放在較大的透明觸控區中央，降低手眼協調門檻
+      const visualSize = size;
+      const hitPadding = 14;
+      b.style.padding = hitPadding + 'px';
+      b.style.boxSizing = 'content-box';
+      b.innerHTML = '<span class="block w-full h-full rounded-full border-2 border-white/80 bg-gradient-to-tr from-cyan-200/50 via-sky-300/40 to-white/70 shadow-md relative pointer-events-none"><span class="absolute top-2 left-2.5 w-2 h-2 rounded-full bg-white opacity-80"></span></span>';
       b.style.width = `${size}px`;
       b.style.height = `${size}px`;
       b.style.left = '-60px';
       b.style.top = `${startY}px`;
       b.style.transition = `left ${duration}s linear, top 2s ease-in-out`;
 
-      // Sparkle reflection dot
-      b.innerHTML = '<span class="absolute top-2 left-2.5 w-2 h-2 rounded-full bg-white opacity-80 pointer-events-none"></span>';
-
-      b.onclick = (e) => {
+      b.onpointerdown = (e) => {
         e.stopPropagation();
         playSound('pop');
         bubblePoppedCount++;
@@ -2542,7 +2545,7 @@
         if (counter) counter.textContent = bubblePoppedCount;
 
         // Pop burst animation
-        b.style.transform = 'scale(1.4)';
+        const inner=b.firstElementChild; if(inner) inner.style.transform='scale(1.35)';
         b.style.opacity = '0';
         b.style.transition = 'all 0.15s ease-out';
         setTimeout(() => {
