@@ -1,6 +1,6 @@
 name: Add localStorage backup tool
 
-on:
+'on':
   push:
     paths:
       - '.github/workflows/add-local-backup.yml'
