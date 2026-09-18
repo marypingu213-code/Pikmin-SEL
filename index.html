@@ -918,6 +918,10 @@
         <div id="history-timeline-container" class="space-y-4">
           <!-- Dynamically Injected in JS -->
         </div>
+
+        <div id="history-pagination-container" class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100">
+          <!-- Dynamically Injected in JS -->
+        </div>
       </div>
     </section>
 
@@ -4259,6 +4263,8 @@
     // Student filter for the multi-student classroom setting
     let currentActiveStudentName = '小勇士';
     let selectedStudentFilter = 'ALL';
+    let historyCurrentPage = 1;
+    let historyPageSize = 8; // 手帳每頁顯示幾筆，可由下拉選單調整
     let isTeacherMode = false; // Teacher edit/delete permission flag
 
     // Shuffled runtime lists to prevent memorization
@@ -5401,9 +5407,56 @@
 
     function filterHistoryByStudent(studentName) {
       selectedStudentFilter = studentName;
+      historyCurrentPage = 1;
       const sel = document.getElementById('student-filter-select');
       if (sel) sel.value = studentName;
       renderGrowthHistory();
+    }
+
+    function changeHistoryPageSize(val) {
+      playSound('pop');
+      historyPageSize = parseInt(val, 10) || 8;
+      historyCurrentPage = 1;
+      renderGrowthHistory();
+    }
+
+    function goToHistoryPage(page) {
+      playSound('pop');
+      historyCurrentPage = page;
+      renderGrowthHistory();
+      const cont = document.getElementById('history-timeline-container');
+      if (cont) cont.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderHistoryPagination(totalRecords, totalPages) {
+      const wrap = document.getElementById('history-pagination-container');
+      if (!wrap) return;
+
+      if (totalRecords === 0) {
+        wrap.innerHTML = '';
+        return;
+      }
+
+      const prevDisabled = historyCurrentPage <= 1;
+      const nextDisabled = historyCurrentPage >= totalPages;
+      const navBtnClass = (disabled) => `px-3 py-1.5 rounded-xl text-xs font-black border transition ${disabled ? 'border-slate-200 text-slate-300 cursor-not-allowed' : 'border-slate-300 text-slate-700 hover:bg-slate-50'}`;
+      const edgeBtnClass = (disabled) => `px-2.5 py-1.5 rounded-xl text-xs font-black border transition ${disabled ? 'border-slate-200 text-slate-300 cursor-not-allowed' : 'border-slate-300 text-slate-700 hover:bg-slate-50'}`;
+
+      wrap.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-500 font-bold whitespace-nowrap">每頁顯示：</span>
+          <select id="history-page-size-select" onchange="changeHistoryPageSize(this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            ${[5, 8, 12, 20].map(n => `<option value="${n}" ${n === historyPageSize ? 'selected' : ''}>${n} 筆</option>`).join('')}
+          </select>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="goToHistoryPage(1)" ${prevDisabled ? 'disabled' : ''} class="${edgeBtnClass(prevDisabled)}" title="第一頁">«</button>
+          <button type="button" onclick="goToHistoryPage(${historyCurrentPage - 1})" ${prevDisabled ? 'disabled' : ''} class="${navBtnClass(prevDisabled)}">上一頁</button>
+          <span class="text-xs font-bold text-slate-600 px-2 whitespace-nowrap">第 ${historyCurrentPage} / ${totalPages} 頁</span>
+          <button type="button" onclick="goToHistoryPage(${historyCurrentPage + 1})" ${nextDisabled ? 'disabled' : ''} class="${navBtnClass(nextDisabled)}">下一頁</button>
+          <button type="button" onclick="goToHistoryPage(${totalPages})" ${nextDisabled ? 'disabled' : ''} class="${edgeBtnClass(nextDisabled)}" title="最後一頁">»</button>
+        </div>
+      `;
     }
 
     function viewMyPersonalHistory() {
@@ -5534,10 +5587,20 @@
         ? growthHistoryRecords
         : growthHistoryRecords.filter(r => r.name === selectedStudentFilter);
 
+      // 分頁計算：統計數字用完整的篩選結果，卡片列表只取當前頁
+      const totalPages = Math.max(1, Math.ceil(displayRecords.length / historyPageSize));
+      if (historyCurrentPage > totalPages) historyCurrentPage = totalPages;
+      if (historyCurrentPage < 1) historyCurrentPage = 1;
+      const pageStart = (historyCurrentPage - 1) * historyPageSize;
+      const pageRecords = displayRecords.slice(pageStart, pageStart + historyPageSize);
+
       if (totalLabel) {
-        totalLabel.textContent = selectedStudentFilter === 'ALL'
-          ? `共 ${displayRecords.length} 筆紀錄 (全班)`
-          : `共 ${displayRecords.length} 筆紀錄 (${selectedStudentFilter})`;
+        const scopeLabel = selectedStudentFilter === 'ALL' ? '全班' : selectedStudentFilter;
+        const rangeStart = displayRecords.length === 0 ? 0 : pageStart + 1;
+        const rangeEnd = Math.min(pageStart + historyPageSize, displayRecords.length);
+        totalLabel.textContent = displayRecords.length === 0
+          ? `共 0 筆紀錄 (${scopeLabel})`
+          : `共 ${displayRecords.length} 筆紀錄 (${scopeLabel})・顯示第 ${rangeStart}-${rangeEnd} 筆`;
       }
       if (badgeCount) badgeCount.textContent = growthHistoryRecords.length;
 
@@ -5564,10 +5627,11 @@
             🌱 尚無【${selectedStudentFilter}】的歷史紀錄，快去填寫今天的心情卡片吧！
           </div>
         `;
+        renderHistoryPagination(0, 1);
         return;
       }
 
-      displayRecords.forEach((rec) => {
+      pageRecords.forEach((rec) => {
         const spirit = PIKMIN_ROSTER.find(p => p.id === rec.spirit) || PIKMIN_ROSTER[0];
         const card = document.createElement('div');
         const origIdx = growthHistoryRecords.findIndex(r => r.id === rec.id);
@@ -5625,6 +5689,7 @@
         `;
         cont.appendChild(card);
       });
+      renderHistoryPagination(displayRecords.length, totalPages);
       lucide.createIcons();
     }
 
