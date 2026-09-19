@@ -1746,7 +1746,7 @@
     <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-emerald-100 text-center space-y-4 transform transition-all scale-95 duration-200" id="modal-content-box">
       <div id="modal-icon" class="text-5xl">🎉</div>
       <h4 id="modal-title" class="text-lg font-black text-slate-800">成就解鎖！</h4>
-      <p id="modal-message" class="text-xs text-slate-600 leading-relaxed">恭喜你完成挑戰！</p>
+      <div id="modal-message" class="text-xs text-slate-600 leading-relaxed">恭喜你完成挑戰！</div>
       <button onclick="closeModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition">
         太棒了，繼續前進！
       </button>
@@ -1987,6 +1987,8 @@
         clearInterval(mindfulBreatheTimer);
         isMindfulBreathing = false;
         if (btn) btn.textContent = '▶️ 開始呼吸引導';
+        const modeLabel = currentBreatheMode === '478' ? '4-7-8 深度安定' : (currentBreatheMode === 'box' ? '4-4-4-4 方塊呼吸' : '4-6 溫和放鬆');
+        logStudentActivity(2, 'SEL2 · 正念呼吸', `練習了「${modeLabel}」呼吸法`, 'done');
         return;
       }
 
@@ -2067,7 +2069,7 @@
       if(muscleCycleTimer)clearInterval(muscleCycleTimer); if(btn)btn.disabled=true;
       let tense=5; if(big)big.textContent='🔴 緊'; if(cue)cue.textContent=target.tense; if(visual)visual.className='text-7xl transition-all duration-500 transform scale-125 my-2'; if(card)card.className='mx-auto max-w-lg rounded-3xl bg-red-50 border-2 border-red-300 p-4 transition-all duration-500'; if(badge){badge.className='inline-block text-base font-black px-5 py-2 rounded-full bg-red-100 text-red-700';badge.textContent='🔴 緊：注意哪裡變硬、變緊';} if(phase)phase.textContent='現在：🔴 緊'; if(sec)sec.textContent='5 秒';
       muscleCycleTimer=setInterval(()=>{tense--;if(bar)bar.style.width=`${((5-tense)/5)*100}%`;if(sec)sec.textContent=`${tense} 秒`;if(tense<=0){clearInterval(muscleCycleTimer);playSound('success');let relax=8;if(big)big.textContent='🟢 鬆';if(cue)cue.textContent=target.relax;if(visual)visual.className='text-7xl transition-all duration-700 transform scale-90 my-2';if(card)card.className='mx-auto max-w-lg rounded-3xl bg-emerald-50 border-2 border-emerald-300 p-4 transition-all duration-500';if(badge){badge.className='inline-block text-base font-black px-5 py-2 rounded-full bg-emerald-100 text-emerald-800';badge.textContent='🟢 鬆：注意現在有什麼不同';}if(phase)phase.textContent='現在：🟢 鬆';if(sec)sec.textContent='8 秒';
-        muscleCycleTimer=setInterval(()=>{relax--;if(bar)bar.style.width=`${(relax/8)*100}%`;if(sec)sec.textContent=`${relax} 秒`;if(relax<=0){clearInterval(muscleCycleTimer);if(big)big.textContent='🤔 比一比';if(cue)cue.textContent='剛才「緊」，現在「鬆」——哪裡不一樣？摸摸看、動一動，再說說你的感覺。';if(visual)visual.className='text-7xl transition-all duration-500 transform scale-100 my-2';if(card)card.className='mx-auto max-w-lg rounded-3xl bg-amber-50 border-2 border-amber-300 p-4 transition-all duration-500';if(badge){badge.className='inline-block text-base font-black px-5 py-2 rounded-full bg-amber-100 text-amber-800';badge.textContent='💡 緊的時候？鬆的時候？';}if(phase)phase.textContent='完成：比較身體感覺';if(sec)sec.textContent='完成';if(btn)btn.disabled=false;updateActiveStudentRecord(2,2);}},1000);}},1000);
+        muscleCycleTimer=setInterval(()=>{relax--;if(bar)bar.style.width=`${(relax/8)*100}%`;if(sec)sec.textContent=`${relax} 秒`;if(relax<=0){clearInterval(muscleCycleTimer);if(big)big.textContent='🤔 比一比';if(cue)cue.textContent='剛才「緊」，現在「鬆」——哪裡不一樣？摸摸看、動一動，再說說你的感覺。';if(visual)visual.className='text-7xl transition-all duration-500 transform scale-100 my-2';if(card)card.className='mx-auto max-w-lg rounded-3xl bg-amber-50 border-2 border-amber-300 p-4 transition-all duration-500';if(badge){badge.className='inline-block text-base font-black px-5 py-2 rounded-full bg-amber-100 text-amber-800';badge.textContent='💡 緊的時候？鬆的時候？';}if(phase)phase.textContent='完成：比較身體感覺';if(sec)sec.textContent='完成';if(btn)btn.disabled=false;updateActiveStudentRecord(2,2);logStudentActivity(2,'SEL2 · 肌肉緊鬆','完成部位：'+target.name,'done');}},1000);}},1000);
     }
 
     // --- TOOL 3: FIDGET POP GRID (Pure circles, disappear on click) ---
@@ -4463,7 +4465,10 @@
             sel2: Number(r.sel2) || 0,
             sel3: Number(r.sel3) || 0,
             sel4: Number(r.sel4) || 0,
-            sel5: Number(r.sel5) || 0
+            sel5: Number(r.sel5) || 0,
+            activityLog: (r.activityLog && typeof r.activityLog === 'object')
+              ? r.activityLog
+              : { sel2: [], sel3: [], sel4: [], sel5: [] }
           }));
 
         if (cleaned.length === 0) {
@@ -5534,8 +5539,85 @@
       renderGrowthHistory();
     }
 
+    // 記錄某個學生在 SEL2~5 某一類別下，具體做了什麼、答對或答錯
+    // 只會從加上這個功能之後開始累積，現有的舊進度數字不會補回逐題紀錄
+    function logStudentActivity(selNumber, label, detail, result) {
+      const studentName = currentActiveStudentName || '小勇士';
+
+      let targetRec = growthHistoryRecords.find(r => r.name === studentName);
+      if (!targetRec && growthHistoryRecords.length > 0) {
+        targetRec = growthHistoryRecords[0];
+      }
+      if (!targetRec) return;
+
+      if (!targetRec.activityLog || typeof targetRec.activityLog !== 'object') {
+        targetRec.activityLog = { sel2: [], sel3: [], sel4: [], sel5: [] };
+      }
+      const key = 'sel' + selNumber;
+      if (!Array.isArray(targetRec.activityLog[key])) {
+        targetRec.activityLog[key] = [];
+      }
+      targetRec.activityLog[key].push({
+        ts: new Date().toISOString(),
+        label: label || '',
+        detail: detail || '',
+        result: result || 'done' // 'correct' | 'wrong' | 'done'
+      });
+      // 每個類別最多保留最近 100 筆，避免資料無限長大
+      if (targetRec.activityLog[key].length > 100) {
+        targetRec.activityLog[key] = targetRec.activityLog[key].slice(-100);
+      }
+      saveRecordsToStorage();
+    }
+
+    const SEL_CATEGORY_LABELS = { 2: '自我管理', 3: '社會知覺', 4: '人際合作', 5: '負責任決策' };
+
+    // 點擊手帳上的 SEL2~5 進度條時，開啟這個學生在該類別下的逐項闖關紀錄
+    function openActivityLogModal(recordId, selNumber) {
+      playSound('pop');
+      const rec = growthHistoryRecords.find(r => r.id === recordId);
+      if (!rec) return;
+
+      const key = 'sel' + selNumber;
+      const entries = (rec.activityLog && Array.isArray(rec.activityLog[key])) ? rec.activityLog[key] : [];
+      const categoryLabel = SEL_CATEGORY_LABELS[selNumber] || '';
+      const title = `${rec.name} · SEL${selNumber} ${categoryLabel} 闖關紀錄`;
+
+      let bodyHtml;
+      if (entries.length === 0) {
+        bodyHtml = `
+          <p class="text-sm text-slate-500 text-center py-4 leading-relaxed">
+            目前沒有這一類別的詳細紀錄。<br>
+            <span class="text-xs text-slate-400">（逐題紀錄功能是新加上去的，只會記錄從現在開始的作答，之前累積的進度數字沒有辦法補回詳細內容）</span>
+          </p>
+        `;
+      } else {
+        const rows = entries.slice().reverse().map(e => {
+          const resultBadge = e.result === 'correct'
+            ? '<span class="text-[10px] font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full whitespace-nowrap">✓ 正確</span>'
+            : e.result === 'wrong'
+              ? '<span class="text-[10px] font-black bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full whitespace-nowrap">△ 再想想</span>'
+              : '<span class="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full whitespace-nowrap">完成</span>';
+          const timeLabel = e.ts ? new Date(e.ts).toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+          return `
+            <div class="p-3 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+              <div class="flex items-start justify-between gap-2">
+                <span class="text-xs font-black text-slate-800">${e.label}</span>
+                ${resultBadge}
+              </div>
+              <p class="text-xs text-slate-600">${e.detail}</p>
+              <p class="text-[10px] text-slate-400">${timeLabel}</p>
+            </div>
+          `;
+        }).join('');
+        bodyHtml = `<div class="space-y-2 max-h-[55vh] overflow-y-auto pr-1">${rows}</div>`;
+      }
+
+      showWideModal('📋', title, bodyHtml);
+    }
+
     // Helper: generate contiguous quantitative strip matching user diagram
-    function generateProgressStrip(title, current, total, colorBg = 'bg-amber-300') {
+    function generateProgressStrip(title, current, total, colorBg = 'bg-amber-300', recordId = '', selNumber = 0) {
       let cells = '';
       for (let i = 0; i < total; i++) {
         const isFilled = i < current;
@@ -5551,8 +5633,10 @@
           }" title="${title}：第 ${i + 1} 關 ${isFilled ? '已完成' : '待挑戰'}"></div>
         `;
       }
+      const clickAttr = (recordId && selNumber) ? ` onclick="openActivityLogModal('${recordId}', ${selNumber})"` : '';
+      const clickableClass = (recordId && selNumber) ? ' cursor-pointer hover:ring-2 hover:ring-emerald-300 rounded-lg transition' : '';
       return `
-        <div class="flex flex-col items-center bg-transparent px-1 py-0.5">
+        <button type="button"${clickAttr} class="flex flex-col items-center bg-transparent px-1 py-0.5${clickableClass}" title="點擊查看闖關內容">
           <div class="flex items-center justify-between w-full px-0.5 mb-1">
             <span class="text-[11px] font-black text-slate-800 tracking-tight">${title}</span>
             <span class="text-[10px] font-bold text-slate-500 ml-1.5">${current}/${total}</span>
@@ -5560,7 +5644,7 @@
           <div class="flex items-center rounded-md overflow-hidden shadow-xs">
             ${cells}
           </div>
-        </div>
+        </button>
       `;
     }
 
@@ -5684,10 +5768,10 @@
 
           <!-- Middle: SEL 2-5 Quantitative Progress Grids (Seamlessly blended into card background, smoothly rounded) -->
           <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center py-1 flex-shrink-0">
-            ${generateProgressStrip('SEL2', s2, 2, 'bg-amber-300')}
-            ${generateProgressStrip('SEL3', s3, 9, 'bg-amber-300')}
-            ${generateProgressStrip('SEL4', s4, 8, 'bg-amber-300')}
-            ${generateProgressStrip('SEL5', s5, 20, 'bg-amber-300')}
+            ${generateProgressStrip('SEL2', s2, 2, 'bg-amber-300', rec.id, 2)}
+            ${generateProgressStrip('SEL3', s3, 9, 'bg-amber-300', rec.id, 3)}
+            ${generateProgressStrip('SEL4', s4, 8, 'bg-amber-300', rec.id, 4)}
+            ${generateProgressStrip('SEL5', s5, 20, 'bg-amber-300', rec.id, 5)}
           </div>
 
           <!-- Right: Action Buttons (Kept clear, button-styled, aligned right) -->
@@ -6011,6 +6095,13 @@
 
         // Update SEL 4 quantitative progress
         updateActiveStudentRecord(4, currentFruitLevel + 1);
+        {
+          const teamNameMap = { red: '紅皮克敏', purple: '紫皮克敏', yellow: '黃皮克敏', rock: '岩石皮克敏' };
+          const teamCounts = {};
+          assignedPikminList.forEach(t => teamCounts[t] = (teamCounts[t] || 0) + 1);
+          const teamSummary = Object.entries(teamCounts).map(([t, c]) => `${teamNameMap[t] || t} ×${c}`).join('、') || '（無隊員）';
+          logStudentActivity(4, 'SEL4 · ' + currentMission.title, `派遣隊員：${teamSummary}，總力量 ${currentTeamPower}/${target}`, 'correct');
+        }
 
         setTimeout(() => {
           if (currentFruitLevel < CAMPUS_TEAMWORK_MISSIONS.length - 1) {
@@ -6110,6 +6201,11 @@
       if (!feedbackBox) return;
       feedbackBox.classList.remove('hidden');
 
+      {
+        const currentQ = activeQuizList[currentQuizIndex] || activeQuizList[0];
+        logStudentActivity(5, 'SEL5 · ' + (currentQ ? currentQ.title : ''), '選擇：' + opt.text, opt.correct ? 'correct' : 'wrong');
+      }
+
       if (opt.correct) {
         playSound('correct');
         feedbackBox.className = 'p-4 rounded-2xl border text-sm space-y-2 bg-emerald-50 border-emerald-300 text-emerald-900';
@@ -6144,10 +6240,27 @@
       const mTitle = document.getElementById('modal-title');
       const mMessage = document.getElementById('modal-message');
       const modal = document.getElementById('custom-modal');
+      const box = document.getElementById('modal-content-box');
 
       if (mIcon) mIcon.innerHTML = icon;
       if (mTitle) mTitle.textContent = title;
       if (mMessage) mMessage.innerHTML = message;
+      if (box) box.className = 'bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-emerald-100 text-center space-y-4 transform transition-all scale-95 duration-200';
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    // 較寬版的彈窗，用於顯示闖關詳細紀錄這類需要較多空間的內容
+    function showWideModal(icon, title, bodyHtml) {
+      const mIcon = document.getElementById('modal-icon');
+      const mTitle = document.getElementById('modal-title');
+      const mMessage = document.getElementById('modal-message');
+      const modal = document.getElementById('custom-modal');
+      const box = document.getElementById('modal-content-box');
+
+      if (mIcon) mIcon.innerHTML = icon;
+      if (mTitle) mTitle.textContent = title;
+      if (mMessage) mMessage.innerHTML = bodyHtml;
+      if (box) box.className = 'bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-emerald-100 text-left space-y-4 transform transition-all scale-95 duration-200';
       if (modal) modal.classList.remove('hidden');
     }
 
@@ -6541,9 +6654,15 @@
       col.querySelectorAll('.s3-option').forEach(b=>b.disabled=true);
       btn.classList.add('selected',ok?'correct':'wrong');
       col.querySelector('.s3-feedback').textContent=btn.dataset.note||(ok?'✓ 這個答案可以。':'△ 這個答案值得再想一想。');
+      if(typeof logStudentActivity==='function'){
+        logStudentActivity(3, 'SEL3 · '+sc.title+' · '+data[i].q, '選擇：'+btn.textContent, ok?'correct':'wrong');
+      }
       lessons[i].classList.remove('active');lessons[i].classList.add('done');
       if(i<3){cols[i+1].classList.remove('locked');lessons[i+1].classList.add('active');cols[i+1].querySelector('.s3-feedback').textContent='可以選答案了！';}
-      else document.getElementById('s3-next').classList.add('show');
+      else{
+        document.getElementById('s3-next').classList.add('show');
+        if(typeof updateActiveStudentRecord==='function'){updateActiveStudentRecord(3, sceneIndex+1);}
+      }
     })));
     document.getElementById('s3-next').onclick=()=>{sceneIndex=(sceneIndex+1)%list.length;build();};
   }
