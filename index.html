@@ -459,6 +459,13 @@
       <!-- Welcome Banner -->
       <div class="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-emerald-200/50 relative overflow-hidden">
         <div class="absolute -right-8 -bottom-10 opacity-20 pointer-events-none text-9xl">🌿</div>
+        <div id="home-active-player-badge" class="hidden sm:flex absolute top-5 right-6 sm:top-8 sm:right-8 z-20 items-center gap-2.5 bg-white/15 backdrop-blur-sm border border-white/25 rounded-2xl px-4 py-2.5 shadow-lg">
+          <span class="text-2xl leading-none">🪪</span>
+          <div class="text-right">
+            <div class="text-[10px] font-black text-emerald-50/80 uppercase tracking-wider leading-none">目前闖關人</div>
+            <div id="home-active-player-name" class="text-base sm:text-lg font-black text-white leading-tight mt-0.5">小勇士</div>
+          </div>
+        </div>
         <div class="relative z-10 max-w-2xl space-y-3">
           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-black tracking-wider uppercase">
             💎 Diamond隊長的心靈通訊
@@ -5374,6 +5381,10 @@
       const customNameInput = document.getElementById('custom-name');
       if (customNameInput && currentActiveStudentName) {
         customNameInput.value = currentActiveStudentName;
+      }
+      const bannerNameEl = document.getElementById('home-active-player-name');
+      if (bannerNameEl) {
+        bannerNameEl.textContent = currentActiveStudentName || '小勇士';
       }
     }
 
