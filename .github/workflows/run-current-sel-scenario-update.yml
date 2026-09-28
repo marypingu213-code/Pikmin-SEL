@@ -1,9 +1,7 @@
 name: Run current SEL scenario update
 
 on:
-  push:
-    paths:
-      - '.github/workflows/run-current-sel-scenario-update.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,10 +9,13 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Apply scenario update
         run: python scripts/update_current_sel_scenarios.py
+
       - name: Commit index update
         run: |
           git config user.name "github-actions[bot]"
