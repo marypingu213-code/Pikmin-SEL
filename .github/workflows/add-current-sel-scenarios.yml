@@ -1,9 +1,7 @@
 name: Add current SEL3 and SEL5 scenarios
 
 on:
-  push:
-    paths:
-      - '.github/workflows/add-current-sel-scenarios.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
