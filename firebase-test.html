@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Pikmin-SEL Firebase 測試</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f0fdf4;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+      color: #334155;
+    }
+
+    .card {
+      width: min(520px, 88vw);
+      padding: 36px;
+      background: white;
+      border: 2px solid #bbf7d0;
+      border-radius: 24px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.08);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+
+    #status {
+      margin-top: 25px;
+      padding: 18px;
+      border-radius: 16px;
+      background: #f1f5f9;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .waiting {
+      color: #64748b;
+    }
+
+    .success {
+      color: #047857;
+      background: #ecfdf5 !important;
+    }
+
+    .error {
+      color: #b91c1c;
+      background: #fef2f2 !important;
+    }
+
+    #details {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <h1>🌱 Pikmin-SEL</h1>
+
+    <p>Firebase 基礎連線測試</p>
+
+    <div id="status" class="waiting">
+      ⏳ 正在連接 Firebase……
+    </div>
+
+    <div id="details"></div>
+
+  </div>
+
+
+  <script type="module">
+
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+
+    import {
+      getFirestore
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBoLr-eixuw_UABUGK-lbCa8GTfmHRe1nw",
+      authDomain: "pikmin-sel.firebaseapp.com",
+      projectId: "pikmin-sel",
+      storageBucket: "pikmin-sel.firebasestorage.app",
+      messagingSenderId: "759793415971",
+      appId: "1:759793415971:web:76ccf46caad63f62c8be96"
+    };
+
+
+    const status = document.getElementById("status");
+    const details = document.getElementById("details");
+
+
+    try {
+
+      const app = initializeApp(firebaseConfig);
+
+      const db = getFirestore(app);
+
+
+      window.PikminFirebaseTest = {
+        app,
+        db
+      };
+
+
+      status.textContent =
+        "🔥 Firebase 初始化成功";
+
+      status.className =
+        "success";
+
+
+      details.innerHTML =
+        "Project ID：<strong>" +
+        firebaseConfig.projectId +
+        "</strong><br>" +
+        "Firestore 物件：已建立";
+
+
+      console.log(
+        "🔥 Pikmin-SEL Firebase 初始化成功",
+        {
+          projectId: firebaseConfig.projectId,
+          db
+        }
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Firebase 初始化失敗：",
+        error
+      );
+
+
+      status.textContent =
+        "❌ Firebase 初始化失敗";
+
+      status.className =
+        "error";
+
+
+      details.textContent =
+        error.message;
+
+    }
+
+  </script>
+
+</body>
+</html>
