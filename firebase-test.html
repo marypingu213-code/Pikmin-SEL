@@ -4,9 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Pikmin-SEL Firebase 測試</title>
+  <title>Pikmin-SEL Firebase 跨電腦測試</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -16,10 +20,11 @@
       background: #f0fdf4;
       font-family: Arial, "Noto Sans TC", sans-serif;
       color: #334155;
+      padding: 24px;
     }
 
     .card {
-      width: min(520px, 88vw);
+      width: min(600px, 94vw);
       padding: 36px;
       background: white;
       border: 2px solid #bbf7d0;
@@ -30,11 +35,18 @@
 
     h1 {
       margin-top: 0;
-      font-size: 28px;
+      margin-bottom: 8px;
+      font-size: 30px;
+    }
+
+    .subtitle {
+      margin-bottom: 24px;
+      color: #64748b;
+      font-size: 17px;
     }
 
     #status {
-      margin-top: 25px;
+      margin-top: 20px;
       padding: 18px;
       border-radius: 16px;
       background: #f1f5f9;
@@ -56,10 +68,88 @@
       background: #fef2f2 !important;
     }
 
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #writeBtn {
+      background: #10b981;
+      color: white;
+    }
+
+    #readBtn {
+      background: #0ea5e9;
+      color: white;
+    }
+
     #details {
-      margin-top: 18px;
+      margin-top: 20px;
       font-size: 14px;
       color: #64748b;
+      line-height: 1.8;
+    }
+
+    #result {
+      display: none;
+      margin-top: 24px;
+      padding: 20px;
+      border: 1px solid #d1fae5;
+      border-radius: 16px;
+      background: #f8fafc;
+      text-align: left;
+    }
+
+    #result h2 {
+      margin-top: 0;
+      font-size: 18px;
+      color: #047857;
+    }
+
+    .row {
+      padding: 7px 0;
+      border-bottom: 1px solid #e2e8f0;
+      word-break: break-word;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-weight: 800;
+      color: #475569;
+    }
+
+    .note {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 13px;
+      color: #94a3b8;
       line-height: 1.7;
     }
   </style>
@@ -71,13 +161,55 @@
 
     <h1>🌱 Pikmin-SEL</h1>
 
-    <p>Firebase 基礎連線測試</p>
+    <div class="subtitle">
+      Firebase 跨電腦讀寫測試
+    </div>
 
     <div id="status" class="waiting">
-      ⏳ 正在連接 Firebase……
+      ⏳ 正在初始化 Firebase……
     </div>
 
     <div id="details"></div>
+
+    <div class="buttons">
+      <button id="writeBtn" disabled>
+        🧪 寫入 TEST-001
+      </button>
+
+      <button id="readBtn" disabled>
+        ☁️ 讀取 TEST-001
+      </button>
+    </div>
+
+    <div id="result">
+      <h2>📦 Firestore 資料</h2>
+
+      <div class="row">
+        <span class="label">文件：</span>
+        <span id="resultId">—</span>
+      </div>
+
+      <div class="row">
+        <span class="label">訊息：</span>
+        <span id="resultMessage">—</span>
+      </div>
+
+      <div class="row">
+        <span class="label">來源：</span>
+        <span id="resultSource">—</span>
+      </div>
+
+      <div class="row">
+        <span class="label">建立時間：</span>
+        <span id="resultTime">—</span>
+      </div>
+    </div>
+
+    <div class="note">
+      測試資料只會寫入
+      <strong>systemTests / TEST-001</strong>，
+      不會修改目前學生的 SEL 資料。
+    </div>
 
   </div>
 
@@ -89,7 +221,11 @@
     } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 
     import {
-      getFirestore
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
 
@@ -103,15 +239,292 @@
     };
 
 
-    const status = document.getElementById("status");
-    const details = document.getElementById("details");
+    const statusEl =
+      document.getElementById("status");
+
+    const detailsEl =
+      document.getElementById("details");
+
+    const writeBtn =
+      document.getElementById("writeBtn");
+
+    const readBtn =
+      document.getElementById("readBtn");
+
+    const resultEl =
+      document.getElementById("result");
+
+    const resultId =
+      document.getElementById("resultId");
+
+    const resultMessage =
+      document.getElementById("resultMessage");
+
+    const resultSource =
+      document.getElementById("resultSource");
+
+    const resultTime =
+      document.getElementById("resultTime");
 
 
+    let db = null;
+
+
+    function setStatus(message, type = "waiting") {
+      statusEl.textContent = message;
+      statusEl.className = type;
+    }
+
+
+    function formatFirestoreTime(timestamp) {
+
+      if (!timestamp) {
+        return "尚未取得伺服器時間";
+      }
+
+      try {
+
+        const date = timestamp.toDate();
+
+        return date.toLocaleString(
+          "zh-TW",
+          {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+          }
+        );
+
+      } catch (error) {
+
+        return "時間格式讀取失敗";
+
+      }
+    }
+
+
+    async function writeTestData() {
+
+      if (!db) return;
+
+      writeBtn.disabled = true;
+      readBtn.disabled = true;
+
+      setStatus(
+        "⏳ 正在寫入 Firestore……",
+        "waiting"
+      );
+
+
+      try {
+
+        const testRef =
+          doc(
+            db,
+            "systemTests",
+            "TEST-001"
+          );
+
+
+        await setDoc(
+          testRef,
+          {
+            message:
+              "Firebase跨電腦測試成功",
+
+            source:
+              "teacher-computer",
+
+            createdAt:
+              serverTimestamp(),
+
+            testVersion:
+              2
+          }
+        );
+
+
+        setStatus(
+          "✅ TEST-001 已成功寫入 Firestore",
+          "success"
+        );
+
+
+        detailsEl.innerHTML =
+          "資料位置：<strong>systemTests / TEST-001</strong>";
+
+
+        console.log(
+          "✅ TEST-001 寫入成功"
+        );
+
+
+        /*
+         * 寫入後稍等一下，
+         * 再自動讀取一次確認資料。
+         */
+        setTimeout(
+          readTestData,
+          700
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Firestore 寫入失敗：",
+          error
+        );
+
+
+        setStatus(
+          "❌ Firestore 寫入失敗",
+          "error"
+        );
+
+
+        detailsEl.textContent =
+          error.message;
+
+
+      } finally {
+
+        writeBtn.disabled = false;
+        readBtn.disabled = false;
+
+      }
+
+    }
+
+
+    async function readTestData() {
+
+      if (!db) return;
+
+      readBtn.disabled = true;
+
+      setStatus(
+        "⏳ 正在從 Firestore 讀取 TEST-001……",
+        "waiting"
+      );
+
+
+      try {
+
+        const testRef =
+          doc(
+            db,
+            "systemTests",
+            "TEST-001"
+          );
+
+
+        const snapshot =
+          await getDoc(testRef);
+
+
+        if (!snapshot.exists()) {
+
+          resultEl.style.display =
+            "none";
+
+
+          setStatus(
+            "⚠️ Firestore 中還沒有 TEST-001",
+            "waiting"
+          );
+
+
+          detailsEl.textContent =
+            "請先在教師電腦按「寫入 TEST-001」。";
+
+
+          return;
+
+        }
+
+
+        const data =
+          snapshot.data();
+
+
+        resultId.textContent =
+          snapshot.id;
+
+        resultMessage.textContent =
+          data.message || "—";
+
+        resultSource.textContent =
+          data.source || "—";
+
+        resultTime.textContent =
+          formatFirestoreTime(
+            data.createdAt
+          );
+
+
+        resultEl.style.display =
+          "block";
+
+
+        setStatus(
+          "☁️ TEST-001 讀取成功",
+          "success"
+        );
+
+
+        detailsEl.innerHTML =
+          "這筆資料來自 Firebase Cloud Firestore。";
+
+
+        console.log(
+          "☁️ TEST-001 讀取成功：",
+          data
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Firestore 讀取失敗：",
+          error
+        );
+
+
+        setStatus(
+          "❌ Firestore 讀取失敗",
+          "error"
+        );
+
+
+        detailsEl.textContent =
+          error.message;
+
+
+      } finally {
+
+        readBtn.disabled = false;
+        writeBtn.disabled = false;
+
+      }
+
+    }
+
+
+    /*
+     * Firebase 初始化
+     */
     try {
 
-      const app = initializeApp(firebaseConfig);
+      const app =
+        initializeApp(firebaseConfig);
 
-      const db = getFirestore(app);
+
+      db =
+        getFirestore(app);
 
 
       window.PikminFirebaseTest = {
@@ -120,26 +533,25 @@
       };
 
 
-      status.textContent =
-        "🔥 Firebase 初始化成功";
+      setStatus(
+        "🔥 Firebase 初始化成功",
+        "success"
+      );
 
-      status.className =
-        "success";
 
-
-      details.innerHTML =
+      detailsEl.innerHTML =
         "Project ID：<strong>" +
         firebaseConfig.projectId +
         "</strong><br>" +
-        "Firestore 物件：已建立";
+        "Firestore：準備完成";
+
+
+      writeBtn.disabled = false;
+      readBtn.disabled = false;
 
 
       console.log(
-        "🔥 Pikmin-SEL Firebase 初始化成功",
-        {
-          projectId: firebaseConfig.projectId,
-          db
-        }
+        "🔥 Pikmin-SEL Firebase 初始化成功"
       );
 
 
@@ -151,17 +563,28 @@
       );
 
 
-      status.textContent =
-        "❌ Firebase 初始化失敗";
+      setStatus(
+        "❌ Firebase 初始化失敗",
+        "error"
+      );
 
-      status.className =
-        "error";
 
-
-      details.textContent =
+      detailsEl.textContent =
         error.message;
 
     }
+
+
+    writeBtn.addEventListener(
+      "click",
+      writeTestData
+    );
+
+
+    readBtn.addEventListener(
+      "click",
+      readTestData
+    );
 
   </script>
 
