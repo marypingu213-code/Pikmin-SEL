@@ -395,7 +395,35 @@
   #sel3-direct-final .s3-col{min-height:305px}
   #sel3-direct-final .s3-actions{position:static;justify-content:flex-end;margin-top:10px}
 }
-</style></head>
+</style>
+  <!-- Firebase SDK：Pikmin-SEL 雲端資料基礎 -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBoLr-eixuw_UABUGK-lbCa8GTfmHRe1nw",
+    authDomain: "pikmin-sel.firebaseapp.com",
+    projectId: "pikmin-sel",
+    storageBucket: "pikmin-sel.firebasestorage.app",
+    messagingSenderId: "759793415971",
+    appId: "1:759793415971:web:76ccf46caad63f62c8be96"
+  };
+
+  const firebaseApp = initializeApp(firebaseConfig);
+  const firestoreDB = getFirestore(firebaseApp);
+
+  // 暫時公開給 Pikmin-SEL 原有程式使用
+  window.PikminFirebase = {
+    app: firebaseApp,
+    db: firestoreDB,
+    connected: true
+  };
+
+  console.log("🔥 Pikmin-SEL Firebase 初始化完成");
+</script>
+
+</head>
 
 <body class="min-h-screen text-slate-800 flex flex-col justify-between overflow-x-hidden">
 
