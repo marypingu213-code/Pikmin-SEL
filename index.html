@@ -725,11 +725,49 @@
           </div>
 
           <!-- Step 1: Name & Avatar -->
-          <div class="space-y-2">
-            <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">1. 探險家姓名 / 綽號</label>
-            <input type="text" id="custom-name" value="小勇士" maxlength="10" oninput="updateCardPreview()"
-                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:outline-none font-bold text-slate-800">
-          </div>
+          <!-- Step 1: Student Identity -->
+<div class="space-y-3">
+
+  <div>
+    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+      1. 班級代碼
+      <span class="text-[10px] text-emerald-600 font-normal ml-1">
+        🔒 用來辨識同一位探險員
+      </span>
+    </label>
+
+    <input
+      type="text"
+      id="student-class-id"
+      maxlength="10"
+      placeholder="例如：202"
+      autocomplete="off"
+      class="mt-2 w-full px-4 py-2.5 bg-emerald-50 border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none font-black text-slate-800"
+    >
+
+    <p class="text-[10px] text-slate-500 mt-1.5 leading-relaxed">
+      🌱 同一位學生請固定使用相同班級代碼。
+      即使更換探險家名稱或皮克敏，成長紀錄仍會歸在同一位學生。
+    </p>
+  </div>
+
+
+  <div>
+    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+      2. 探險家姓名 / 綽號
+    </label>
+
+    <input
+      type="text"
+      id="custom-name"
+      value="小勇士"
+      maxlength="10"
+      oninput="updateCardPreview()"
+      class="mt-2 w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:outline-none font-bold text-slate-800"
+    >
+  </div>
+
+</div>
 
           <!-- Step 2: Main Pikmin Spirit -->
           <div class="space-y-2">
@@ -4325,11 +4363,59 @@
     let clickTimerMap = new Map();
 
     // Student filter for the multi-student classroom setting
-    let currentActiveStudentName = '小勇士';
-    let selectedStudentFilter = 'ALL';
-    let historyCurrentPage = 1;
-    let historyPageSize = 8; // 手帳每頁顯示幾筆，可由下拉選單調整
-    let isTeacherMode = false; // Teacher edit/delete permission flag
+    // ============================================================
+// Active Student Identity
+// studentId = 固定身分（以班級代碼識別，例如 202）
+// studentName = 學生當天自行設定的探險員名稱，可隨時改變
+// ============================================================
+
+let activeStudentId = localStorage.getItem('pikmin_sel_active_student_id') || '';
+let currentActiveStudentName = '小勇士';
+
+let selectedStudentFilter = 'ALL';
+let historyCurrentPage = 1;
+let historyPageSize = 8; // 手帳每頁顯示幾筆，可由下拉選單調整
+let isTeacherMode = false; // Teacher edit/delete permission flag
+
+
+function setActiveStudentId(studentId) {
+  const normalizedId = String(studentId || '').trim();
+
+  if (!normalizedId) {
+    console.warn('activeStudentId 不可為空白');
+    return false;
+  }
+
+  activeStudentId = normalizedId;
+
+  localStorage.setItem(
+    'pikmin_sel_active_student_id',
+    activeStudentId
+  );
+
+  console.log(
+    '🌱 目前探險員 ID：',
+    activeStudentId
+  );
+
+  return true;
+}
+
+
+function getActiveStudentId() {
+  return activeStudentId;
+}
+
+
+function clearActiveStudentId() {
+  activeStudentId = '';
+
+  localStorage.removeItem(
+    'pikmin_sel_active_student_id'
+  );
+
+  console.log('🌱 已清除目前探險員 ID');
+}
 
     // Shuffled runtime lists to prevent memorization
     let activeQuizList = [];
@@ -5393,45 +5479,162 @@
     }
 
     function finishCustomCard(isNew = false) {
-      playSound('success');
-      confetti({ particleCount: 50, spread: 50 });
+  // ------------------------------------------------------------
+  // 1. 先取得固定學生 ID
+  // ------------------------------------------------------------
+  const studentIdInput = document.getElementById('student-class-id');
+  const studentId = studentIdInput ? studentIdInput.value.trim() : '';
 
-      const nameInput = document.getElementById('custom-name');
-      const noteInput = document.getElementById('custom-note');
-      const studentName = nameInput ? nameInput.value.trim() || '小勇士' : '小勇士';
+  // 沒有學生 ID 就不允許建立紀錄
+  if (!studentId) {
+    showModal(
+      '🌱',
+      '請先輸入班級代碼',
+      '班級代碼是辨識同一位探險員的重要依據。<br>例如：202'
+    );
 
-      // Lock currentActiveStudentName to newly saved student
-      currentActiveStudentName = studentName;
-
-      // Preserve existing student's SEL 2-5 scores if already in progress
-      const existingRec = growthHistoryRecords.find(r => r.name === studentName);
-
-      const rec = {
-        id: 'rec_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-        dateStr: new Date().toLocaleDateString('zh-TW'),
-        timeStr: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }),
-        name: studentName,
-        spirit: selectedSpirit,
-        stage: currentStage,
-        strengths: [...selectedStrengths],
-        weaknesses: [...selectedWeaknesses],
-        note: noteInput ? noteInput.value.trim() || '今天也是充滿幹勁的一天！' : '今天也是充滿幹勁的一天！',
-        sel2: existingRec ? (existingRec.sel2 || 0) : 0,
-        sel3: existingRec ? (existingRec.sel3 || 0) : 0,
-        sel4: existingRec ? (existingRec.sel4 || 0) : 0,
-        sel5: existingRec ? (existingRec.sel5 || 0) : 0
-      };
-
-      // In classroom setting: always append a distinct record so students rotating never overwrite each other
-      growthHistoryRecords.unshift(rec);
-
-      saveRecordsToStorage();
-      updateHistorySelectDropdown();
-      updateStudentFilterDropdown();
-      renderGrowthHistory();
-      syncActiveStudentDisplay();
-      showModal('🪪', `已儲存【${studentName}】的心靈卡片！`, `已為【${studentName}】建立了專屬成長紀錄！<br>現在已設定為目前操作探險家，所有闖關進度將記錄在手帳中！`);
+    if (studentIdInput) {
+      studentIdInput.focus();
     }
+
+    return;
+  }
+
+  // ------------------------------------------------------------
+  // 2. 設定目前操作中的學生
+  // ------------------------------------------------------------
+  if (!setActiveStudentId(studentId)) {
+    showModal(
+      '⚠️',
+      '班級代碼設定失敗',
+      '請重新確認班級代碼後再試一次。'
+    );
+    return;
+  }
+
+  // ------------------------------------------------------------
+  // 3. 取得 SEL1 當日資料
+  // ------------------------------------------------------------
+  const nameInput = document.getElementById('custom-name');
+  const noteInput = document.getElementById('custom-note');
+
+  const studentName =
+    nameInput
+      ? (nameInput.value.trim() || '小勇士')
+      : '小勇士';
+
+  // 顯示名稱可以改，但真正身分由 activeStudentId 決定
+  currentActiveStudentName = studentName;
+
+  // ------------------------------------------------------------
+  // 4. 找同一位學生過去的紀錄
+  //
+  // 重要：
+  // 不再使用 name 判斷學生。
+  // 改用 studentId。
+  // ------------------------------------------------------------
+  const existingRec = growthHistoryRecords.find(
+    r => String(r.studentId || '').trim() === activeStudentId
+  );
+
+  // ------------------------------------------------------------
+  // 5. 建立今天新的 SEL1 紀錄
+  // ------------------------------------------------------------
+  const rec = {
+    id:
+      'rec_' +
+      Date.now() +
+      '_' +
+      Math.random().toString(36).substr(2, 4),
+
+    // 固定學生身分
+    studentId: activeStudentId,
+
+    // 當天顯示名稱，可以改變
+    name: studentName,
+
+    dateStr: new Date().toLocaleDateString('zh-TW'),
+
+    timeStr: new Date().toLocaleTimeString(
+      'zh-TW',
+      {
+        hour: '2-digit',
+        minute: '2-digit'
+      }
+    ),
+
+    // SEL1：皮克敏／成長階段
+    spirit: selectedSpirit,
+    stage: currentStage,
+
+    // SEL1：今天的優勢超能力
+    strengths: [...selectedStrengths],
+
+    // SEL1：今天需要隊友協助的挑戰
+    weaknesses: [...selectedWeaknesses],
+
+    // SEL1：今天的反思／心情
+    note:
+      noteInput
+        ? (
+            noteInput.value.trim() ||
+            '今天也是充滿幹勁的一天！'
+          )
+        : '今天也是充滿幹勁的一天！',
+
+    // 暫時保留目前既有的 SEL2～SEL5 分數架構
+    sel2: existingRec ? (existingRec.sel2 || 0) : 0,
+    sel3: existingRec ? (existingRec.sel3 || 0) : 0,
+    sel4: existingRec ? (existingRec.sel4 || 0) : 0,
+    sel5: existingRec ? (existingRec.sel5 || 0) : 0
+  };
+
+  // ------------------------------------------------------------
+  // 6. 每次都建立新的歷史紀錄
+  //
+  // 同一位 202：
+  // 9/29 可以叫「藍皮克敏」
+  // 10/3 可以叫「香蕉皮克敏」
+  //
+  // 兩筆都保留，但 studentId 都是 202。
+  // ------------------------------------------------------------
+  growthHistoryRecords.unshift(rec);
+
+  // ------------------------------------------------------------
+  // 7. 先存回既有 localStorage
+  //
+  // Firebase 下一刀才接。
+  // 現在不破壞原本網站的儲存方式。
+  // ------------------------------------------------------------
+  saveRecordsToStorage();
+
+  // ------------------------------------------------------------
+  // 8. 更新既有畫面
+  // ------------------------------------------------------------
+  updateHistorySelectDropdown();
+  updateStudentFilterDropdown();
+  renderGrowthHistory();
+  syncActiveStudentDisplay();
+
+  // ------------------------------------------------------------
+  // 9. 成功提示
+  // ------------------------------------------------------------
+  playSound('success');
+
+  confetti({
+    particleCount: 50,
+    spread: 50
+  });
+
+  showModal(
+    '🪪',
+    `已儲存【${studentName}】的心靈卡片！`,
+    `班級代碼：<strong>${activeStudentId}</strong><br>` +
+    `已建立今天的 SEL1 成長紀錄。<br><br>` +
+    `即使之後更換探險家名稱或皮克敏，` +
+    `只要使用相同班級代碼，仍會視為同一位學生。`
+  );
+}
 
     function saveAsNewHistoryRecord() {
       finishCustomCard(true);
@@ -5462,6 +5665,59 @@
     }
 
     function updateStudentFilterDropdown() {
+  const sel = document.getElementById('student-filter-select');
+  if (!sel) return;
+
+  /*
+   * 以 studentId 作為真正的學生身分。
+   *
+   * 同一個 studentId 可能有很多歷史紀錄，
+   * 也可能曾經使用不同探險家名稱。
+   *
+   * 篩選器只顯示一次。
+   */
+  const studentMap = new Map();
+
+  growthHistoryRecords.forEach(rec => {
+    const studentId = String(rec.studentId || '').trim();
+
+    if (!studentId) return;
+
+    /*
+     * growthHistoryRecords 最新紀錄在前面，
+     * 所以第一次遇到這個 studentId 時，
+     * 就保留目前最新的探險家名稱。
+     */
+    if (!studentMap.has(studentId)) {
+      studentMap.set(
+        studentId,
+        rec.name || '小勇士'
+      );
+    }
+  });
+
+  sel.innerHTML =
+    '<option value="ALL">🌟 全班所有學生手帳 (全部)</option>';
+
+  studentMap.forEach((latestName, studentId) => {
+    const opt = document.createElement('option');
+
+    opt.value = studentId;
+
+    opt.textContent =
+      `👤 ${studentId}｜${latestName}`;
+
+    if (selectedStudentFilter === studentId) {
+      opt.selected = true;
+    }
+
+    sel.appendChild(opt);
+  });
+
+  if (selectedStudentFilter === 'ALL') {
+    sel.value = 'ALL';
+  }
+}{
       const sel = document.getElementById('student-filter-select');
       if (!sel) return;
       const studentNames = Array.from(new Set(growthHistoryRecords.map(r => r.name))).filter(Boolean);
@@ -5476,13 +5732,18 @@
       if (selectedStudentFilter === 'ALL') sel.value = 'ALL';
     }
 
-    function filterHistoryByStudent(studentName) {
-      selectedStudentFilter = studentName;
-      historyCurrentPage = 1;
-      const sel = document.getElementById('student-filter-select');
-      if (sel) sel.value = studentName;
-      renderGrowthHistory();
-    }
+    ffunction filterHistoryByStudent(studentId) {
+  selectedStudentFilter = studentId;
+  historyCurrentPage = 1;
+
+  const sel = document.getElementById('student-filter-select');
+
+  if (sel) {
+    sel.value = studentId;
+  }
+
+  renderGrowthHistory();
+}
 
     function changeHistoryPageSize(val) {
       playSound('pop');
@@ -5732,10 +5993,12 @@
       const totalLabel = document.getElementById('history-total-label');
       const badgeCount = document.getElementById('history-badge-count');
 
-      // Filter by selected student
-      const displayRecords = selectedStudentFilter === 'ALL'
-        ? growthHistoryRecords
-        : growthHistoryRecords.filter(r => r.name === selectedStudentFilter);
+      //// Filter by selected student ID
+const displayRecords = selectedStudentFilter === 'ALL'
+  ? growthHistoryRecords
+  : growthHistoryRecords.filter(
+      r => String(r.studentId || '').trim() === selectedStudentFilter
+    );
 
       // 分頁計算：統計數字用完整的篩選結果，卡片列表只取當前頁
       const totalPages = Math.max(1, Math.ceil(displayRecords.length / historyPageSize));
