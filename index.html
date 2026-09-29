@@ -5717,22 +5717,9 @@ function clearActiveStudentId() {
   if (selectedStudentFilter === 'ALL') {
     sel.value = 'ALL';
   }
-}{
-      const sel = document.getElementById('student-filter-select');
-      if (!sel) return;
-      const studentNames = Array.from(new Set(growthHistoryRecords.map(r => r.name))).filter(Boolean);
-      sel.innerHTML = '<option value="ALL">🌟 全班所有學生手帳 (全部)</option>';
-      studentNames.forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = `👤 ${name}`;
-        if (selectedStudentFilter === name) opt.selected = true;
-        sel.appendChild(opt);
-      });
-      if (selectedStudentFilter === 'ALL') sel.value = 'ALL';
-    }
+}
 
-    ffunction filterHistoryByStudent(studentId) {
+function filterHistoryByStudent(studentId) {
   selectedStudentFilter = studentId;
   historyCurrentPage = 1;
 
