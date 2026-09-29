@@ -7436,4 +7436,170 @@ window.addEventListener('load', () => {
   step('版面縮放', () => { if (typeof fitStageToViewport === 'function') fitStageToViewport(); });
 });
 </script>
+<!-- ===== PIKMIN_SQUAD_SWITCHER =====
+  貼在 index.html 檔案最底部（Firebase 補丁的前面或後面都可以）。 -->
+<script>
+(function () {
+  const KEY = 'pikmin_squad_v1', MAX = 5;
+  let S; try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { S = {}; }
+  S.ids = Array.isArray(S.ids) ? S.ids : []; S.progress = S.progress || {};
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+  const $ = i => document.getElementById(i);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const latest = id => growthHistoryRecords.find(r => String(r.studentId || '').trim() === id);   // 手帳最新的一筆
+  const onOrganize = () => $('tab-organize') && !$('tab-organize').classList.contains('hidden');
 
+  /* 記住目前這位學生的關卡位置 */
+  function snapshot() {
+    const id = getActiveStudentId();
+    if (!id || !S.ids.includes(id)) return;
+    const p = S.progress[id] = S.progress[id] || {};
+    const sel = $('s3-level-select'); if (sel) p.s3 = parseInt(sel.value, 10) || 0;
+    p.s4 = currentFruitLevel || 0;
+    if (onOrganize()) p.s5 = currentQuizIndex || 0;
+    save();
+  }
+
+  /* 切換到某位學生：角色、特質、名字、關卡位置全部換過去 */
+  function activate(id, first) {
+    const rec = latest(id); if (!rec) return;
+    if (!first) snapshot();
+    setActiveStudentId(id);
+    currentActiveStudentName = rec.name;
+    selectedSpirit = rec.spirit || 'red';
+    currentStage = rec.stage || 'leaf';
+    selectedStrengths = [...(rec.strengths || [STRENGTH_OPTIONS[0]])];
+    selectedWeaknesses = [...(rec.weaknesses || [WEAKNESS_OPTIONS[0]])];
+    if ($('student-class-id')) $('student-class-id').value = id;
+    if ($('custom-name')) $('custom-name').value = rec.name;
+    if ($('custom-note')) $('custom-note').value = rec.note || '';
+    initCardCustomizer(); setGrowthStage(currentStage); selectSpirit(selectedSpirit);
+    syncActiveStudentDisplay();
+    const p = S.progress[id] || {};
+    const sel = $('s3-level-select');                       // SEL3：回到上次的那一關
+    if (sel) { sel.value = p.s3 || 0; sel.dispatchEvent(new Event('change')); }
+    currentFruitLevel = p.s4 || 0; resetTeamworkLevel();    // SEL4
+    if (onOrganize()) { const n = p.s5 || 0; if (n < activeQuizList.length) loadQuizQuestion(n); }   // SEL5
+    renderBar();
+  }
+
+  /* 上方「今日小組」切換列 */
+  function renderBar() {
+    let bar = $('squad-bar');
+    if (!bar) {
+      bar = document.createElement('div'); bar.id = 'squad-bar'; bar.className = 'focus-lock-target';
+      bar.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 16px;background:#f0fdf4;border-bottom:1px solid #bbf7d0';
+      document.querySelector('#fit-stage > header').after(bar);
+    }
+    const act = getActiveStudentId();
+    const chips = S.ids.map(id => {
+      const r = latest(id); if (!r) return '';
+      const on = id === act;
+      return `<span style="display:inline-flex;align-items:center;border-radius:9999px;border:2px solid ${on ? '#16a34a' : '#cbd5e1'};background:${on ? '#dcfce7' : '#fff'};padding:2px 6px 2px 8px">
+        <button type="button" data-sq="${esc(id)}" style="display:flex;align-items:center;gap:4px;font-weight:900;font-size:13px;background:none;border:0;cursor:pointer">
+          <span style="width:22px;height:26px;display:inline-block">${getDynamicPikminSvg(r.spirit, r.stage)}</span>${esc(r.name)}<span style="font-size:10px;color:#64748b">${esc(id)}</span></button>
+        <button type="button" data-sqx="${esc(id)}" title="移出小組" style="border:0;background:none;color:#94a3b8;cursor:pointer;font-size:12px">✕</button></span>`;
+    }).join('');
+    const others = [...new Set(growthHistoryRecords.map(r => String(r.studentId || '').trim()).filter(Boolean))].filter(id => !S.ids.includes(id));
+    const add = (S.ids.length < MAX && others.length)
+      ? `<select id="squad-add" style="font-size:12px;font-weight:800;border:2px solid #86efac;border-radius:10px;padding:3px 6px;background:#fff"><option value="">＋加入學生</option>${others.map(id => `<option value="${esc(id)}">${esc(id)}｜${esc(latest(id).name)}</option>`).join('')}</select>` : '';
+    bar.innerHTML = `<b style="font-size:12px;color:#166534">👥 今日小組 (${S.ids.length}/${MAX})</b>` +
+      (chips || '<span style="font-size:12px;color:#64748b">先到 SEL1 建立卡片並儲存，就會自動加入小組</span>') + add;
+  }
+
+  document.addEventListener('click', e => {
+    const c = e.target.closest('[data-sq]'), x = e.target.closest('[data-sqx]');
+    if (c) { playSound('pop'); activate(c.dataset.sq); }
+    else if (x) { S.ids = S.ids.filter(i => i !== x.dataset.sqx); save(); renderBar(); }
+  });
+  document.addEventListener('change', e => {
+    if (e.target.id !== 'squad-add' || !e.target.value) return;
+    if (S.ids.length < MAX) { S.ids.push(e.target.value); save(); activate(e.target.value); }
+  });
+
+  /* SEL1 按「儲存」後，自動加入今日小組 */
+  const _finish = window.finishCustomCard;
+  window.finishCustomCard = function () {
+    const before = growthHistoryRecords.length;
+    _finish.apply(this, arguments);
+    if (growthHistoryRecords.length > before) {
+      const id = getActiveStudentId();
+      if (id && !S.ids.includes(id)) {
+        if (S.ids.length < MAX) { S.ids.push(id); save(); }
+        else showModal('👥', '今日小組已滿 5 人', '請先在上方把一位同學按 ✕ 移出小組，再加入新的同學。');
+      }
+      renderBar();
+    }
+  };
+
+  /* 進入 SEL5 時，回到這位學生上次做到的題目 */
+  const _tab = window.switchTab;
+  window.switchTab = function (t) {
+    _tab.apply(this, arguments);
+    if (t === 'organize') {
+      const p = S.progress[getActiveStudentId()];
+      if (p && p.s5 > 0 && p.s5 < activeQuizList.length) loadQuizQuestion(p.s5);
+    }
+  };
+
+  /* 手帳資料更新（含 Firebase 同步進來）時，刷新切換列 */
+  const _refresh = window.refreshHandbookViews;
+  if (_refresh) window.refreshHandbookViews = function () { _refresh.apply(this, arguments); renderBar(); };
+
+  /* ===== SEL3：每位學生、每一關已選的答案都會保留 ===== */
+  const s3Scene = () => parseInt(($('s3-level-select') || {}).value, 10) || 0;
+
+  // 學生點選答案後，記下這位學生在這一關四個階段各選了第幾個選項
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.s3-option')) return;
+    const id = getActiveStudentId(); if (!id) return;
+    const p = S.progress[id] = S.progress[id] || {};
+    p.a3 = p.a3 || {};
+    p.a3[s3Scene()] = [...document.querySelectorAll('#sel3-direct-final .s3-col')].map(c => {
+      const k = [...c.querySelectorAll('.s3-option')].findIndex(o => o.classList.contains('selected'));
+      return k < 0 ? null : k;
+    });
+    save();
+  });
+
+  // 按「重做本題」才會清掉這位學生這一關的答案（要在原本的按鈕動作之前執行）
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#s3-reset')) return;
+    const p = S.progress[getActiveStudentId()];
+    if (p && p.a3) { delete p.a3[s3Scene()]; save(); }
+  }, true);
+
+  // 把存好的答案畫回畫面（不會重複計分或重複寫入闖關紀錄）
+  function restoreS3() {
+    const id = getActiveStudentId(); if (!id) return;
+    const arr = (((S.progress[id] || {}).a3) || {})[s3Scene()]; if (!arr) return;
+    const cols = [...document.querySelectorAll('#sel3-direct-final .s3-col')];
+    const lessons = [...document.querySelectorAll('#sel3-direct-final .s3-lesson')];
+    arr.forEach((k, i) => {
+      const col = cols[i]; if (k == null || !col) return;
+      const btns = col.querySelectorAll('.s3-option'), b = btns[k]; if (!b) return;
+      const ok = b.dataset.correct === '1';
+      col.classList.remove('locked'); col.dataset.answered = '1';
+      btns.forEach(o => o.disabled = true);
+      b.classList.add('selected', ok ? 'correct' : 'wrong');
+      col.querySelector('.s3-feedback').textContent = b.dataset.note || (ok ? '✓ 這個答案可以。' : '△ 這個答案值得再想一想。');
+      lessons[i].classList.remove('active'); lessons[i].classList.add('done');
+      if (cols[i + 1]) {
+        cols[i + 1].classList.remove('locked'); lessons[i + 1].classList.add('active');
+        cols[i + 1].querySelector('.s3-feedback').textContent = '可以選答案了！';
+      } else if ($('s3-next')) $('s3-next').classList.add('show');
+    });
+  }
+  // SEL3 畫面每次重新產生（換人、換關、下一題）就自動補回答案
+  if ($('tab-empathy')) new MutationObserver(restoreS3).observe($('tab-empathy'), { childList: true });
+
+  function init() {
+    renderBar();
+    const id = getActiveStudentId();
+    if (id && S.ids.includes(id) && latest(id)) activate(id, true);   // 重新整理後，回到上次的學生
+    setInterval(snapshot, 1500);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(init, 300));
+  else setTimeout(init, 300);
+})();
+</script>
