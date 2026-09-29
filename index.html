@@ -7242,7 +7242,7 @@ const displayRecords = selectedStudentFilter === 'ALL'
               <div class="s3-scene-title">${sc.title}</div>
               <div class="s3-scene-desc">${sc.desc}</div>
             </div>
-            <div class="s3-count">情境 ${sceneIndex+1} / ${list.length}</div>
+           <div class="s3-count"><select id="s3-level-select" style="max-width:260px;font-size:14px;font-weight:900;color:#166534;background:#dcfce7;border:2px solid #86efac;border-radius:10px;padding:6px 8px;cursor:pointer;">${list.map((s,i)=>`<option value="${i}" ${i===sceneIndex?'selected':''}>第 ${i+1} 關｜${s.title}</option>`).join('')}</select></div>
           </div>
         </div>
         <div class="s3-lesson-row">
@@ -7268,6 +7268,7 @@ const displayRecords = selectedStudentFilter === 'ALL'
       </section>`;
     document.getElementById('s3-home').onclick=()=>{if(typeof switchTab==='function')switchTab('home');};
     document.getElementById('s3-reset').onclick=()=>build();
+   document.getElementById('s3-level-select').onchange=e=>{sceneIndex=parseInt(e.target.value,10)||0;build();};
     const cols=[...tab.querySelectorAll('.s3-col')],lessons=[...tab.querySelectorAll('.s3-lesson')];
     cols.forEach((col,i)=>col.querySelectorAll('.s3-option').forEach(btn=>btn.addEventListener('click',()=>{
       if(col.classList.contains('locked')||col.dataset.answered==='1')return;
