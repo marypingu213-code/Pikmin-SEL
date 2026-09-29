@@ -7291,3 +7291,148 @@ const displayRecords = selectedStudentFilter === 'ALL'
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
 })();
 </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// ▼▼▼ 換成你自己的 Firebase 設定 ▼▼▼
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+// ▲▲▲ ────────────────────────── ▲▲▲
+const COLLECTION = 'pikmin_sel_records';
+
+/* ---------- 狀態小標籤 ---------- */
+const badge = document.createElement('div');
+badge.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;font:700 11px sans-serif;padding:4px 9px;border-radius:9999px;background:#e2e8f0;color:#334155;opacity:.85;pointer-events:none';
+badge.textContent = '☁️ 雲端：連線中…';
+document.body.appendChild(badge);
+const setStatus = (t, ok) => { badge.textContent = t; badge.style.background = ok ? '#dcfce7' : '#fee2e2'; badge.style.color = ok ? '#166534' : '#991b1b'; };
+
+/* ---------- 資料整理：補齊欄位，避免舊資料讓畫面壞掉 ---------- */
+function normalize(r) {
+  r = r || {};
+  r.id = r.id || ('rec_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6));
+  r.name = r.name || '小勇士';
+  r.studentId = String(r.studentId || '').trim() || r.name;   // 舊資料沒有班級代碼 → 暫用姓名，篩選才不會漏掉
+  r.spirit = PIKMIN_ROSTER.some(p => p.id === r.spirit) ? r.spirit : 'red';
+  r.stage = ['leaf', 'bud', 'flower'].includes(r.stage) ? r.stage : 'leaf';
+  r.strengths = Array.isArray(r.strengths) && r.strengths.length ? r.strengths : [STRENGTH_OPTIONS[0]];
+  r.weaknesses = Array.isArray(r.weaknesses) && r.weaknesses.length ? r.weaknesses : [WEAKNESS_OPTIONS[0]];
+  r.note = r.note || '';
+  ['sel2', 'sel3', 'sel4', 'sel5'].forEach(k => r[k] = Number(r[k]) || 0);
+  if (!r.activityLog || typeof r.activityLog !== 'object') r.activityLog = {};
+  ['sel2', 'sel3', 'sel4', 'sel5'].forEach(k => { if (!Array.isArray(r.activityLog[k])) r.activityLog[k] = []; });
+  return r;
+}
+const createdOf = r => Number(String(r.id).split('_')[1]) || 0;
+const sortRecords = list => list.sort((a, b) => createdOf(b) - createdOf(a));
+const clean = r => JSON.parse(JSON.stringify(r));           // 移除 undefined，Firestore 不接受
+const hashOf = r => JSON.stringify({ ...r, updatedAt: 0 });
+
+/* ---------- 修正：以班級代碼(studentId)為準的三個函式 ---------- */
+function myRec() {
+  return growthHistoryRecords.find(r => activeStudentId && r.studentId === activeStudentId)
+      || growthHistoryRecords.find(r => r.name === currentActiveStudentName)
+      || growthHistoryRecords[0];
+}
+window.viewMyPersonalHistory = function () {
+  filterHistoryByStudent(activeStudentId || (document.getElementById('custom-name')?.value.trim()) || 'ALL');
+  switchTab('history');
+};
+window.updateActiveStudentRecord = function (selNumber, count) {
+  const rec = myRec(); if (!rec) return;
+  const caps = { 2: 2, 3: 9, 4: 8, 5: 20 };
+  const k = 'sel' + selNumber;
+  rec[k] = Math.min(caps[selNumber], Math.max(rec[k] || 0, count));
+  saveRecordsToStorage(); renderGrowthHistory();
+};
+window.logStudentActivity = function (selNumber, label, detail, result) {
+  const rec = myRec(); if (!rec) return;
+  rec.activityLog = rec.activityLog || {};
+  const k = 'sel' + selNumber;
+  (rec.activityLog[k] = rec.activityLog[k] || []).push({ ts: new Date().toISOString(), label: label || '', detail: detail || '', result: result || 'done' });
+  if (rec.activityLog[k].length > 100) rec.activityLog[k] = rec.activityLog[k].slice(-100);
+  saveRecordsToStorage();
+};
+
+/* ---------- Firebase 同步 ---------- */
+let db = null, ready = false, applyingRemote = false, pushTimer = null;
+const synced = new Map();                       // id -> 上次已同步內容
+const origSave = window.saveRecordsToStorage;   // 原本存 localStorage 的函式
+
+window.saveRecordsToStorage = function () {
+  origSave.apply(this, arguments);
+  if (db && ready && !applyingRemote) { clearTimeout(pushTimer); pushTimer = setTimeout(pushChanges, 800); }
+};
+
+async function pushChanges() {
+  const current = new Map(growthHistoryRecords.map(r => [r.id, r]));
+  let fail = 0;
+  for (const [id, r] of current) {
+    const h = hashOf(r);
+    if (synced.get(id) === h) continue;
+    r.updatedAt = Date.now();
+    synced.set(id, h);
+    try { await setDoc(doc(db, COLLECTION, id), clean(r)); }
+    catch (e) { synced.delete(id); fail++; console.error('[Firebase] 上傳失敗', id, e); }
+  }
+  for (const id of [...synced.keys()]) {        // 本機刪除 → 雲端也刪
+    if (current.has(id)) continue;
+    synced.delete(id);
+    try { await deleteDoc(doc(db, COLLECTION, id)); } catch (e) { console.error('[Firebase] 刪除失敗', id, e); }
+  }
+  setStatus(fail ? '☁️ 部分資料上傳失敗（看 Console）' : '☁️ 已同步', !fail);
+}
+
+function applyRemote(snap) {
+  const remote = new Map(); snap.forEach(d => remote.set(d.id, d.data()));
+  const local = new Map(growthHistoryRecords.map(r => [r.id, r]));
+  applyingRemote = true;
+  try {
+    for (const id of [...synced.keys()]) {      // 別台裝置刪掉的 → 這台也移除
+      if (!remote.has(id) && local.has(id)) { local.delete(id); synced.delete(id); }
+    }
+    remote.forEach((data, id) => {
+      const l = local.get(id);
+      if (!l || (data.updatedAt || 0) > (l.updatedAt || 0)) local.set(id, normalize({ ...data, id }));
+      synced.set(id, hashOf(local.get(id)));
+    });
+    growthHistoryRecords = sortRecords([...local.values()].map(normalize));
+    origSave();
+    refreshHandbookViews();
+  } catch (e) { console.error('[Firebase] 套用雲端資料失敗', e); }
+  applyingRemote = false;
+  if (!ready) { ready = true; }
+  clearTimeout(pushTimer); pushTimer = setTimeout(pushChanges, 300);   // 把「只存在本機」的資料補上傳
+  setStatus('☁️ 已連線（' + growthHistoryRecords.length + ' 筆）', true);
+}
+
+(async function startFirebase() {
+  if (firebaseConfig.apiKey === 'YOUR_API_KEY') { setStatus('☁️ 尚未填入 Firebase 設定（目前只存本機）', false); return; }
+  try {
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    try { await signInAnonymously(getAuth(app)); } catch (e) { console.warn('[Firebase] 匿名登入未啟用，改用未登入模式', e.code || e); }
+    onSnapshot(collection(db, COLLECTION), applyRemote,
+      e => { console.error('[Firebase] 讀取失敗', e); setStatus('☁️ 讀取失敗：' + (e.code || e.message), false); });
+  } catch (e) { console.error('[Firebase] 初始化失敗', e); setStatus('☁️ 初始化失敗', false); }
+})();
+
+/* ---------- 開機自我檢查：任何一區壞掉都不會拖垮其他區，錯誤會印在 Console ---------- */
+window.addEventListener('load', () => {
+  const step = (name, fn) => { try { fn(); } catch (e) { console.error('[皮克敏] ' + name + ' 失敗：', e); } };
+  step('整理本機資料', () => { growthHistoryRecords = sortRecords(growthHistoryRecords.map(normalize)); });
+  step('皮克敏圖鑑', () => { const g = document.getElementById('pikmin-encyclopedia-grid'); if (g && !g.children.length) renderPikminEncyclopedia(); });
+  step('屬性卡', () => { const g = document.getElementById('spirit-selector'); if (g && !g.children.length) initCardCustomizer(); });
+  step('成長手帳', () => { updateHistorySelectDropdown(); updateStudentFilterDropdown(); renderGrowthHistory(); });
+  step('版面縮放', () => { if (typeof fitStageToViewport === 'function') fitStageToViewport(); });
+});
+</script>
+
