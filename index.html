@@ -7440,7 +7440,7 @@ window.addEventListener('load', () => {
   貼在 index.html 檔案最底部（Firebase 補丁的前面或後面都可以）。 -->
 <script>
 (function () {
-  const KEY = 'pikmin_squad_v1', MAX = 5;
+  const KEY = 'pikmin_squad_v1', MAX = 6;
   let S; try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { S = {}; }
   S.ids = Array.isArray(S.ids) ? S.ids : []; S.progress = S.progress || {};
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
@@ -7526,7 +7526,7 @@ window.addEventListener('load', () => {
       const id = getActiveStudentId();
       if (id && !S.ids.includes(id)) {
         if (S.ids.length < MAX) { S.ids.push(id); save(); }
-        else showModal('👥', '今日小組已滿 5 人', '請先在上方把一位同學按 ✕ 移出小組，再加入新的同學。');
+        else showModal('👥', `今日小組已滿 ${MAX} 人`, '請先在上方把一位同學按 ✕ 移出小組，再加入新的同學。');
       }
       renderBar();
     }
