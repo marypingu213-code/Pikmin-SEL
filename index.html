@@ -8226,3 +8226,18 @@ window.addEventListener('load', () => {
   };
 })();
 </script>
+<!-- ===== PIKMIN_DISABLE_CONTEXT_MENU =====
+  貼在 index.html 檔案最底部（跟其他補丁一樣，順序不影響）。
+  關閉觸控長按時瀏覽器跳出的選單，以及長按造成的文字選取／放大鏡，
+  輸入框（班級代碼、姓名、備註）仍然可以正常點擊、輸入、選取文字。 -->
+<style>
+  body *:not(input):not(textarea) {
+    -webkit-touch-callout: none !important;   /* 關閉長按跳出的選單（圖片/連結常見） */
+    -webkit-user-select: none !important;     /* 關閉長按文字選取與放大鏡 */
+    user-select: none !important;
+  }
+  img, svg, canvas { -webkit-user-drag: none; }
+</style>
+<script>
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); }, true);
+</script>
