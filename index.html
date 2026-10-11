@@ -8245,10 +8245,19 @@ window.addEventListener('load', () => {
 <style>
 #s6-fab{position:fixed;right:18px;bottom:18px;z-index:99990;background:#FFD54F;color:#5D4037;font-size:24px;font-weight:900;padding:14px 24px;border-radius:40px 40px 40px 8px;box-shadow:0 5px 0 #C9A227;cursor:pointer;border:none;touch-action:manipulation;font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif}
 #s6-fab:active{transform:translateY(3px);box-shadow:0 2px 0 #C9A227}
-#s6-ov{position:fixed;inset:0;z-index:99991;background:#DFF3FF;display:none;overflow:auto;font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;color:#3E2723}
+#s6-ov{position:fixed;inset:0;z-index:99991;background:#DFF3FF;display:none;overflow:hidden;font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;color:#3E2723}
 #s6-ov.on{display:block}
 #s6-ov *{box-sizing:border-box}
-.s6-wrap{max-width:880px;margin:0 auto;padding:18px 16px 70px}
+.s6-wrap{position:absolute;left:0;top:0;width:1280px;padding:16px 24px 20px;transform-origin:0 0}
+#s6-ov.scroll{overflow:auto}
+#s6-ov.scroll .s6-wrap{position:static;width:auto;max-width:1280px;margin:0 auto;transform:none!important}
+.s6-col3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.s6-split{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:center}
+.s6-paper.two{display:grid;grid-template-rows:repeat(4,auto);grid-auto-flow:column;column-gap:24px}
+.s6-paper.two .s6-q{border-bottom:2px dashed #D7CCC8}
+.s6-mask{position:fixed;inset:0;background:rgba(62,39,35,.45);z-index:2}
+.s6-modal{position:absolute;left:0;top:0;width:900px;transform-origin:0 0;background:#fff;border-radius:26px;padding:28px;border-bottom:6px solid #FFB74D}
+.s6-fs{font-size:22px;background:#fff;border:3px solid #3E8E41;border-radius:14px;padding:8px 16px;cursor:pointer;color:#2E7D32;font-weight:bold;margin-right:8px}
 .s6-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px}
 .s6-title{font-size:30px;font-weight:900;color:#2E7D32}
 .s6-who{font-size:20px;background:#fff;border-radius:20px;padding:4px 14px;margin-left:8px;color:#5D4037}
@@ -8257,11 +8266,11 @@ window.addEventListener('load', () => {
 .s6-steps span{flex:1;text-align:center;padding:10px 4px;border-radius:14px;background:rgba(255,255,255,.6);color:#90A4AE;font-size:19px;font-weight:bold}
 .s6-steps span.now{background:#3E8E41;color:#fff}
 .s6-steps span.past{background:#C8E6C9;color:#2E7D32}
-.s6-card{background:#fff;border-radius:26px;padding:24px;margin-bottom:16px;border-bottom:6px solid #A5D6A7}
+.s6-card{background:#fff;border-radius:26px;padding:20px 24px;margin-bottom:14px;border-bottom:6px solid #A5D6A7}
 .s6-h{font-size:30px;font-weight:900;margin:0 0 14px;line-height:1.4}
 .s6-p{font-size:25px;line-height:1.6;margin:0 0 12px}
 .s6-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-.s6-col{display:flex;flex-direction:column;gap:12px}
+.s6-col{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .s6-btn{font-size:25px;font-weight:bold;padding:16px;border-radius:18px;border:4px solid #3E8E41;background:#fff;cursor:pointer;color:#3E2723;line-height:1.4;touch-action:manipulation;user-select:none;-webkit-user-select:none;font-family:inherit}
 .s6-btn:active{transform:scale(.96)}
 .s6-btn.big{font-size:32px}
@@ -8282,7 +8291,7 @@ window.addEventListener('load', () => {
 .s6-q.hard{background:#FFEBEE;border-radius:10px}
 .s6-q.now{background:#E3F2FD;border-radius:10px}
 .s6-zone{min-height:80px;border:4px dashed #F57C00;border-radius:16px;padding:12px;margin-top:14px;background:#FFF8E1;font-size:23px}
-.s6-bubble{width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#81D4FA 60%,#1E88E5);margin:24px auto;transition:transform 4s ease-in-out;transform:scale(.55)}
+.s6-bubble{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#81D4FA 60%,#1E88E5);margin:16px auto;transition:transform 4s ease-in-out;transform:scale(.55)}
 .s6-breath{text-align:center;font-size:40px;font-weight:900;color:#1565C0;min-height:56px}
 .s6-word{display:inline-block;font-size:30px;padding:6px 10px;margin:4px 2px;border-radius:10px;background:#F1F8E9;cursor:pointer;border:3px solid transparent;touch-action:manipulation}
 .s6-word.hit{background:#FFEB3B;border-color:#F57F17;border-radius:50%}
@@ -8350,16 +8359,35 @@ window.addEventListener('load', () => {
     var names=['① 我的考試警報','② 皮克敏招式','③ 我的護身符'];
     return '<div class="s6-steps">'+names.map(function(s,i){return '<span class="'+(i+1===n?'now':(i+1<n?'past':''))+'">'+s+'</span>';}).join('')+'</div>';
   }
-  function frame(step,html){
+  var scrollMode=false;
+  function frame(step,html,modal,scroll){
     var who = st.k ? '<span class="s6-who">'+esc(nm(st.k))+'</span>' : '';
+    scrollMode=!!scroll; ov.classList.toggle('scroll',scrollMode);
     ov.innerHTML='<div class="s6-wrap"><div class="s6-top"><div class="s6-title">🛡️ 考試勇氣站'+who+'</div>'+
-      '<button class="s6-x" onclick="S6.close()">✖ 離開</button></div>'+(step?stepBar(step):'')+html+'</div>';
-    ov.scrollTop=0;
+      '<div><button class="s6-fs" onclick="S6.fs()">⛶ 全螢幕</button><button class="s6-x" onclick="S6.close()">✖ 離開</button></div></div>'+
+      (step?stepBar(step):'')+html+'</div>'+(modal?'<div class="s6-mask"><div class="s6-modal">'+modal+'</div></div>':'');
+    ov.scrollTop=0; fit();
   }
+  /* 依螢幕大小自動縮放，整個畫面一次看完、不用捲動 */
+  function fit(){
+    var w=ov.querySelector('.s6-wrap'); if(!w) return;
+    if(scrollMode){ w.style.transform=''; return; }
+    var W=innerWidth, H=innerHeight;
+    w.style.transform='none'; var h=w.offsetHeight;
+    var s=Math.min(W/1280, H/h);
+    w.style.transform='scale('+s+')';
+    w.style.left=((W-1280*s)/2)+'px'; w.style.top=Math.max(0,(H-h*s)/2)+'px';
+    var m=ov.querySelector('.s6-modal');
+    if(m){ m.style.transform='none'; var mh=m.offsetHeight; var ms=Math.min(W*0.9/900, H*0.9/mh);
+      m.style.transform='scale('+ms+')'; m.style.left=((W-900*ms)/2)+'px'; m.style.top=((H-mh*ms)/2)+'px'; }
+  }
+  window.addEventListener('resize',function(){ if(ov.classList.contains('on')) fit(); });
+  document.addEventListener('fullscreenchange',function(){ setTimeout(fit,100); });
   function doneBtn(){ return '<div class="s6-row"><button class="s6-btn go big" onclick="S6.charm()">招式學會了！做護身符 🛡️</button></div>'; }
 
   var S6 = window.S6 = {};
   S6.read = function(el){ speak(el.innerText.replace('🔊','')); };
+  S6.fs = function(){ try{ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }catch(e){} };
   S6.open = function(){ ov.classList.add('on'); S6.pick(); };
   S6.close = function(){ clearT(); try{speechSynthesis.cancel();}catch(e){} ov.classList.remove('on'); st={}; };
 
@@ -8377,7 +8405,7 @@ window.addEventListener('load', () => {
   S6.temp = function(which){
     var q = which==='before' ? '想到「考試」，你現在的心情溫度是？' : '學完招式，再想到「考試」，心情溫度是？';
     var html = card('<p class="s6-h">🌡️ '+q+'</p>'+pik('點一個最像你的臉。沒有對或錯喔！')+
-      '<div class="s6-grid">'+TEMP.map(function(t,i){return '<button class="s6-btn" onclick="S6.setTemp(\''+which+'\','+(i+1)+')"><span class="s6-emo">'+t[0]+'</span>'+(i+1)+' '+t[1]+'</button>';}).join('')+'</div>');
+      '<div class="s6-grid" style="grid-template-columns:repeat(5,1fr)">'+TEMP.map(function(t,i){return '<button class="s6-btn" onclick="S6.setTemp(\''+which+'\','+(i+1)+')"><span class="s6-emo">'+t[0]+'</span>'+(i+1)+' '+t[1]+'</button>';}).join('')+'</div>');
     frame(which==='before'?1:3,html);
   };
   S6.setTemp = function(which,v){ st[which]=v; if(which==='before') S6.alarm(); else S6.finish(); };
@@ -8387,7 +8415,7 @@ window.addEventListener('load', () => {
     var rec = preset()[st.k];
     var keys = Object.keys(ALARMS).sort(function(a,b){ return (a===rec?-1:0)-(b===rec?-1:0); });
     var html = card('<p class="s6-h">考試的時候，你最像哪一個？</p>'+pik('每個人考試都會遇到困難。找到它，皮克敏就能教你一招！')+
-      '<div class="s6-col">'+keys.map(function(k){var a=ALARMS[k];
+      '<div class="s6-col3">'+keys.map(function(k){var a=ALARMS[k];
         return '<button class="s6-btn'+(k===rec?' rec':'')+'" style="text-align:left" onclick="S6.setAlarm(\''+k+'\')">'+
           (k===rec?'<span class="s6-tag">⭐ 皮克敏覺得最像你</span><br>':'')+'<span style="font-size:40px">'+a.i+'</span> '+a.t+'</button>';}).join('')+'</div>');
     frame(1,html);
@@ -8414,14 +8442,14 @@ window.addEventListener('load', () => {
       zone = '<div class="s6-zone">⏳ 等一下區：'+hard.t+
         (easyLeft===0 ? '<div class="s6-row"><button class="s6-btn go" onclick="S6.sqBack()">⭐ 會的都寫完了！回來挑戰這題</button></div>' : '<br>（先把會的題目寫完）')+'</div>';
     }
-    var ask = g.ask ? card('<p class="s6-h">這題好難！你要怎麼做？</p><div class="s6-col">'+
-      '<button class="s6-btn" onclick="S6.sqStay()">😣 一直想，想到出來才往下</button>'+
-      '<button class="s6-btn" onclick="S6.sqSkip()">🦘 先跳過，放到等一下區</button></div>') : '';
+    var ask = g.ask ? '<p class="s6-h">🧱 這題好難！你要怎麼做？</p>'+(g.askMsg?pik(g.askMsg,'😢'):'')+'<div class="s6-col">'+
+      '<button class="s6-btn big" onclick="S6.sqStay()">😣 一直想，想到出來才往下</button>'+
+      '<button class="s6-btn big" onclick="S6.sqSkip()">🦘 先跳過，放到等一下區</button></div>' : '';
     var all = g.qs.every(function(q){return q.done;});
     var html = card('<p class="s6-h">🧱 招式：跳過再回來</p>'+
       pik(msg || '點題目就是「寫答案」。遇到很難的題目，想一想該怎麼辦？')+
-      '<div class="s6-paper">'+list+'</div>'+zone)+ask+(all?doneBtn():'');
-    frame(2,html);
+      '<div class="s6-paper">'+list+'</div>'+zone)+(all?doneBtn():'');
+    frame(2,html,ask);
   };
   S6.sq = function(i){
     var q=g.qs[i]; if(q.done) return;
@@ -8430,8 +8458,8 @@ window.addEventListener('load', () => {
     if(easyLeft===0){ q.done=true; return G.stuck('你先把會的寫完，最後才寫難題，超聰明！🎉'); }
     g.ask=true; G.stuck('這題好難！下面選一個做法。');
   };
-  S6.sqStay = function(){ g.ask=true; G.stuck('⏰ 想了好久好久……鐘聲響了！後面的題目都沒寫到，好可惜。<br>再選一次看看？','😢'); };
-  S6.sqSkip = function(){ g.ask=false; g.wait=true; G.stuck('對！卡住就跳過。先寫會的題目，等一下再回來。','😄'); };
+  S6.sqStay = function(){ g.ask=true; g.askMsg='⏰ 想了好久好久……鐘聲響了！後面的題目都沒寫到，好可惜。再選一次看看？'; G.stuck('這題好難！'); };
+  S6.sqSkip = function(){ g.ask=false; g.askMsg=''; g.wait=true; G.stuck('對！卡住就跳過。先寫會的題目，等一下再回來。','😄'); };
   S6.sqBack = function(){ g.qs[2].done=true; G.stuck('回來了！試著寫寫看，寫出想到的步驟也很棒！<br>你學會「卡住就跳過，最後再回來」🎉','🥳'); };
 
   /* B：考試焦慮 → 身體訊號、泡泡呼吸、換句話、安心計畫 */
@@ -8441,7 +8469,7 @@ window.addEventListener('load', () => {
       g.body = g.body||[];
       var opts=[['🤯','頭好脹'],['💓','心跳好快'],['🤢','肚子痛'],['✋','手流汗'],['😢','想哭'],['🛌','睡不著']];
       frame(2,card('<p class="s6-h">😰 緊張的時候，身體哪裡怪怪的？（可以選很多個）</p>'+
-        '<div class="s6-grid">'+opts.map(function(o,i){return '<button class="s6-btn'+(g.body.indexOf(o[1])>-1?' sel':'')+'" onclick="S6.ab(\''+o[1]+'\')"><span class="s6-emo">'+o[0]+'</span>'+o[1]+'</button>';}).join('')+'</div>'+
+        '<div class="s6-col3">'+opts.map(function(o,i){return '<button class="s6-btn'+(g.body.indexOf(o[1])>-1?' sel':'')+'" onclick="S6.ab(\''+o[1]+'\')"><span class="s6-emo">'+o[0]+'</span>'+o[1]+'</button>';}).join('')+'</div>'+
         (g.body.length? pik('這些是身體在說：「我緊張了！」<br>緊張不是壞事，我們一起幫它降溫。','🤗')+'<div class="s6-row"><button class="s6-btn go" onclick="S6.aNext()">下一步 👉</button></div>':'')));
     } else if(g.ph===2){
       frame(2,card('<p class="s6-h">🫧 泡泡呼吸：跟著泡泡做 3 次</p>'+pik('泡泡變大就吸氣，泡泡變小就吐氣。')+
@@ -8463,7 +8491,7 @@ window.addEventListener('load', () => {
       g.plan=g.plan||[];
       var P=['👨‍👩‍👧 告訴爸爸媽媽','🌱 告訴資源班老師','🏫 告訴班級導師','🫧 做 3 次泡泡呼吸','🛡️ 拿出護身符看一看','☀️ 先來資源班說早安'];
       frame(2,card('<p class="s6-h">🏠 我的安心計畫：緊張的時候，我可以……（選 2 個以上）</p>'+
-        '<div class="s6-grid">'+P.map(function(p){return '<button class="s6-btn'+(g.plan.indexOf(p)>-1?' sel':'')+'" onclick="S6.ap(\''+p+'\')">'+p+'</button>';}).join('')+'</div>'+
+        '<div class="s6-col3">'+P.map(function(p){return '<button class="s6-btn'+(g.plan.indexOf(p)>-1?' sel':'')+'" onclick="S6.ap(\''+p+'\')">'+p+'</button>';}).join('')+'</div>'+
         (g.plan.length>=2? pik('有好多人可以幫你，你不是一個人面對考試。','💛')+doneBtn():'')));
     }
   };
@@ -8491,13 +8519,13 @@ window.addEventListener('load', () => {
       var txt = q.blank&&!q.fixed ? '＿＿＿（空白）' : (q.fixed?'✏️ 補上了！':'已作答');
       return '<div class="s6-q'+(i===g.cur?' now':'')+'" onclick="S6.dq('+i+')"><span>'+(i===g.cur?'👉 ':'　')+'第'+(i+1)+'題</span><span>'+txt+(q.seen?' ✔️':'')+'</span></div>';
     }).join('');
-    var fly = g.fly ? card('<p class="s6-h">🦋 窗外飛來一隻蝴蝶！你要……</p><div class="s6-col">'+
-      '<button class="s6-btn" onclick="S6.dfly(0)">👀 一直看蝴蝶</button><button class="s6-btn" onclick="S6.dfly(1)">✋ 手指放回題目，繼續寫</button></div>') : '';
+    var fly = g.fly ? '<p class="s6-h">🦋 窗外飛來一隻蝴蝶！你要……</p><div class="s6-col">'+
+      '<button class="s6-btn big" onclick="S6.dfly(0)">👀 一直看蝴蝶</button><button class="s6-btn big" onclick="S6.dfly(1)">✋ 手指放回題目，繼續寫</button></div>' : '';
     var finished = g.cur>=g.qs.length;
     frame(2,card('<p class="s6-h">🦋 招式：手指巡邏，交卷前檢查</p>'+
       pik(msg||'用手指著題目，從第 1 題開始，一題一題往下點。看到空白就補上！',face)+
-      '<div class="s6-paper">'+list+'</div>'+
-      '<div class="s6-row"><button class="s6-btn'+(finished?' go':'')+'" onclick="S6.dsubmit()">📤 交卷</button></div>')+fly+(g.ok?doneBtn():''));
+      '<div class="s6-paper two">'+list+'</div>'+
+      '<div class="s6-row"><button class="s6-btn'+(finished?' go':'')+'" onclick="S6.dsubmit()">📤 交卷</button></div>')+(g.ok?doneBtn():''),fly);
   };
   S6.dq = function(i){
     if(g.fly) return;
@@ -8585,8 +8613,8 @@ window.addEventListener('load', () => {
   S6.charm = function(){
     clearT(); var list=MANTRAS[st.alarm];
     frame(3,card('<p class="s6-h">🛡️ 選一句你的護身符口訣</p>'+pik('考試前看一看，皮克敏就在你身邊！')+
-      '<div class="s6-col">'+list.map(function(m,i){return '<button class="s6-btn'+(st.mantra===m?' sel':'')+'" onclick="S6.setM('+i+')">'+m+'</button>';}).join('')+'</div>'+
-      charmHTML()+(st.mantra?'<div class="s6-row"><button class="s6-btn go big" onclick="S6.temp(\'after\')">完成 👉</button></div>':'')));
+      '<div class="s6-split"><div style="display:flex;flex-direction:column;gap:12px">'+list.map(function(m,i){return '<button class="s6-btn big'+(st.mantra===m?' sel':'')+'" onclick="S6.setM('+i+')">'+m+'</button>';}).join('')+'</div>'+
+      charmHTML()+'</div>'+(st.mantra?'<div class="s6-row"><button class="s6-btn go big" onclick="S6.temp(\'after\')">完成 👉</button></div>':'')));
   };
   S6.setM = function(i){ st.mantra=MANTRAS[st.alarm][i]; speak(st.mantra); S6.charm(); };
 
@@ -8596,7 +8624,7 @@ window.addEventListener('load', () => {
     save(LS_REC,r);
     var diff=st.before-st.after;
     var fb = diff>0?'緊張溫度下降了 '+diff+' 格！':(diff===0?'溫度一樣也沒關係，你已經多了一個招式。':'還是有點緊張嗎？跟老師說說看吧。');
-    frame(3,card('<p class="s6-h">🎉 挑戰完成！</p>'+pik('開始 '+TEMP[st.before-1][0]+' → 現在 '+TEMP[st.after-1][0]+'<br>'+fb,'🥳')+charmHTML()+
+    frame(3,card('<p class="s6-h">🎉 挑戰完成！</p><div class="s6-split"><div>'+pik('開始 '+TEMP[st.before-1][0]+' → 現在 '+TEMP[st.after-1][0]+'<br>'+fb,'🥳')+'</div>'+charmHTML()+'</div>'+
       '<div class="s6-row"><button class="s6-btn" onclick="S6.print()">🖨️ 印出護身符</button><button class="s6-btn go" onclick="S6.pick()">換下一位 👉</button></div>'));
   };
   S6.print = function(){
@@ -8616,7 +8644,7 @@ window.addEventListener('load', () => {
     frame(0,card('<p class="s6-h">👩‍🏫 學生名字與預設困擾</p><div style="overflow-x:auto"><table class="s6-table"><tr><th>代號</th><th>顯示名字</th><th>推薦的考試警報</th></tr>'+setRows+'</table></div>'+
       '<div class="s6-row"><button class="s6-btn go" onclick="S6.tsave()">💾 儲存設定</button><button class="s6-btn" onclick="S6.pick()">返回</button></div>')+
       card('<p class="s6-h">📋 挑戰紀錄（溫度：1 輕鬆 ～ 5 超緊張）</p><div style="overflow-x:auto"><table class="s6-table"><tr><th>時間</th><th>學生</th><th>警報</th><th>溫度</th><th>口訣</th><th>其他</th></tr>'+(recRows||'<tr><td colspan="6">還沒有紀錄</td></tr>')+'</table></div>'+
-      '<div class="s6-row"><button class="s6-btn" onclick="S6.tcsv()">⬇️ 複製成表格文字</button><button class="s6-btn" onclick="S6.tclear()">🗑️ 清除紀錄</button></div>'));
+      '<div class="s6-row"><button class="s6-btn" onclick="S6.tcsv()">⬇️ 複製成表格文字</button><button class="s6-btn" onclick="S6.tclear()">🗑️ 清除紀錄</button></div>'),null,true);
   };
   S6.tsave = function(){
     var n={},p={};
