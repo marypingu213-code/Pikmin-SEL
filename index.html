@@ -8320,7 +8320,7 @@ window.addEventListener('load', () => {
 <script>
 (function(){
   /* ===== 老師可以改這裡：每位學生預設的考試困擾 ===== */
-  var DEFAULT_PRESET = { A:'stuck', B:'anxious', C:'distract', D:'daydream', E:'random' };
+  var DEFAULT_PRESET = { A:'stuck', B:'anxious', C:'distract', D:'daydream', E:'random', F:'' };
 
   var ALARMS = {
     stuck:    { i:'🧱', t:'一題不會，就卡住不動',   c:'#E53935' },
@@ -8395,7 +8395,7 @@ window.addEventListener('load', () => {
   S6.pick = function(){
     clearT(); st={};
     var html = card('<p class="s6-h">今天是誰要挑戰？</p><div class="s6-grid">'+
-      'ABCDE'.split('').map(function(k){return '<button class="s6-btn big" onclick="S6.start(\''+k+'\')">🌱<br>'+esc(nm(k))+'</button>';}).join('')+
+      'ABCDEF'.split('').map(function(k){return '<button class="s6-btn big" onclick="S6.start(\''+k+'\')">🌱<br>'+esc(nm(k))+'</button>';}).join('')+
       '</div>')+'<div class="s6-row"><button class="s6-btn" onclick="S6.teacher()">👩‍🏫 老師設定與紀錄</button></div>';
     frame(0,html);
   };
@@ -8485,7 +8485,7 @@ window.addEventListener('load', () => {
       var x=W[g.wi], flip=g.wi%2===1;
       var b1='<button class="s6-btn" onclick="S6.aw(1)">💚 '+x.ok+'</button>', b2='<button class="s6-btn" onclick="S6.aw(0)">'+x.no+'</button>';
       frame(2,card('<p class="s6-h">💬 換一句話對自己說（'+(g.wi+1)+'/3）</p>'+
-        '<p class="s6-p">心裡冒出：<b>'+x.w+'</b><br>換成哪一句，心會比較輕？</p>'+(g.wmsg?pik(g.wmsg,'🤔'):'')+
+        '<p class="s6-p">心裡冒出：<b>'+x.w+'</b><br>換成哪一句，心會比較放鬆？</p>'+(g.wmsg?pik(g.wmsg,'🤔'):'')+
         '<div class="s6-col">'+(flip?b2+b1:b1+b2)+'</div>'));
     } else {
       g.plan=g.plan||[];
@@ -8512,7 +8512,7 @@ window.addEventListener('load', () => {
   S6.aw = function(ok){ if(ok){ g.wi++; g.wmsg=''; } else g.wmsg='這句話會讓心更重喔，換另一句試試看。'; G.anxious(); };
   S6.ap = function(p){ var i=g.plan.indexOf(p); if(i>-1) g.plan.splice(i,1); else g.plan.push(p); st.extra='安心計畫：'+g.plan.join('、'); G.anxious(); };
 
-  /* C：分心漏題 → 手指巡邏、蝴蝶干擾、交卷前檢查 */
+  /* C：分心漏題 → 手指檢查、蝴蝶干擾、交卷前檢查 */
   G.distract = function(msg,face){
     if(!g.qs){ g.qs=[0,1,0,0,1,0,1,0].map(function(b){return {blank:!!b,seen:false,fixed:false};}); g.cur=0; g.fly=false; }
     var list=g.qs.map(function(q,i){
@@ -8522,7 +8522,7 @@ window.addEventListener('load', () => {
     var fly = g.fly ? '<p class="s6-h">🦋 窗外飛來一隻蝴蝶！你要……</p><div class="s6-col">'+
       '<button class="s6-btn big" onclick="S6.dfly(0)">👀 一直看蝴蝶</button><button class="s6-btn big" onclick="S6.dfly(1)">✋ 手指放回題目，繼續寫</button></div>' : '';
     var finished = g.cur>=g.qs.length;
-    frame(2,card('<p class="s6-h">🦋 招式：手指巡邏，交卷前檢查</p>'+
+    frame(2,card('<p class="s6-h">🦋 招式：手指檢查，交卷前檢查</p>'+
       pik(msg||'用手指著題目，從第 1 題開始，一題一題往下點。看到空白就補上！',face)+
       '<div class="s6-paper two">'+list+'</div>'+
       '<div class="s6-row"><button class="s6-btn'+(finished?' go':'')+'" onclick="S6.dsubmit()">📤 交卷</button></div>')+(g.ok?doneBtn():''),fly);
@@ -8534,14 +8534,14 @@ window.addEventListener('load', () => {
     if(q.blank&&!q.fixed){ q.fixed=true; m='找到空白了！補上答案 ✏️'; }
     g.cur++;
     if(g.cur===3 && !g.flown){ g.flown=true; g.fly=true; }
-    if(g.cur>=g.qs.length) m='全部巡邏完了！現在可以交卷囉。';
+    if(g.cur>=g.qs.length) m='全部檢查完了！現在可以交卷囉。';
     G.distract(m);
   };
   S6.dfly = function(ok){ g.fly=false; if(ok) G.distract('好專心！手指還在題目上，知道寫到哪裡。','😄');
     else G.distract('蝴蝶飛走了……咦，寫到第幾題了？<br>分心沒關係，把手指放回 👉 那一題就好。','😮'); };
   S6.dsubmit = function(){
     var left=g.qs.filter(function(q){return q.blank&&!q.fixed;}).length;
-    if(g.cur<g.qs.length) return G.distract('等一下！還沒巡邏完'+(left?'，還有 '+left+' 題空白':'')+'。交卷前要每題都看過喔！','✋');
+    if(g.cur<g.qs.length) return G.distract('等一下！還沒檢查完'+(left?'，還有 '+left+' 題空白':'')+'。交卷前要每題都看過喔！','✋');
     g.ok=true; G.distract('交卷成功！每一題都有寫，太棒了 🎉','🥳');
   };
 
@@ -8636,8 +8636,8 @@ window.addEventListener('load', () => {
   /* ---------- 老師設定與紀錄 ---------- */
   S6.teacher = function(){
     var n=load(LS_NAME,{}), p=preset(), r=load(LS_REC,[]);
-    var setRows='ABCDE'.split('').map(function(k){
-      return '<tr><td>'+k+'</td><td><input class="s6-in" id="s6-n'+k+'" value="'+esc(n[k]||'')+'" placeholder="學生 '+k+'"></td><td><select class="s6-sel" id="s6-p'+k+'">'+
+    var setRows='ABCDEF'.split('').map(function(k){
+      return '<tr><td>'+k+'</td><td><input class="s6-in" id="s6-n'+k+'" value="'+esc(n[k]||'')+'" placeholder="學生 '+k+'"></td><td><select class="s6-sel" id="s6-p'+k+'">'+'<option value=""'+(!p[k]?' selected':'')+'>（未設定，不推薦）</option>'+
         Object.keys(ALARMS).map(function(a){return '<option value="'+a+'"'+(p[k]===a?' selected':'')+'>'+ALARMS[a].i+' '+ALARMS[a].t+'</option>';}).join('')+'</select></td></tr>';}).join('');
     var recRows=r.slice().reverse().map(function(x){
       return '<tr><td>'+esc(x.date)+'</td><td>'+esc(x.name)+'</td><td>'+ALARMS[x.alarm].i+' '+ALARMS[x.alarm].t+'</td><td>'+x.before+' → '+x.after+'</td><td>'+esc(x.mantra||'')+'</td><td style="text-align:left">'+esc(x.extra||'')+'</td></tr>';}).join('');
@@ -8648,7 +8648,7 @@ window.addEventListener('load', () => {
   };
   S6.tsave = function(){
     var n={},p={};
-    'ABCDE'.split('').forEach(function(k){ var v=document.getElementById('s6-n'+k).value.trim(); if(v) n[k]=v; p[k]=document.getElementById('s6-p'+k).value; });
+    'ABCDEF'.split('').forEach(function(k){ var v=document.getElementById('s6-n'+k).value.trim(); if(v) n[k]=v; p[k]=document.getElementById('s6-p'+k).value; });
     save(LS_NAME,n); save(LS_PRE,p); alert('已儲存'); S6.teacher();
   };
   S6.tcsv = function(){
