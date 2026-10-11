@@ -8018,3 +8018,211 @@ window.addEventListener('load', () => {
   // 每頁筆數變少、字放大之後，畫面就不會塞得那麼密。
   if (typeof historyPageSize !== 'undefined') historyPageSize = 5;
 </script>
+<!-- ===== PIKMIN_SLINGSHOT_TOUCH_CUTE =====
+  貼在 index.html 檔案最底部（跟其他補丁一樣，順序不影響）。
+  整個「皮克敏彈弓」工具換成更穩定的觸控方式（適合大電視觸控），
+  畫面縮小並畫得更可愛，彈弓跟花朵距離也拉近，減少孩子視線左右移動的距離。
+  不影響分數、不影響其他工具或補丁。 -->
+<script>
+(function () {
+  if (typeof initSlingshotGame === 'undefined') {
+    console.error('[彈弓改版] 找不到 initSlingshotGame，這段程式可能貼錯位置了。');
+    return;
+  }
+
+  window.initSlingshotGame = function () {
+    const canvas = document.getElementById('slingshot-canvas');
+    if (!canvas) return;
+
+    // 把遊戲區縮窄並置中，彈弓跟花朵靠近一點，不需要孩子一直左右轉頭看
+    const wrapper = canvas.parentElement;
+    wrapper.style.maxWidth = '480px';
+    wrapper.style.margin = '0 auto';
+    wrapper.style.touchAction = 'none';     // 避免大螢幕觸控時整頁被拖動
+    canvas.style.touchAction = 'none';
+
+    const rect = wrapper.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    slingshotBasePos = { x: Math.max(150, canvas.width * 0.26), y: canvas.height - 95 };
+    slingshotDragPos = { ...slingshotBasePos };
+
+    const cliffX = canvas.width - Math.max(100, canvas.width * 0.14);
+    cliffTargets = [
+      { x: cliffX + 18, y: 52, radius: 27, hit: false, color: '#f59e0b' },
+      { x: cliffX - 8, y: 93, radius: 27, hit: false, color: '#ef4444' },
+      { x: cliffX + 12, y: 134, radius: 27, hit: false, color: '#3b82f6' },
+      { x: cliffX - 12, y: 175, radius: 27, hit: false, color: '#a855f7' },
+      { x: cliffX + 8, y: 216, radius: 27, hit: false, color: '#22c55e' },
+      { x: cliffX - 10, y: 257, radius: 27, hit: false, color: '#ec4899' }
+    ];
+
+    /* ---- 觸控／滑鼠／觸控筆統一用 Pointer Events，在大螢幕觸控電視上最穩定 ---- */
+    const getCoords = (e) => {
+      const cRect = canvas.getBoundingClientRect();
+      return { x: e.clientX - cRect.left, y: e.clientY - cRect.top };
+    };
+
+    canvas.onpointerdown = (e) => {
+      const pt = getCoords(e);
+      const dist = Math.hypot(pt.x - slingshotBasePos.x, pt.y - slingshotBasePos.y);
+      if (dist < 60) {
+        isSlingshotDragging = true;
+        slingshotDragPos = pt;
+        try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+        e.preventDefault();
+      }
+    };
+
+    canvas.onpointermove = (e) => {
+      if (!isSlingshotDragging) return;
+      e.preventDefault();
+      const pt = getCoords(e);
+      const dx = pt.x - slingshotBasePos.x;
+      const dy = pt.y - slingshotBasePos.y;
+      const dist = Math.hypot(dx, dy);
+      const maxDist = Math.min(170, canvas.width * 0.24);
+      slingshotDragPos = dist > maxDist
+        ? { x: slingshotBasePos.x + (dx / dist) * maxDist, y: slingshotBasePos.y + (dy / dist) * maxDist }
+        : pt;
+    };
+
+    const endDrag = (fire, e) => {
+      if (!isSlingshotDragging) return;
+      isSlingshotDragging = false;
+      if (e) { try { canvas.releasePointerCapture(e.pointerId); } catch (err) {} e.preventDefault(); }
+      if (fire) {
+        playSound('pop');
+        const vx = (slingshotBasePos.x - slingshotDragPos.x) * 0.42;
+        const vy = (slingshotBasePos.y - slingshotDragPos.y) * 0.42;
+        const firingPikmin = PIKMIN_ROSTER[slingshotPikminIndex] || PIKMIN_ROSTER[0];
+        slingshotProjectile = { x: slingshotDragPos.x, y: slingshotDragPos.y, vx, vy, type: firingPikmin.id, angle: 0 };
+        slingshotPikminIndex = (slingshotPikminIndex + 1) % PIKMIN_ROSTER.length;
+      }
+      slingshotDragPos = { ...slingshotBasePos };
+    };
+    canvas.onpointerup = (e) => endDrag(true, e);
+    canvas.onpointercancel = (e) => endDrag(false, e);
+
+    /* ---- 畫面：天空、可愛小山丘、圓潤花朵 ---- */
+    function slingshotLoop() {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 1. 可愛天空背景
+      const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      sky.addColorStop(0, '#bfe9ff'); sky.addColorStop(1, '#eaffea');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fff7cc';
+      ctx.beginPath(); ctx.arc(46, 42, 22, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.85)';
+      [[120, 34, 16], [150, 40, 11], [95, 95, 14], [118, 92, 10]].forEach(([x, y, r]) => { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); });
+
+      // 2. 圓潤小山丘（取代原本尖銳岩壁）
+      const hillX = canvas.width - 150;
+      ctx.fillStyle = '#c99a63';
+      ctx.beginPath();
+      ctx.moveTo(canvas.width, canvas.height);
+      ctx.lineTo(canvas.width, 10);
+      ctx.quadraticCurveTo(hillX + 40, 20, hillX + 20, 70);
+      ctx.quadraticCurveTo(hillX - 30, 110, hillX + 10, 150);
+      ctx.quadraticCurveTo(hillX - 35, 190, hillX + 5, 230);
+      ctx.quadraticCurveTo(hillX - 20, 270, hillX + 15, canvas.height);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#9dcb6b';
+      ctx.beginPath();
+      ctx.moveTo(canvas.width, 10);
+      ctx.quadraticCurveTo(hillX + 40, 20, hillX + 20, 70);
+      ctx.lineTo(hillX + 35, 76); ctx.quadraticCurveTo(hillX + 55, 24, canvas.width, 22);
+      ctx.closePath(); ctx.fill();
+
+      // 3. 彈弓（圓頭木樁＋小花盆底座）
+      ctx.strokeStyle = '#8a5a2b'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(slingshotBasePos.x, canvas.height);
+      ctx.lineTo(slingshotBasePos.x, slingshotBasePos.y + 14);
+      ctx.lineTo(slingshotBasePos.x - 13, slingshotBasePos.y - 10);
+      ctx.moveTo(slingshotBasePos.x, slingshotBasePos.y + 14);
+      ctx.lineTo(slingshotBasePos.x + 13, slingshotBasePos.y - 10);
+      ctx.stroke();
+
+      // 4. 彈力繩
+      ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(slingshotBasePos.x - 13, slingshotBasePos.y - 10);
+      ctx.lineTo(slingshotDragPos.x, slingshotDragPos.y);
+      ctx.lineTo(slingshotBasePos.x + 13, slingshotBasePos.y - 10);
+      ctx.stroke();
+
+      // 5. 拉弓時的預測軌跡
+      if (isSlingshotDragging) {
+        const simVx = (slingshotBasePos.x - slingshotDragPos.x) * 0.42;
+        const simVy = (slingshotBasePos.y - slingshotDragPos.y) * 0.42;
+        let simX = slingshotDragPos.x, simY = slingshotDragPos.y;
+        ctx.fillStyle = '#fb923c';
+        for (let step = 0; step < 24; step++) {
+          simX += simVx; simY += simVy + step * 0.11;
+          if (simX > canvas.width - 40 || simY > canvas.height) break;
+          if (step % 2 === 0) { ctx.beginPath(); ctx.arc(simX, simY, Math.max(1.6, 4.2 - step * 0.12), 0, Math.PI * 2); ctx.fill(); }
+        }
+      }
+
+      // 6. 可愛花朵目標（加上笑臉）
+      cliffTargets.forEach(t => {
+        if (t.hit) {
+          ctx.fillStyle = '#16a34a'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText('🌸 盛開！', t.x, t.y + 5);
+          return;
+        }
+        ctx.fillStyle = '#fff'; ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1.2;
+        for (let p = 0; p < 6; p++) {
+          const a = (p * Math.PI) / 3, px = t.x + Math.cos(a) * 11, py = t.y + Math.sin(a) * 11;
+          ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        }
+        ctx.fillStyle = t.color; ctx.beginPath(); ctx.arc(t.x, t.y, 6.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#1f2937';
+        ctx.beginPath(); ctx.arc(t.x - 2.2, t.y - 1, 0.9, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(t.x + 2.2, t.y - 1, 0.9, 0, Math.PI * 2); ctx.fill();
+      });
+
+      // 7. 尚未發射：待命皮克敏
+      const activePikmin = PIKMIN_ROSTER[slingshotPikminIndex] || PIKMIN_ROSTER[0];
+      const pikminImg = pikminSpriteImages[activePikmin.id] || pikminSpriteImages.red;
+      if (!slingshotProjectile) {
+        ctx.save(); ctx.translate(slingshotDragPos.x, slingshotDragPos.y);
+        if (pikminImg && pikminImg.complete) ctx.drawImage(pikminImg, -17, -24, 34, 40);
+        else { ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(0, 0, 13, 0, Math.PI * 2); ctx.fill(); }
+        ctx.restore();
+      }
+
+      // 8. 飛行中的皮克敏與碰撞
+      if (slingshotProjectile) {
+        slingshotProjectile.x += slingshotProjectile.vx;
+        slingshotProjectile.y += slingshotProjectile.vy;
+        slingshotProjectile.vy += 0.22;
+        slingshotProjectile.angle = Math.atan2(slingshotProjectile.vy, slingshotProjectile.vx);
+        const projImg = pikminSpriteImages[slingshotProjectile.type] || pikminSpriteImages.red;
+        ctx.save(); ctx.translate(slingshotProjectile.x, slingshotProjectile.y); ctx.rotate(slingshotProjectile.angle);
+        if (projImg && projImg.complete) ctx.drawImage(projImg, -17, -20, 34, 40);
+        else { ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(0, 0, 13, 0, Math.PI * 2); ctx.fill(); }
+        ctx.restore();
+
+        cliffTargets.forEach(t => {
+          if (!t.hit && Math.hypot(slingshotProjectile.x - t.x, slingshotProjectile.y - t.y) < t.radius + 22) {
+            t.hit = true; playSound('correct');
+            confetti({ particleCount: 36, origin: { x: t.x / canvas.width, y: t.y / canvas.height } });
+            slingshotHits++;
+            const hitsEl = document.getElementById('slingshot-hits');
+            if (hitsEl) hitsEl.textContent = slingshotHits;
+          }
+        });
+        if (slingshotProjectile.y > canvas.height + 30 || slingshotProjectile.x > canvas.width + 30) slingshotProjectile = null;
+      }
+
+      slingshotAnimId = requestAnimationFrame(slingshotLoop);
+    }
+    slingshotAnimId = requestAnimationFrame(slingshotLoop);
+  };
+})();
+</script>
