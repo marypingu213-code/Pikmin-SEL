@@ -8248,7 +8248,9 @@ window.addEventListener('load', () => {
 <script>
   document.addEventListener('contextmenu', function (e) { e.preventDefault(); }, true);
 </script>
-<!-- ===== SEL6 考試勇氣站（補丁）：貼在 index.html 最底部、</body> 之前 ===== -->
+<!-- ===== SEL6 成長加油站（取代舊的「SEL6 考試勇氣站」整段）=====
+  考試勇氣站＋問題解決站。紀錄寫進學生手帳，跟著原本的 Firebase 一起上傳雲端，以班級代碼辨識學生。
+  請貼在 Firebase 補丁、今日小組補丁的「後面」。 -->
 <style>
 #s6-fab{position:fixed;right:18px;bottom:18px;z-index:99990;background:#FFD54F;color:#5D4037;font-size:24px;font-weight:900;padding:14px 24px;border-radius:40px 40px 40px 8px;box-shadow:0 5px 0 #C9A227;cursor:pointer;border:none;touch-action:manipulation;font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif}
 #s6-fab:active{transform:translateY(3px);box-shadow:0 2px 0 #C9A227}
@@ -8318,16 +8320,35 @@ window.addEventListener('load', () => {
   #s6-print .s6-charm{width:9cm;border-width:6px;page-break-inside:avoid}
 }
 @media (prefers-reduced-motion:reduce){.s6-bubble{transition:none}}
+
+.s6-stu{display:flex;flex-direction:column;align-items:center;gap:4px}
+.s6-stu .pk{width:56px;height:66px;display:block}
+.s6-stu small{font-size:18px;color:#78909C;font-weight:normal}
+.s6-station{display:flex;align-items:center;gap:20px;text-align:left;padding:26px;border-width:6px}
+.s6-station .ic{font-size:72px}
+.s6-station .nm{font-size:38px;font-weight:900}
+.s6-station .ds{font-size:22px;color:#6D4C41;font-weight:normal}
+.s6-scene{font-size:30px;font-weight:900;background:#E3F2FD;border-radius:18px;padding:18px 20px;line-height:1.5;margin-bottom:6px;cursor:pointer}
+.s6-big{font-size:38px;font-weight:900;text-align:center;padding:16px;background:#F1F8E9;border-radius:20px;margin:10px 0}
+.s6-board{background:#2E7D32;color:#fff;border-radius:18px;padding:24px;text-align:center;font-size:32px;font-weight:900;border:10px solid #8D6E63;line-height:1.5}
 </style>
 
-<button id="s6-fab" type="button">🛡️ 考試勇氣站</button>
-<div id="s6-ov" role="dialog" aria-label="考試勇氣站"></div>
+<button id="s6-fab" type="button">🧭 成長加油站</button>
+<div id="s6-ov" role="dialog" aria-label="成長加油站"></div>
 <div id="s6-print"></div>
 
-<script>
-(function(){
-  /* ===== 老師可以改這裡：每位學生預設的考試困擾 ===== */
-  var DEFAULT_PRESET = { A:'stuck', B:'anxious', C:'distract', D:'daydream', E:'random', F:'' };
+<script>(function(){
+  /* =========================================================
+     成長加油站：考試勇氣站＋問題解決站
+     紀錄寫進學生手帳（activityLog.sel6），跟著原本的 Firebase 一起上傳雲端，
+     並以「班級代碼」辨識學生。
+     ========================================================= */
+  var STATIONS = {
+    exam: { icon:'🛡️', name:'考試勇氣站', color:'#F57C00', desc:'考試卡住、緊張、分心的時候，學一招！', card:'考試護身符',
+            steps:['① 我的考試警報','② 皮克敏招式','③ 我的護身符'] },
+    rule: { icon:'🧩', name:'問題解決站', color:'#3E8E41', desc:'練習班級好習慣，遇到狀況做出好選擇！', card:'好習慣約定卡',
+            steps:['① 選一個好習慣','② 情境練習','③ 我的約定卡'] }
+  };
 
   var ALARMS = {
     stuck:    { i:'🧱', t:'一題不會，就卡住不動',   c:'#E53935' },
@@ -8339,43 +8360,201 @@ window.addEventListener('load', () => {
   var MANTRAS = {
     stuck:    ['卡住就跳過，最後再回來','先寫會的，再想難的','一題不會沒關係，下一題加油'],
     anxious:  ['慢慢吸氣，慢慢吐氣','我盡力寫就好','緊張時，我可以告訴老師'],
-    distract: ['手指著題目，一題一題寫','交卷前，巡邏有沒有空格','分心了，回到題目就好'],
+    distract: ['手指著題目，一題一題寫','交卷前，檢查有沒有空格','分心了，回到題目就好'],
     daydream: ['先讀完，再圈重點，再作答','看不懂就舉手問老師','讀出來，就會更清楚'],
     random:   ['考試是讓老師知道怎麼幫我','先認真寫我會的題目','慢慢寫，我做得到']
   };
-  var TEMP = [['😀','輕鬆'],['🙂','還好'],['😐','有一點'],['😟','緊張'],['😱','超緊張']];
-  var LS_REC='s6_records', LS_NAME='s6_names', LS_PRE='s6_preset';
 
-  var ov = document.getElementById('s6-ov');
-  var st = {}, g = {}, timers = [];
+  /* ===== 問題解決站：7 個班級好習慣 ===== */
+  var RULES = [
+    { id:'r1', i:'🗣️', t:'有事要用說的，不用碰到別人', c:'#E53935',
+      sc:[
+        { s:'同學拿了你的橡皮擦，一直沒有還你。', o:[
+          ['跟他說：「請把橡皮擦還我。」',1,'✓ 用說的，對方就知道你需要什麼。'],
+          ['直接衝過去搶回來',0,'△ 搶東西可能讓兩個人都受傷。'],
+          ['推他一下，讓他知道你生氣',0,'△ 推人會讓別人受傷，事情也會變糟。']]},
+        { s:'排隊的時候，後面的同學一直擠你。', o:[
+          ['轉頭說：「請不要擠我。」',1,'✓ 說清楚，手腳放好，很棒！'],
+          ['用手肘撞回去',0,'△ 撞回去，兩個人都可能跌倒。'],
+          ['大叫，然後把他推開',0,'△ 推開別人很危險，可以用說的。']]}],
+      act:{ type:'say', lines:['請你停下來，我不喜歡這樣。','我需要幫忙，老師可以來一下嗎？'] },
+      m:['有事用說的，手腳放好','先說「請你停下來」','說了沒用，就去找老師'] },
 
-  function load(k,d){ try{ var v=JSON.parse(localStorage.getItem(k)); return v||d; }catch(e){ return d; } }
-  function save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
-  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-  function nm(k){ var n=load(LS_NAME,{}); return n[k] ? n[k] : ('學生 '+k); }
-  function preset(){ var p=load(LS_PRE,null); return p||DEFAULT_PRESET; }
+    { id:'r2', i:'🤐', t:'不關我的事，我嘴巴安靜', c:'#8E24AA',
+      sc:[
+        { s:'老師正在提醒別的同學，你很想插嘴說：「他剛剛也有……」', o:[
+          ['嘴巴安靜，做好自己的事',1,'✓ 這是老師和他的事，你照顧好自己就好。'],
+          ['大聲幫老師一起罵他',0,'△ 同學會更難過，教室也會變亂。'],
+          ['轉頭跟旁邊的人一直講',0,'△ 這樣會讓更多人分心。']]},
+        { s:'兩個同學在吵架，你不在裡面。', o:[
+          ['不跟著吵；如果有人可能受傷，就去找老師',1,'✓ 不加入吵架，有危險才找大人。'],
+          ['在旁邊加油、起鬨',0,'△ 起鬨會讓吵架變得更大。'],
+          ['跑過去幫其中一邊吵',0,'△ 加入吵架，事情會更難解決。']]}],
+      act:{ type:'sort', a:'關我的事 🙋', b:'不關我的事 🤐', items:[
+          ['老師叫我的名字',1,'✓ 老師叫我，我要回應。'],
+          ['同學被老師提醒',0,'✓ 這是老師和他的事，我嘴巴安靜。'],
+          ['同學問我可不可以借鉛筆',1,'✓ 同學在問我，我可以回答。'],
+          ['別組同學在討論',0,'✓ 不是我的組，我做好自己的事。'],
+          ['有同學跌倒受傷了',1,'✓ 有人受傷，要趕快告訴老師！']]},
+      m:['不關我的事，嘴巴拉鍊拉起來','做好我自己的事','有危險，才去告訴老師'] },
+
+    { id:'r3', i:'🤝', t:'我想跟同學玩，會先詢問', c:'#43A047',
+      sc:[
+        { s:'同學在玩積木，你也很想一起玩。', o:[
+          ['先問：「我可以一起玩嗎？」',1,'✓ 先問，同學會覺得被尊重。'],
+          ['直接拿走他的積木',0,'△ 直接拿，同學會不高興。'],
+          ['把積木推倒，讓他注意你',0,'△ 推倒別人的東西，大家都不開心。']]},
+        { s:'你問了，同學說：「等一下，我們快玩完了。」', o:[
+          ['說「好，我等一下」，先去做別的事',1,'✓ 會等待，是很厲害的能力！'],
+          ['生氣地搶他們的東西',0,'△ 搶東西，同學就不想跟你玩了。'],
+          ['一直在旁邊吵：「快一點！」',0,'△ 一直催，大家會覺得很煩。']]}],
+      act:{ type:'say', lines:['我可以一起玩嗎？','好，那我等一下再來。'] },
+      m:['想玩先問：「我可以一起玩嗎？」','他說不行，我先去做別的事','等一下也沒關係'] },
+
+    { id:'r4', i:'🙇', t:'我會尊重老師', c:'#1E88E5',
+      sc:[
+        { s:'老師請你把玩具收起來，但你還想玩。', o:[
+          ['先收起來，下課再問老師可不可以玩',1,'✓ 先聽老師的，再好好問，很棒！'],
+          ['假裝沒聽到，繼續玩',0,'△ 假裝沒聽到，老師會一直等你。'],
+          ['大聲對老師說：「不要！」',0,'△ 大聲頂嘴，會讓老師和你都不舒服。']]},
+        { s:'你覺得老師誤會你了，心裡很生氣。', o:[
+          ['先深呼吸，等一下再好好跟老師說',1,'✓ 冷靜後再說，老師更能聽懂你。'],
+          ['對老師大吼',0,'△ 大吼的時候，老師很難聽懂你的意思。'],
+          ['摔東西表示生氣',0,'△ 摔東西可能傷到人，也會弄壞東西。']]}],
+      act:{ type:'sort', a:'尊重 👍', b:'不尊重 👎', items:[
+          ['老師說話時，眼睛看著老師',1,'✓ 看著老師，就是在尊重老師。'],
+          ['回答老師：「好，我知道了。」',1,'✓ 好好回答，很有禮貌！'],
+          ['老師說話時一直插嘴',0,'✓ 插嘴是不尊重，要等老師說完。'],
+          ['對老師翻白眼',0,'✓ 翻白眼會讓老師難過。'],
+          ['有意見的時候，舉手好好說',1,'✓ 舉手說出想法，老師會想聽。']]},
+      m:['老師說話，我先聽','有意見，舉手好好說','生氣時，先深呼吸'] },
+
+    { id:'r5', i:'👀', t:'上課時，眼睛看前面', c:'#00897B',
+      sc:[
+        { s:'上課時，旁邊的同學在玩鉛筆，你很想看。', o:[
+          ['眼睛看回黑板',1,'✓ 眼睛看前面，才不會錯過重點。'],
+          ['跟他一起玩鉛筆',0,'△ 兩個人都會錯過老師說的話。'],
+          ['一直轉頭看他',0,'△ 一直看，就聽不到老師說什麼了。']]},
+        { s:'窗外有聲音，你轉頭看了一下。', o:[
+          ['看一眼就好，眼睛回到老師身上',1,'✓ 分心沒關係，趕快回來就好！'],
+          ['一直看著窗外',0,'△ 看太久，就跟不上上課了。'],
+          ['站起來走到窗邊看',0,'△ 上課時離開座位會影響大家。']]}],
+      act:{ type:'focus', items:[
+          ['🦋','窗外飛來一隻蝴蝶'],['✏️','同學在玩鉛筆'],['💬','後面有人在講話'],['🐦','小鳥在窗外叫'],['🔔','走廊有聲音']]},
+      m:['眼睛看前面，耳朵聽老師','分心了，回到黑板就好','看老師，就知道現在要做什麼'] },
+
+    { id:'r6', i:'📒', t:'聯絡簿要記得簽名', c:'#FB8C00',
+      sc:[
+        { s:'回到家了，聯絡簿還在書包裡。', o:[
+          ['拿出來請家人簽名',1,'✓ 回家就拿出來，最不會忘記！'],
+          ['等明天早上再說',0,'△ 早上很匆忙，很容易忘記。'],
+          ['自己隨便簽一簽',0,'△ 要請家人簽，才是真的簽名喔。']]},
+        { s:'家人在忙，你怕自己會忘記。', o:[
+          ['把聯絡簿打開，放在家人看得到的桌上，再提醒一次',1,'✓ 放在看得到的地方，好聰明！'],
+          ['算了，今天不簽了',0,'△ 沒簽名，老師就不知道家人看過了。'],
+          ['塞到書包最底下',0,'△ 塞到最底下，就更容易忘記。']]}],
+      act:{ type:'order', q:'把回家後的步驟排好順序（依序點一點）', steps:['🎒 回家打開書包','📒 拿出聯絡簿','✍️ 請家人簽名','🎒 把聯絡簿放回書包'] },
+      m:['回家第一件事：拿出聯絡簿','簽好名，放回書包','怕忘記，就放在桌上'] },
+
+    { id:'r7', i:'🎒', t:'作業會記得帶回家', c:'#6D4C41',
+      sc:[
+        { s:'放學鐘響了，大家都在收書包。', o:[
+          ['看聯絡簿，把要寫的作業放進書包',1,'✓ 先看聯絡簿，就知道要帶什麼。'],
+          ['趕快衝出去玩',0,'△ 作業留在學校，回家就沒辦法寫了。'],
+          ['全部留在抽屜裡',0,'△ 這樣作業就沒辦法帶回家寫。']]},
+        { s:'你不確定今天有哪些作業。', o:[
+          ['看聯絡簿，或是問老師',1,'✓ 不確定就查一查、問一問，很棒！'],
+          ['隨便猜一猜就好',0,'△ 猜錯了，就會少帶作業。'],
+          ['乾脆都不要帶',0,'△ 不帶作業，明天就交不出來了。']]}],
+      act:{ type:'pack', note:'📒 聯絡簿上寫：今天的作業是「國語習作、數學習作、生字簿」', items:[
+          ['📘','國語習作',1],['🧸','玩具小熊',0],['📗','數學習作',1],['🍬','糖果',0],['📕','生字簿',1],['📒','聯絡簿',1]]},
+      m:['放學前，看聯絡簿收作業','作業放進書包，再檢查一次','不確定，就問老師'] }
+  ];
+  function ruleOf(id){ for(var i=0;i<RULES.length;i++) if(RULES[i].id===id) return RULES[i]; return null; }
+
+  var SCALES = {
+    exam: { before:'想到「考試」，你現在的心情溫度是？', after:'學完招式，再想到「考試」，心情溫度是？', tip:'點一個最像你的臉。沒有對或錯喔！',
+            opts:[['😀','輕鬆'],['🙂','還好'],['😐','有一點'],['😟','緊張'],['😱','超緊張']], label:'緊張' },
+    rule: { before:'這個好習慣，你覺得自己做得到嗎？', after:'練習完了，現在覺得自己做得到嗎？', tip:'誠實選就好，沒有對或錯喔！',
+            opts:[['😟','做不到'],['😕','有點難'],['😐','試試看'],['🙂','應該可以'],['😄','我做得到']], label:'信心' }
+  };
+
+  var ov, st = {}, g = {}, timers = [], scrollMode = false;
+
+  /* ---------- 小工具 ---------- */
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function clearT(){ timers.forEach(clearTimeout); timers=[]; }
   function later(fn,ms){ timers.push(setTimeout(fn,ms)); }
-
+  function pop(){ try{ if(typeof playSound==='function') playSound('pop'); }catch(e){} }
   function speak(t){
+    try{ if(typeof speakText==='function') return speakText(t); }catch(e){}
     try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.lang='zh-TW'; u.rate=0.85; speechSynthesis.speak(u); }catch(e){}
   }
+  function shuffle(n){ var a=[]; for(var i=0;i<n;i++) a.push(i); for(var j=n-1;j>0;j--){ var k=Math.floor(Math.random()*(j+1)); var t=a[j]; a[j]=a[k]; a[k]=t; } return a; }
+
+  /* ---------- 學生資料（全部從手帳讀，用班級代碼辨識） ---------- */
+  function recs(){ try{ return growthHistoryRecords || []; }catch(e){ return []; } }
+  function codeOf(r){ return String((r && r.studentId) || '').trim(); }
+  function latestRec(code){ var l=recs(); for(var i=0;i<l.length;i++) if(codeOf(l[i])===code) return l[i]; return null; }
+  function allCodes(){ var seen={}, out=[]; recs().forEach(function(r){ var c=codeOf(r); if(c && !seen[c]){ seen[c]=1; out.push(c); } }); return out; }
+  function squadCodes(){
+    try{ var s=JSON.parse(localStorage.getItem('pikmin_squad_v1'))||{}; return (s.ids||[]).filter(function(c){ return !!latestRec(c); }); }catch(e){ return []; }
+  }
+  function nameOf(code){ var r=latestRec(code); return r ? (r.name||'小勇士') : code; }
+  function avatar(code){
+    var r=latestRec(code);
+    try{ return getDynamicPikminSvg(r.spirit||'red', r.stage||'leaf'); }catch(e){ return '🌱'; }
+  }
+  function getPreset(code){
+    var l=recs(); for(var i=0;i<l.length;i++) if(codeOf(l[i])===code && l[i].s6preset) return l[i].s6preset;
+    return {};
+  }
+  function persist(){
+    try{ (window.saveRecordsToStorage || saveRecordsToStorage)(); }catch(e){ console.error('[加油站] 儲存失敗', e); }
+    try{ if(typeof renderGrowthHistory==='function') renderGrowthHistory(); }catch(e){}
+  }
+  function setPreset(code, station, val, noSave){
+    var r=latestRec(code); if(!r) return;
+    var p={}, old=getPreset(code); for(var k in old) p[k]=old[k];
+    if(val) p[station]=val; else delete p[station];
+    r.s6preset=p; if(!noSave) persist();
+  }
+  /* 把一筆加油站紀錄寫進這位學生「最新的那張手帳」，原本的 Firebase 補丁會自動同步上雲端 */
+  function addLog(code, entry, noSave){
+    var r=latestRec(code); if(!r) return false;
+    if(!r.activityLog || typeof r.activityLog!=='object') r.activityLog={};
+    if(!Array.isArray(r.activityLog.sel6)) r.activityLog.sel6=[];
+    r.activityLog.sel6.push(entry);
+    if(r.activityLog.sel6.length>100) r.activityLog.sel6=r.activityLog.sel6.slice(-100);
+    if(!noSave) persist();
+    return true;
+  }
+  function allLogs(){
+    var out=[];
+    recs().forEach(function(r){
+      var a=(r.activityLog && Array.isArray(r.activityLog.sel6)) ? r.activityLog.sel6 : [];
+      a.forEach(function(e){ out.push({code:codeOf(r), name:r.name, e:e}); });
+    });
+    out.sort(function(x,y){ return String(y.e.ts).localeCompare(String(x.e.ts)); });
+    return out;
+  }
+
+  /* ---------- 畫面框架與自動縮放 ---------- */
   function pik(msg,face){ return '<div class="s6-say" onclick="S6.read(this)"><b>'+(face||'🌱')+'</b><div>'+msg+'</div><i>🔊</i></div>'; }
   function card(h){ return '<div class="s6-card">'+h+'</div>'; }
   function stepBar(n){
-    var names=['① 我的考試警報','② 皮克敏招式','③ 我的護身符'];
+    var names=(STATIONS[st.station]||STATIONS.exam).steps;
     return '<div class="s6-steps">'+names.map(function(s,i){return '<span class="'+(i+1===n?'now':(i+1<n?'past':''))+'">'+s+'</span>';}).join('')+'</div>';
   }
-  var scrollMode=false;
   function frame(step,html,modal,scroll){
-    var who = st.k ? '<span class="s6-who">'+esc(nm(st.k))+'</span>' : '';
+    var sta = st.station ? '｜'+STATIONS[st.station].icon+' '+STATIONS[st.station].name : '';
+    var who = st.code ? '<span class="s6-who">'+esc(nameOf(st.code))+'</span>' : '';
     scrollMode=!!scroll; ov.classList.toggle('scroll',scrollMode);
-    ov.innerHTML='<div class="s6-wrap"><div class="s6-top"><div class="s6-title">🛡️ 考試勇氣站'+who+'</div>'+
+    ov.innerHTML='<div class="s6-wrap"><div class="s6-top"><div class="s6-title">🧭 成長加油站'+sta+who+'</div>'+
       '<div><button class="s6-fs" onclick="S6.fs()">⛶ 全螢幕</button><button class="s6-x" onclick="S6.close()">✖ 離開</button></div></div>'+
       (step?stepBar(step):'')+html+'</div>'+(modal?'<div class="s6-mask"><div class="s6-modal">'+modal+'</div></div>':'');
     ov.scrollTop=0; fit();
   }
-  /* 依螢幕大小自動縮放，整個畫面一次看完、不用捲動 */
   function fit(){
     var w=ov.querySelector('.s6-wrap'); if(!w) return;
     if(scrollMode){ w.style.transform=''; return; }
@@ -8388,50 +8567,75 @@ window.addEventListener('load', () => {
     if(m){ m.style.transform='none'; var mh=m.offsetHeight; var ms=Math.min(W*0.9/900, H*0.9/mh);
       m.style.transform='scale('+ms+')'; m.style.left=((W-900*ms)/2)+'px'; m.style.top=((H-mh*ms)/2)+'px'; }
   }
-  window.addEventListener('resize',function(){ if(ov.classList.contains('on')) fit(); });
-  document.addEventListener('fullscreenchange',function(){ setTimeout(fit,100); });
-  function doneBtn(){ return '<div class="s6-row"><button class="s6-btn go big" onclick="S6.charm()">招式學會了！做護身符 🛡️</button></div>'; }
+  function doneBtn(){ return '<div class="s6-row"><button class="s6-btn go big" onclick="S6.charm()">學會了！做'+STATIONS[st.station].card+' 🛡️</button></div>'; }
 
   var S6 = window.S6 = {};
   S6.read = function(el){ speak(el.innerText.replace('🔊','')); };
   S6.fs = function(){ try{ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }catch(e){} };
-  S6.open = function(){ ov.classList.add('on'); S6.pick(); };
+  S6.open = function(){ pop(); ov.classList.add('on'); S6.pick(); };
   S6.close = function(){ clearT(); try{speechSynthesis.cancel();}catch(e){} ov.classList.remove('on'); st={}; };
 
-  /* ---------- 選學生 ---------- */
-  S6.pick = function(){
-    clearT(); st={};
-    var html = card('<p class="s6-h">今天是誰要挑戰？</p><div class="s6-grid">'+
-      'ABCDEF'.split('').map(function(k){return '<button class="s6-btn big" onclick="S6.start(\''+k+'\')">🌱<br>'+esc(nm(k))+'</button>';}).join('')+
-      '</div>')+'<div class="s6-row"><button class="s6-btn" onclick="S6.teacher()">👩‍🏫 老師設定與紀錄</button></div>';
-    frame(0,html);
+  /* ---------- 選學生（今日小組優先） ---------- */
+  S6.pick = function(showAll){
+    clearT(); st={ showAll: !!showAll };
+    var sq=squadCodes(), list = (showAll || !sq.length) ? allCodes() : sq;
+    var body;
+    if(!list.length){
+      body = pik('還沒有學生資料喔！請先到「SEL1 我的皮克敏屬性卡」輸入班級代碼、建立卡片並儲存。','🙋');
+    } else {
+      S6._list=list;
+      body = '<div class="s6-grid">'+list.map(function(c,idx){
+        return '<button class="s6-btn s6-stu" onclick="S6.choose(S6._list['+idx+'])"><span class="pk">'+avatar(c)+'</span>'+esc(nameOf(c))+'<small>'+esc(c)+'</small></button>';
+      }).join('')+'</div>';
+    }
+    var toggle = (sq.length && allCodes().length>sq.length)
+      ? '<button class="s6-btn" onclick="S6.pick('+(showAll?'false':'true')+')">'+(showAll?'👥 只看今日小組':'📋 顯示全班學生')+'</button>' : '';
+    frame(0, card('<p class="s6-h">今天是誰要挑戰？</p>'+body)+
+      '<div class="s6-row">'+toggle+'<button class="s6-btn" onclick="S6.teacher()">👩‍🏫 老師設定與紀錄</button></div>');
   };
-  S6.start = function(k){ st={k:k,alarm:null,before:null,after:null,mantra:null,extra:''}; S6.temp('before'); };
+  S6.choose = function(code){ pop(); st={ code:code }; S6.hub(); };
 
-  /* ---------- 心情溫度計 ---------- */
+  /* ---------- 選站 ---------- */
+  S6.hub = function(){
+    clearT(); st={ code:st.code };
+    var p=getPreset(st.code);
+    var recE = p.exam && ALARMS[p.exam] ? '<span class="s6-tag">⭐ 推薦練習：'+ALARMS[p.exam].t+'</span><br>' : '';
+    var rr = p.rule && ruleOf(p.rule), recR = rr ? '<span class="s6-tag">⭐ 推薦練習：'+rr.t+'</span><br>' : '';
+    frame(0, card('<p class="s6-h">'+esc(nameOf(st.code))+'，今天想去哪一站？</p><div class="s6-col">'+
+      '<button class="s6-btn s6-station" style="border-color:'+STATIONS.exam.color+'" onclick="S6.go(\'exam\')"><span class="ic">🛡️</span><span>'+recE+'<span class="nm">考試勇氣站</span><br><span class="ds">'+STATIONS.exam.desc+'</span></span></button>'+
+      '<button class="s6-btn s6-station" style="border-color:'+STATIONS.rule.color+'" onclick="S6.go(\'rule\')"><span class="ic">🧩</span><span>'+recR+'<span class="nm">問題解決站</span><br><span class="ds">'+STATIONS.rule.desc+'</span></span></button>'+
+      '</div>')+'<div class="s6-row"><button class="s6-btn" onclick="S6.pick()">🔄 換一位同學</button></div>');
+  };
+  S6.go = function(station){
+    pop(); st={ code:st.code, station:station, before:null, after:null, mantra:null, extra:'' }; g={};
+    if(station==='exam') S6.temp('before'); else S6.ruleList();
+  };
+
+  /* ---------- 心情／信心溫度計 ---------- */
   S6.temp = function(which){
-    var q = which==='before' ? '想到「考試」，你現在的心情溫度是？' : '學完招式，再想到「考試」，心情溫度是？';
-    var html = card('<p class="s6-h">🌡️ '+q+'</p>'+pik('點一個最像你的臉。沒有對或錯喔！')+
-      '<div class="s6-grid" style="grid-template-columns:repeat(5,1fr)">'+TEMP.map(function(t,i){return '<button class="s6-btn" onclick="S6.setTemp(\''+which+'\','+(i+1)+')"><span class="s6-emo">'+t[0]+'</span>'+(i+1)+' '+t[1]+'</button>';}).join('')+'</div>');
-    frame(which==='before'?1:3,html);
+    var sc=SCALES[st.station];
+    var html = card('<p class="s6-h">🌡️ '+sc[which]+'</p>'+pik(sc.tip)+
+      '<div class="s6-grid" style="grid-template-columns:repeat(5,1fr)">'+sc.opts.map(function(t,i){return '<button class="s6-btn" onclick="S6.setTemp(\''+which+'\','+(i+1)+')"><span class="s6-emo">'+t[0]+'</span>'+(i+1)+' '+t[1]+'</button>';}).join('')+'</div>');
+    frame(which==='before'?1:3, html);
   };
-  S6.setTemp = function(which,v){ st[which]=v; if(which==='before') S6.alarm(); else S6.finish(); };
+  S6.setTemp = function(which,v){
+    pop(); st[which]=v;
+    if(which==='after') return S6.finish();
+    if(st.station==='exam') S6.alarm(); else S6.ruleScene(0);
+  };
 
-  /* ---------- 第一站：考試警報 ---------- */
+  /* ---------- 考試勇氣站：第一站 ---------- */
   S6.alarm = function(){
-    var rec = preset()[st.k];
+    var rec = getPreset(st.code).exam;
     var keys = Object.keys(ALARMS).sort(function(a,b){ return (a===rec?-1:0)-(b===rec?-1:0); });
-    var html = card('<p class="s6-h">考試的時候，你最像哪一個？</p>'+pik('每個人考試都會遇到困難。找到它，皮克敏就能教你一招！')+
+    frame(1, card('<p class="s6-h">考試的時候，你最像哪一個？</p>'+pik('每個人考試都會遇到困難。找到它，皮克敏就能教你一招！')+
       '<div class="s6-col3">'+keys.map(function(k){var a=ALARMS[k];
         return '<button class="s6-btn'+(k===rec?' rec':'')+'" style="text-align:left" onclick="S6.setAlarm(\''+k+'\')">'+
-          (k===rec?'<span class="s6-tag">⭐ 皮克敏覺得最像你</span><br>':'')+'<span style="font-size:40px">'+a.i+'</span> '+a.t+'</button>';}).join('')+'</div>');
-    frame(1,html);
+          (k===rec?'<span class="s6-tag">⭐ 皮克敏覺得最像你</span><br>':'')+'<span style="font-size:40px">'+a.i+'</span> '+a.t+'</button>';}).join('')+'</div>'));
   };
-  S6.setAlarm = function(k){ st.alarm=k; g={}; G[k](); };
+  S6.setAlarm = function(k){ pop(); st.alarm=k; g={}; G[k](); };
 
-  /* ---------- 第二站：五種招式 ---------- */
   var G = {};
-
   /* A：卡題 → 跳過再回來 */
   G.stuck = function(msg){
     if(!g.qs){ g.qs=[
@@ -8492,7 +8696,7 @@ window.addEventListener('load', () => {
       var x=W[g.wi], flip=g.wi%2===1;
       var b1='<button class="s6-btn" onclick="S6.aw(1)">💚 '+x.ok+'</button>', b2='<button class="s6-btn" onclick="S6.aw(0)">'+x.no+'</button>';
       frame(2,card('<p class="s6-h">💬 換一句話對自己說（'+(g.wi+1)+'/3）</p>'+
-        '<p class="s6-p">心裡冒出：<b>'+x.w+'</b><br>換成哪一句，心會比較放鬆？</p>'+(g.wmsg?pik(g.wmsg,'🤔'):'')+
+        '<p class="s6-p">心裡冒出：<b>'+x.w+'</b><br>換成哪一句，心會比較輕？</p>'+(g.wmsg?pik(g.wmsg,'🤔'):'')+
         '<div class="s6-col">'+(flip?b2+b1:b1+b2)+'</div>'));
     } else {
       g.plan=g.plan||[];
@@ -8519,7 +8723,7 @@ window.addEventListener('load', () => {
   S6.aw = function(ok){ if(ok){ g.wi++; g.wmsg=''; } else g.wmsg='這句話會讓心更重喔，換另一句試試看。'; G.anxious(); };
   S6.ap = function(p){ var i=g.plan.indexOf(p); if(i>-1) g.plan.splice(i,1); else g.plan.push(p); st.extra='安心計畫：'+g.plan.join('、'); G.anxious(); };
 
-  /* C：分心漏題 → 手指檢查、蝴蝶干擾、交卷前檢查 */
+  /* C：分心漏題 → 手指巡邏、蝴蝶干擾、交卷前檢查 */
   G.distract = function(msg,face){
     if(!g.qs){ g.qs=[0,1,0,0,1,0,1,0].map(function(b){return {blank:!!b,seen:false,fixed:false};}); g.cur=0; g.fly=false; }
     var list=g.qs.map(function(q,i){
@@ -8529,7 +8733,7 @@ window.addEventListener('load', () => {
     var fly = g.fly ? '<p class="s6-h">🦋 窗外飛來一隻蝴蝶！你要……</p><div class="s6-col">'+
       '<button class="s6-btn big" onclick="S6.dfly(0)">👀 一直看蝴蝶</button><button class="s6-btn big" onclick="S6.dfly(1)">✋ 手指放回題目，繼續寫</button></div>' : '';
     var finished = g.cur>=g.qs.length;
-    frame(2,card('<p class="s6-h">🦋 招式：手指檢查，交卷前檢查</p>'+
+    frame(2,card('<p class="s6-h">🦋 招式：手指巡邏，交卷前檢查</p>'+
       pik(msg||'用手指著題目，從第 1 題開始，一題一題往下點。看到空白就補上！',face)+
       '<div class="s6-paper two">'+list+'</div>'+
       '<div class="s6-row"><button class="s6-btn'+(finished?' go':'')+'" onclick="S6.dsubmit()">📤 交卷</button></div>')+(g.ok?doneBtn():''),fly);
@@ -8541,14 +8745,14 @@ window.addEventListener('load', () => {
     if(q.blank&&!q.fixed){ q.fixed=true; m='找到空白了！補上答案 ✏️'; }
     g.cur++;
     if(g.cur===3 && !g.flown){ g.flown=true; g.fly=true; }
-    if(g.cur>=g.qs.length) m='全部檢查完了！現在可以交卷囉。';
+    if(g.cur>=g.qs.length) m='全部巡邏完了！現在可以交卷囉。';
     G.distract(m);
   };
   S6.dfly = function(ok){ g.fly=false; if(ok) G.distract('好專心！手指還在題目上，知道寫到哪裡。','😄');
     else G.distract('蝴蝶飛走了……咦，寫到第幾題了？<br>分心沒關係，把手指放回 👉 那一題就好。','😮'); };
   S6.dsubmit = function(){
     var left=g.qs.filter(function(q){return q.blank&&!q.fixed;}).length;
-    if(g.cur<g.qs.length) return G.distract('等一下！還沒檢查完'+(left?'，還有 '+left+' 題空白':'')+'。交卷前要每題都看過喔！','✋');
+    if(g.cur<g.qs.length) return G.distract('等一下！還沒巡邏完'+(left?'，還有 '+left+' 題空白':'')+'。交卷前要每題都看過喔！','✋');
     g.ok=true; G.distract('交卷成功！每一題都有寫，太棒了 🎉','🥳');
   };
 
@@ -8611,28 +8815,162 @@ window.addEventListener('load', () => {
   S6.r4 = function(){ g.ph=4; G.random(); };
   S6.r5 = function(v){ g.goal=v; st.extra='小目標：認真寫 '+v+'；做法：'+g.alt.join('、'); G.random('好！你的目標是認真寫 '+v+'，皮克敏幫你加油！','💪'); };
 
-  /* ---------- 第三站：護身符 ---------- */
+
+  /* =========================================================
+     問題解決站
+     ========================================================= */
+  S6.ruleList = function(){
+    var rec=getPreset(st.code).rule;
+    var list=RULES.slice().sort(function(a,b){ return (a.id===rec?-1:0)-(b.id===rec?-1:0); });
+    frame(1, card('<p class="s6-h">今天想練習哪一個好習慣？</p>'+pik('選一個你想變得更厲害的好習慣！')+
+      '<div class="s6-col3">'+list.map(function(r){
+        return '<button class="s6-btn'+(r.id===rec?' rec':'')+'" style="text-align:left" onclick="S6.setRule(\''+r.id+'\')">'+
+          (r.id===rec?'<span class="s6-tag">⭐ 推薦給你</span><br>':'')+'<span style="font-size:40px">'+r.i+'</span> '+r.t+'</button>';
+      }).join('')+'</div>'));
+  };
+  S6.setRule = function(id){ pop(); st.rule=id; g={ order:[], done:[] }; S6.temp('before'); };
+
+  S6.ruleScene = function(i,msg,face){
+    var r=ruleOf(st.rule), sc=r.sc[i];
+    if(!g.order[i]) g.order[i]=shuffle(sc.o.length);
+    var opts=g.order[i].map(function(j){
+      var o=sc.o[j], cls = g.done[i] ? (o[1]?' done':' dim') : '';
+      return '<button class="s6-btn'+cls+'" onclick="S6.rs('+i+','+j+')">'+o[0]+'</button>';
+    }).join('');
+    frame(2, card('<p class="s6-h">'+r.i+' '+r.t+'（情境 '+(i+1)+'/'+r.sc.length+'）</p>'+
+      '<div class="s6-scene" onclick="S6.read(this)">📍 '+sc.s+' 🔊</div>'+
+      pik(msg||'你會怎麼做？選一個最好的方法。',face)+
+      '<div class="s6-col3">'+opts+'</div>'+
+      (g.done[i]?'<div class="s6-row"><button class="s6-btn go big" onclick="S6.rnext('+i+')">下一步 👉</button></div>':'')));
+  };
+  S6.rs = function(i,j){
+    if(g.done[i]) return;
+    var o=ruleOf(st.rule).sc[i].o[j];
+    if(o[1]){ g.done[i]=true; S6.ruleScene(i,o[2],'😄'); } else S6.ruleScene(i,o[2]+'<br>再想想看，換一個試試！','🤔');
+  };
+  S6.rnext = function(i){ pop(); var r=ruleOf(st.rule); if(i+1<r.sc.length) S6.ruleScene(i+1); else { g.a={}; S6.ruleAct(); } };
+
+  /* 每個好習慣都有一個不同的小活動 */
+  S6.ruleAct = function(msg,face){
+    var r=ruleOf(st.rule), a=r.act, A=g.a, head='<p class="s6-h">'+r.i+' 小活動：', body='', ok=false;
+
+    if(a.type==='say'){
+      A.said=A.said||{};
+      head+='說說看</p>';
+      body = pik(msg||'先按 🔊 聽一聽，再大聲說一次。說完按「我說好了」！',face)+
+        a.lines.map(function(l,k){
+          return '<div class="s6-big">「'+l+'」</div><div class="s6-row" style="margin-top:0">'+
+            '<button class="s6-btn" onclick="S6.sayHear('+k+')">🔊 聽一聽</button>'+
+            '<button class="s6-btn'+(A.said[k]?' done':' go')+'" onclick="S6.saySaid('+k+')">'+(A.said[k]?'✅ 說好了':'🗣️ 我說好了')+'</button></div>';
+        }).join('');
+      ok = a.lines.every(function(_,k){ return A.said[k]; });
+    }
+    else if(a.type==='sort'){
+      A.i=A.i||0;
+      head+='分一分</p>';
+      if(A.i<a.items.length){
+        var it=a.items[A.i];
+        body = pik(msg||'這件事要怎麼分？點下面其中一個。',face)+
+          '<div class="s6-big">（'+(A.i+1)+'/'+a.items.length+'）'+it[0]+'</div>'+
+          '<div class="s6-col"><button class="s6-btn big" onclick="S6.sortPick(1)">'+a.a+'</button><button class="s6-btn big" onclick="S6.sortPick(0)">'+a.b+'</button></div>';
+      } else { body = pik(msg||'全部分好了，太厲害了！','🥳'); ok=true; }
+    }
+    else if(a.type==='focus'){
+      A.i=A.i||0; A.stars=A.stars||0;
+      head+='眼睛小雷達</p>';
+      if(A.i<a.items.length){
+        var d=a.items[A.i];
+        body = pik(msg||'老師正在上課！這時候……','👩‍🏫')+
+          '<div class="s6-split"><div class="s6-board">📋 老師在黑板上講重點<br><span style="font-size:24px">⭐ 眼睛看前面 '+A.stars+' / '+a.items.length+'</span></div>'+
+          '<div class="s6-big" style="font-size:34px">'+d[0]+' '+d[1]+'！</div></div>'+
+          (function(){ var x='<button class="s6-btn big" onclick="S6.focusPick(0)">'+d[0]+' 一直看它</button>', y='<button class="s6-btn big" onclick="S6.focusPick(1)">👀 眼睛看回黑板</button>';
+            return '<div class="s6-col">'+(A.i%2?y+x:x+y)+'</div>'; })();
+      } else { body = pik(msg||'雷達完成！你拿到 '+A.stars+' 顆星星 ⭐','🥳'); ok=true; }
+    }
+    else if(a.type==='order'){
+      A.got=A.got||[]; if(!A.show) A.show=shuffle(a.steps.length);
+      head+='排一排</p>';
+      body = pik(msg||a.q,face)+
+        '<div class="s6-col">'+A.show.map(function(k){
+          var n=A.got.indexOf(k);
+          return '<button class="s6-btn big'+(n>-1?' done':'')+'" onclick="S6.orderPick('+k+')">'+(n>-1?'【'+(n+1)+'】':'')+a.steps[k]+'</button>';
+        }).join('')+'</div>';
+      ok = A.got.length===a.steps.length;
+    }
+    else if(a.type==='pack'){
+      A.got=A.got||{};
+      head+='收書包</p>';
+      var need=a.items.filter(function(x){return x[2];}).length, have=Object.keys(A.got).length;
+      body = '<div class="s6-scene">'+a.note+'</div>'+pik(msg||'把要帶回家的東西點進書包！',face)+
+        '<div class="s6-split"><div class="s6-col3">'+a.items.map(function(x,k){
+          return A.got[k]?'<button class="s6-btn done" disabled>✅ 已放進</button>':'<button class="s6-btn" onclick="S6.packPick('+k+')"><span class="s6-emo">'+x[0]+'</span>'+x[1]+'</button>';
+        }).join('')+'</div><div class="s6-big" style="font-size:80px">🎒<br><span style="font-size:28px">'+have+' / '+need+'</span></div></div>';
+      ok = have===need;
+    }
+    frame(2, card(head+body)+(ok?doneBtn():''));
+  };
+  S6.sayHear = function(k){ speak(ruleOf(st.rule).act.lines[k]); };
+  S6.saySaid = function(k){ pop(); g.a.said[k]=true; S6.ruleAct('說得很清楚，好棒！','😄'); };
+  S6.sortPick = function(v){
+    var a=ruleOf(st.rule).act, it=a.items[g.a.i];
+    if((it[1]?1:0)===v){ g.a.i++; S6.ruleAct(it[2],'😄'); } else S6.ruleAct('再想想看喔！這件事應該是另一邊。','🤔');
+  };
+  S6.focusPick = function(v){
+    var a=ruleOf(st.rule).act;
+    if(v){ g.a.stars++; g.a.i++; S6.ruleAct('好專心！眼睛回到老師身上 ⭐','😄'); }
+    else { g.a.i++; S6.ruleAct('眼睛被吸走了……沒關係，下一次馬上看回黑板就好！','😮'); }
+  };
+  S6.orderPick = function(k){
+    var A=g.a; if(A.got.indexOf(k)>-1) return;
+    if(k===A.got.length){ A.got.push(k); S6.ruleAct(A.got.length===ruleOf(st.rule).act.steps.length?'順序完全正確，太棒了！':'對了！下一步是什麼？', '😄'); }
+    else S6.ruleAct('還不是這一步喔，想想看要先做什麼？','🤔');
+  };
+  S6.packPick = function(k){
+    var it=ruleOf(st.rule).act.items[k];
+    if(it[2]){ g.a.got[k]=true; S6.ruleAct(it[1]+' 放進書包了！','😄'); }
+    else S6.ruleAct(it[0]+' '+it[1]+'不是作業，不用帶喔！','🤔');
+  };
+
+  /* =========================================================
+     第三步：護身符／約定卡
+     ========================================================= */
+  function info(){
+    if(st.station==='exam'){ var a=ALARMS[st.alarm]; return { i:a.i, c:a.c, t:a.t, m:MANTRAS[st.alarm] }; }
+    var r=ruleOf(st.rule); return { i:r.i, c:r.c, t:r.t, m:r.m };
+  }
   function charmHTML(){
-    var a=ALARMS[st.alarm];
-    return '<div class="s6-charm" style="--c:'+a.c+'"><div class="ic">'+a.i+'🌱</div><div class="nm">'+esc(nm(st.k))+' 的考試護身符</div>'+
+    var f=info();
+    return '<div class="s6-charm" style="--c:'+f.c+'"><div class="ic">'+f.i+'🌱</div><div class="nm">'+esc(nameOf(st.code))+' 的'+STATIONS[st.station].card+'</div>'+
       '<div class="m">'+(st.mantra?esc(st.mantra):'？')+'</div>'+(st.extra?'<div class="ex">'+esc(st.extra)+'</div>':'')+'</div>';
   }
   S6.charm = function(){
-    clearT(); var list=MANTRAS[st.alarm];
-    frame(3,card('<p class="s6-h">🛡️ 選一句你的護身符口訣</p>'+pik('考試前看一看，皮克敏就在你身邊！')+
+    clearT(); var list=info().m;
+    var word = st.station==='exam' ? '護身符口訣' : '約定';
+    frame(3, card('<p class="s6-h">🛡️ 選一句你的'+word+'</p>'+pik(st.station==='exam'?'考試前看一看，皮克敏就在你身邊！':'選一句你願意做到的約定！')+
       '<div class="s6-split"><div style="display:flex;flex-direction:column;gap:12px">'+list.map(function(m,i){return '<button class="s6-btn big'+(st.mantra===m?' sel':'')+'" onclick="S6.setM('+i+')">'+m+'</button>';}).join('')+'</div>'+
       charmHTML()+'</div>'+(st.mantra?'<div class="s6-row"><button class="s6-btn go big" onclick="S6.temp(\'after\')">完成 👉</button></div>':'')));
   };
-  S6.setM = function(i){ st.mantra=MANTRAS[st.alarm][i]; speak(st.mantra); S6.charm(); };
+  S6.setM = function(i){ st.mantra=info().m[i]; speak(st.mantra); S6.charm(); };
 
   S6.finish = function(){
-    var r=load(LS_REC,[]);
-    r.push({k:st.k,name:nm(st.k),alarm:st.alarm,before:st.before,after:st.after,mantra:st.mantra,extra:st.extra,date:new Date().toLocaleString('zh-TW')});
-    save(LS_REC,r);
-    var diff=st.before-st.after;
-    var fb = diff>0?'緊張溫度下降了 '+diff+' 格！':(diff===0?'溫度一樣也沒關係，你已經多了一個招式。':'還是有點緊張嗎？跟老師說說看吧。');
-    frame(3,card('<p class="s6-h">🎉 挑戰完成！</p><div class="s6-split"><div>'+pik('開始 '+TEMP[st.before-1][0]+' → 現在 '+TEMP[st.after-1][0]+'<br>'+fb,'🥳')+'</div>'+charmHTML()+'</div>'+
-      '<div class="s6-row"><button class="s6-btn" onclick="S6.print()">🖨️ 印出護身符</button><button class="s6-btn go" onclick="S6.pick()">換下一位 👉</button></div>'));
+    var f=info(), sc=SCALES[st.station], sta=STATIONS[st.station];
+    var entry = {
+      ts: new Date().toISOString(),
+      label: '加油站 · '+sta.name+' · '+f.t,
+      detail: sc.label+' '+st.before+'→'+st.after+'；'+(st.station==='exam'?'口訣':'約定')+'：'+st.mantra+(st.extra?'；'+st.extra:''),
+      result: 'done',
+      station: st.station, key: st.station==='exam'?st.alarm:st.rule,
+      before: st.before, after: st.after, mantra: st.mantra, extra: st.extra || ''
+    };
+    var saved = addLog(st.code, entry);
+    var diff = st.station==='exam' ? st.before-st.after : st.after-st.before;
+    var fb = st.station==='exam'
+      ? (diff>0?'緊張溫度下降了 '+diff+' 格！':(diff===0?'溫度一樣也沒關係，你已經多了一個招式。':'還是有點緊張嗎？跟老師說說看吧。'))
+      : (diff>0?'信心增加了 '+diff+' 格！':(diff===0?'信心一樣也沒關係，多練習就會更厲害。':'覺得有點難嗎？老師會陪你一起練習。'));
+    frame(3, card('<p class="s6-h">🎉 挑戰完成！</p><div class="s6-split"><div>'+
+      pik('開始 '+sc.opts[st.before-1][0]+' → 現在 '+sc.opts[st.after-1][0]+'<br>'+fb,'🥳')+
+      (saved?'':pik('⚠️ 這次的紀錄沒有存到手帳，請確認這位學生在 SEL1 有建立卡片。','⚠️'))+'</div>'+charmHTML()+'</div>'+
+      '<div class="s6-row"><button class="s6-btn" onclick="S6.print()">🖨️ 印出卡片</button><button class="s6-btn" onclick="S6.hub()">🧭 去別的站</button><button class="s6-btn go" onclick="S6.pick()">換下一位 👉</button></div>'));
   };
   S6.print = function(){
     var p=document.getElementById('s6-print'); p.innerHTML=charmHTML();
@@ -8640,31 +8978,124 @@ window.addEventListener('load', () => {
     setTimeout(function(){ document.body.classList.remove('s6-printing'); },800);
   };
 
-  /* ---------- 老師設定與紀錄 ---------- */
+  /* =========================================================
+     老師設定與紀錄
+     ========================================================= */
+  function oldLocal(){ try{ return JSON.parse(localStorage.getItem('s6_records'))||[]; }catch(e){ return []; } }
+
   S6.teacher = function(){
-    var n=load(LS_NAME,{}), p=preset(), r=load(LS_REC,[]);
-    var setRows='ABCDEF'.split('').map(function(k){
-      return '<tr><td>'+k+'</td><td><input class="s6-in" id="s6-n'+k+'" value="'+esc(n[k]||'')+'" placeholder="學生 '+k+'"></td><td><select class="s6-sel" id="s6-p'+k+'">'+'<option value=""'+(!p[k]?' selected':'')+'>（未設定，不推薦）</option>'+
-        Object.keys(ALARMS).map(function(a){return '<option value="'+a+'"'+(p[k]===a?' selected':'')+'>'+ALARMS[a].i+' '+ALARMS[a].t+'</option>';}).join('')+'</select></td></tr>';}).join('');
-    var recRows=r.slice().reverse().map(function(x){
-      return '<tr><td>'+esc(x.date)+'</td><td>'+esc(x.name)+'</td><td>'+ALARMS[x.alarm].i+' '+ALARMS[x.alarm].t+'</td><td>'+x.before+' → '+x.after+'</td><td>'+esc(x.mantra||'')+'</td><td style="text-align:left">'+esc(x.extra||'')+'</td></tr>';}).join('');
-    frame(0,card('<p class="s6-h">👩‍🏫 學生名字與預設困擾</p><div style="overflow-x:auto"><table class="s6-table"><tr><th>代號</th><th>顯示名字</th><th>推薦的考試警報</th></tr>'+setRows+'</table></div>'+
-      '<div class="s6-row"><button class="s6-btn go" onclick="S6.tsave()">💾 儲存設定</button><button class="s6-btn" onclick="S6.pick()">返回</button></div>')+
-      card('<p class="s6-h">📋 挑戰紀錄（溫度：1 輕鬆 ～ 5 超緊張）</p><div style="overflow-x:auto"><table class="s6-table"><tr><th>時間</th><th>學生</th><th>警報</th><th>溫度</th><th>口訣</th><th>其他</th></tr>'+(recRows||'<tr><td colspan="6">還沒有紀錄</td></tr>')+'</table></div>'+
-      '<div class="s6-row"><button class="s6-btn" onclick="S6.tcsv()">⬇️ 複製成表格文字</button><button class="s6-btn" onclick="S6.tclear()">🗑️ 清除紀錄</button></div>'),null,true);
+    st={};
+    var codes=allCodes();
+    var setRows = codes.map(function(c,idx){
+      var p=getPreset(c);
+      return '<tr><td>'+esc(c)+'</td><td>'+esc(nameOf(c))+'</td>'+
+        '<td><select class="s6-sel" id="s6-pe'+idx+'"><option value="">（未設定）</option>'+Object.keys(ALARMS).map(function(a){return '<option value="'+a+'"'+(p.exam===a?' selected':'')+'>'+ALARMS[a].i+' '+ALARMS[a].t+'</option>';}).join('')+'</select></td>'+
+        '<td><select class="s6-sel" id="s6-pr'+idx+'"><option value="">（未設定）</option>'+RULES.map(function(r){return '<option value="'+r.id+'"'+(p.rule===r.id?' selected':'')+'>'+r.i+' '+r.t+'</option>';}).join('')+'</select></td></tr>';
+    }).join('');
+    var logs=allLogs();
+    var logRows = logs.map(function(x){
+      var e=x.e, d=e.ts?new Date(e.ts).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+      return '<tr><td>'+esc(d)+'</td><td>'+esc(x.code)+'｜'+esc(x.name)+'</td><td style="text-align:left">'+esc(String(e.label||'').replace('加油站 · ',''))+'</td><td style="text-align:left">'+esc(e.detail)+'</td></tr>';
+    }).join('');
+
+    var old=oldLocal(), importHtml='';
+    if(old.length){
+      var names={}; try{ names=JSON.parse(localStorage.getItem('s6_names'))||{}; }catch(e){}
+      var letters=[]; old.forEach(function(r){ if(r.k && letters.indexOf(r.k)<0) letters.push(r.k); });
+      importHtml = card('<p class="s6-h">📥 匯入舊版勇氣站紀錄（本機共 '+old.length+' 筆）</p>'+
+        '<p class="s6-p">舊版用 A～F 代號存在這台電腦。請幫每個代號選對應的班級代碼，按匯入後就會寫進學生手帳並上傳雲端。</p>'+
+        '<table class="s6-table"><tr><th>舊代號</th><th>舊名字</th><th>對應班級代碼</th></tr>'+letters.map(function(L){
+          return '<tr><td>'+esc(L)+'</td><td>'+esc(names[L]||('學生 '+L))+'</td><td><select class="s6-sel" id="s6-imp-'+esc(L)+'"><option value="">（不匯入）</option>'+
+            codes.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'｜'+esc(nameOf(c))+'</option>';}).join('')+'</select></td></tr>';
+        }).join('')+'</table><div class="s6-row"><button class="s6-btn go" onclick="S6.importOld()">📥 匯入</button></div>');
+      S6._letters=letters;
+    }
+
+    frame(0,
+      card('<p class="s6-h">👩‍🏫 每位學生的推薦練習</p><p class="s6-p" style="font-size:20px">設定會存在學生手帳裡，跟著雲端同步。學生進入該站時，推薦的那一項會排在最前面。</p>'+
+        (codes.length?'<div style="overflow-x:auto"><table class="s6-table"><tr><th>班級代碼</th><th>名字</th><th>🛡️ 考試勇氣站</th><th>🧩 問題解決站</th></tr>'+setRows+'</table></div>'+
+        '<div class="s6-row"><button class="s6-btn go" onclick="S6.tsave()">💾 儲存設定</button><button class="s6-btn" onclick="S6.pick()">返回</button></div>'
+        : pik('還沒有學生資料，請先到 SEL1 建立卡片。')+'<div class="s6-row"><button class="s6-btn" onclick="S6.pick()">返回</button></div>'))+
+      importHtml+
+      card('<p class="s6-h">📋 全班加油站紀錄（共 '+logs.length+' 筆）</p><div style="overflow-x:auto"><table class="s6-table"><tr><th>時間</th><th>學生</th><th>站／項目</th><th>內容</th></tr>'+(logRows||'<tr><td colspan="4">還沒有紀錄</td></tr>')+'</table></div>'+
+        '<div class="s6-row"><button class="s6-btn" onclick="S6.tcsv()">⬇️ 複製成表格文字</button></div>'),
+      null, true);
   };
   S6.tsave = function(){
-    var n={},p={};
-    'ABCDEF'.split('').forEach(function(k){ var v=document.getElementById('s6-n'+k).value.trim(); if(v) n[k]=v; p[k]=document.getElementById('s6-p'+k).value; });
-    save(LS_NAME,n); save(LS_PRE,p); alert('已儲存'); S6.teacher();
+    allCodes().forEach(function(c,idx){
+      var e=document.getElementById('s6-pe'+idx), r=document.getElementById('s6-pr'+idx); if(!e||!r) return;
+      var p=getPreset(c);
+      if((p.exam||'')!==e.value) setPreset(c,'exam',e.value,true);
+      if((getPreset(c).rule||'')!==r.value) setPreset(c,'rule',r.value,true);
+    });
+    persist(); alert('已儲存，會自動同步到雲端'); S6.teacher();
+  };
+  S6.importOld = function(){
+    var map={}, n=0;
+    (S6._letters||[]).forEach(function(L){ var el=document.getElementById('s6-imp-'+L); if(el && el.value) map[L]=el.value; });
+    if(!Object.keys(map).length) return alert('請至少選一個要匯入的對應班級代碼');
+    var left=[];
+    oldLocal().forEach(function(x){
+      var code=map[x.k];
+      if(!code || !ALARMS[x.alarm]){ left.push(x); return; }
+      var ok=addLog(code,{
+        ts:new Date().toISOString(), label:'加油站 · 考試勇氣站 · '+ALARMS[x.alarm].t,
+        detail:'緊張 '+x.before+'→'+x.after+'；口訣：'+(x.mantra||'')+(x.extra?'；'+x.extra:'')+'（舊紀錄 '+(x.date||'')+'）',
+        result:'done', station:'exam', key:x.alarm, before:x.before, after:x.after, mantra:x.mantra||'', extra:x.extra||''
+      }, true);
+      if(ok) n++; else left.push(x);
+    });
+    try{
+      localStorage.setItem('s6_records_imported_backup', localStorage.getItem('s6_records')||'[]');
+      localStorage.setItem('s6_records', JSON.stringify(left));
+    }catch(e){}
+    persist(); alert('已匯入 '+n+' 筆，並同步到雲端'); S6.teacher();
   };
   S6.tcsv = function(){
-    var r=load(LS_REC,[]); var t='時間\t學生\t警報\t前測\t後測\t口訣\t其他\n'+r.map(function(x){return [x.date,x.name,ALARMS[x.alarm].t,x.before,x.after,x.mantra,x.extra].join('\t');}).join('\n');
-    try{ navigator.clipboard.writeText(t).then(function(){alert('已複製，可直接貼到 Excel 或 Google 試算表');}); }catch(e){ prompt('請複製下面文字',t); }
+    var t='時間\t班級代碼\t名字\t站\t項目\t前\t後\t口訣或約定\t其他\n'+allLogs().map(function(x){
+      var e=x.e, parts=String(e.label||'').split(' · ');
+      return [e.ts?new Date(e.ts).toLocaleString('zh-TW'):'', x.code, x.name, parts[1]||'', parts[2]||'', e.before==null?'':e.before, e.after==null?'':e.after, e.mantra||'', e.extra||''].join('\t');
+    }).join('\n');
+    try{ navigator.clipboard.writeText(t).then(function(){ alert('已複製，可直接貼到 Excel 或 Google 試算表'); }, function(){ prompt('請複製下面文字', t); }); }
+    catch(e){ prompt('請複製下面文字', t); }
   };
-  S6.tclear = function(){ if(confirm('確定要清除全部挑戰紀錄嗎？')){ save(LS_REC,[]); S6.teacher(); } };
 
-  document.getElementById('s6-fab').addEventListener('click',S6.open);
+  /* =========================================================
+     手帳表格：每張紀錄卡多一格「🧭 加油站」，點了看詳細紀錄
+     ========================================================= */
+  try{ if(typeof SEL_CATEGORY_LABELS!=='undefined') SEL_CATEGORY_LABELS[6]='成長加油站'; }catch(e){}
+  function addHistoryButtons(){
+    try{
+      var cont=document.getElementById('history-timeline-container'); if(!cont) return;
+      var list = selectedStudentFilter==='ALL' ? recs() : recs().filter(function(r){ return codeOf(r)===selectedStudentFilter; });
+      var start=(historyCurrentPage-1)*historyPageSize, page=list.slice(start, start+historyPageSize);
+      var cards=cont.children; if(cards.length!==page.length) return;
+      page.forEach(function(r,i){
+        var mid=cards[i].children[1]; if(!mid || mid.querySelector('.s6-hist')) return;
+        var n=(r.activityLog && Array.isArray(r.activityLog.sel6)) ? r.activityLog.sel6.length : 0;
+        var b=document.createElement('button');
+        b.type='button'; b.className='s6-hist';
+        b.style.cssText='display:flex;flex-direction:column;align-items:center;padding:4px 10px;border:2px solid #FBC02D;border-radius:12px;background:#FFFDE7;font-weight:900;color:#5D4037;cursor:pointer';
+        b.innerHTML='<span>🧭 加油站</span><span style="color:#F57C00">'+n+' 次</span>';
+        b.onclick=function(){ openActivityLogModal(r.id, 6); };
+        mid.appendChild(b);
+      });
+    }catch(e){ console.warn('[加油站] 手帳按鈕', e); }
+  }
+  if(typeof renderGrowthHistory==='function'){
+    var _rgh = renderGrowthHistory;
+    window.renderGrowthHistory = function(){ var out=_rgh.apply(this, arguments); addHistoryButtons(); return out; };
+  }
+
+  /* ---------- 啟動 ---------- */
+  function boot(){
+    ov=document.getElementById('s6-ov');
+    document.getElementById('s6-fab').addEventListener('click', S6.open);
+    window.addEventListener('resize', function(){ if(ov.classList.contains('on')) fit(); });
+    document.addEventListener('fullscreenchange', function(){ setTimeout(fit,100); });
+    addHistoryButtons();
+  }
+  if(document.getElementById('s6-ov')) boot(); else document.addEventListener('DOMContentLoaded', boot);
 })();
 </script>
-<!-- ===== SEL6 考試勇氣站 結束 ===== -->
+<!-- ===== SEL6 成長加油站 結束 ===== -->
