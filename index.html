@@ -1325,9 +1325,9 @@
           <p class="text-xs text-slate-500">選擇畫布與顏色後，點擊曼陀羅的幾何色塊填入顏色！</p>
         </div>
 
-        <!-- 8 original geometric templates; all generated in code, no external copyrighted images -->
+        <!-- 8 original geometric templates generated in code; 理查版 = line art supplied by the site owner (mandala/richard-0X.png, flood-fill canvas); 榮格版 = original SVG inspired by Jung's circle/square/quaternity motifs -->
         <div class="flex items-center justify-center gap-2 flex-wrap pt-1">
-          <span class="text-xs font-bold text-slate-500 mr-1">選擇畫布：</span>
+          <span class="text-xs font-bold text-slate-500 mr-1">原創版：</span>
           <button type="button" onclick="switchMandalaTemplate(0)" id="mandala-tpl-0" class="px-3 py-1.5 rounded-xl text-xs font-black border-2 border-pink-500 bg-pink-50 text-pink-900 transition">🌸 經典八瓣蓮</button>
           <button type="button" onclick="switchMandalaTemplate(1)" id="mandala-tpl-1" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">⭐ 十二芒星脈輪</button>
           <button type="button" onclick="switchMandalaTemplate(2)" id="mandala-tpl-2" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌻 太陽放射繁花</button>
@@ -1337,6 +1337,22 @@
           <button type="button" onclick="switchMandalaTemplate(6)" id="mandala-tpl-6" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">💎 寶石萬花筒</button>
           <button type="button" onclick="switchMandalaTemplate(7)" id="mandala-tpl-7" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">☀️ 光芒同心圓</button>
         </div>
+
+        <div class="flex items-center justify-center gap-2 flex-wrap">
+          <span class="text-xs font-bold text-slate-500 mr-1">理查版：</span>
+          <button type="button" onclick="switchMandalaTemplate(8)" id="mandala-tpl-8" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🪷 理查 01</button>
+          <button type="button" onclick="switchMandalaTemplate(9)" id="mandala-tpl-9" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🪷 理查 02</button>
+          <button type="button" onclick="switchMandalaTemplate(10)" id="mandala-tpl-10" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🪷 理查 03</button>
+          <button type="button" onclick="switchMandalaTemplate(11)" id="mandala-tpl-11" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🪷 理查 04</button>
+          <button type="button" onclick="switchMandalaTemplate(12)" id="mandala-tpl-12" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🪷 理查 05</button>
+        </div>
+        <div class="flex items-center justify-center gap-2 flex-wrap">
+          <span class="text-xs font-bold text-slate-500 mr-1">榮格版：</span>
+          <button type="button" onclick="switchMandalaTemplate(13)" id="mandala-tpl-13" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🔷 四位一體</button>
+          <button type="button" onclick="switchMandalaTemplate(14)" id="mandala-tpl-14" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌼 金花</button>
+          <button type="button" onclick="switchMandalaTemplate(15)" id="mandala-tpl-15" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">☸️ 自性之輪</button>
+        </div>
+        <p id="mandala-series-note" class="text-[11px] text-slate-400 min-h-[1rem]"></p>
 
         <div id="mandala-palette" class="flex items-center justify-center gap-2 flex-wrap pt-1">
           <!-- Dynamically populated palette -->
@@ -2363,20 +2379,36 @@
     function switchMandalaTemplate(idx) {
       playSound('pop');
       currentMandalaTemplate = idx;
-      [0, 1, 2, 3, 4, 5, 6, 7].forEach(i => {
+      for (let i = 0; i <= 15; i++) {
         const btn = document.getElementById(`mandala-tpl-${i}`);
         if (btn) {
           btn.className = i === idx
             ? 'px-3 py-1.5 rounded-xl text-xs font-black border-2 border-pink-500 bg-pink-50 text-pink-900 transition'
             : 'px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition';
         }
-      });
+      }
       renderMandalaSvg();
     }
 
     function renderMandalaSvg() {
       const wrapper = document.getElementById('mandala-svg-wrapper');
       if (!wrapper) return;
+      const note = document.getElementById('mandala-series-note');
+      const isRichard = currentMandalaTemplate >= 8 && currentMandalaTemplate <= 12;
+      // 理查版線稿較精細，畫布放大（用 inline style，避免依賴 Tailwind 動態產生 class）
+      wrapper.style.width = isRichard ? 'min(26rem, 100%)' : '';
+      wrapper.style.height = isRichard ? 'auto' : '';
+      wrapper.style.aspectRatio = isRichard ? '1 / 1' : '';
+      if (note) {
+        note.textContent = isRichard
+          ? `理查版彩繪曼陀羅 0${currentMandalaTemplate - 7}：點擊線條圍起來的任一區塊即可上色`
+          : currentMandalaTemplate >= 13
+            ? '榮格版：以圓（整體）、方（現實）、四位一體與中心（自性）為結構的原創曼陀羅'
+            : '';
+      }
+      if (isRichard) { renderRichardMandala(currentMandalaTemplate - 7, wrapper); return; }
+      if (currentMandalaTemplate >= 13) { renderJungMandala(currentMandalaTemplate - 13, wrapper); return; }
+      mandalaCanvasState = null;
 
       if (currentMandalaTemplate === 0) {
         // Template 0: Classic 8-Petal Lotus with Concentric Rings
@@ -2522,6 +2554,130 @@
       }
     }
 
+    // --- 理查版：使用者提供的線稿，以 canvas 區塊填色（flood fill by pre-labelled regions） ---
+    let mandalaCanvasState = null;
+    let mandalaRenderToken = 0;
+    function renderRichardMandala(n, wrapper) {
+      const token = ++mandalaRenderToken;
+      mandalaCanvasState = null;
+      wrapper.innerHTML = `<canvas id="mandala-canvas" width="800" height="800" class="cursor-pointer select-none rounded-2xl bg-white" style="touch-action:manipulation;display:block;width:100%;height:100%"></canvas>`;
+      const canvas = wrapper.querySelector('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 28px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('載入中…', 400, 400);
+      const img = new Image();
+      img.onload = () => {
+        if (token !== mandalaRenderToken) return;
+        const W = canvas.width, H = canvas.height;
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+        ctx.drawImage(img, 0, 0, W, H);
+        let data;
+        try { data = ctx.getImageData(0, 0, W, H); }
+        catch (e) { ctx.fillStyle = '#ef4444'; ctx.fillText('請透過網站網址開啟才能上色', 400, 400); return; }
+        const px = data.data, N = W * H;
+        const isLine = new Uint8Array(N);
+        for (let i = 0; i < N; i++) {
+          const o = i * 4;
+          if (px[o] + px[o + 1] + px[o + 2] < 384) { isLine[i] = 1; px[o] = 51; px[o + 1] = 65; px[o + 2] = 85; }
+          else { px[o] = px[o + 1] = px[o + 2] = 255; }
+          px[o + 3] = 255;
+        }
+        // 4-connected labelling of all non-line pixels
+        const labels = new Int32Array(N); const stack = new Int32Array(N); let next = 0;
+        for (let i = 0; i < N; i++) {
+          if (isLine[i] || labels[i]) continue;
+          next++; let sp = 0; stack[sp++] = i; labels[i] = next;
+          while (sp) {
+            const k = stack[--sp], x = k % W;
+            if (x > 0 && !isLine[k - 1] && !labels[k - 1]) { labels[k - 1] = next; stack[sp++] = k - 1; }
+            if (x < W - 1 && !isLine[k + 1] && !labels[k + 1]) { labels[k + 1] = next; stack[sp++] = k + 1; }
+            if (k >= W && !isLine[k - W] && !labels[k - W]) { labels[k - W] = next; stack[sp++] = k - W; }
+            if (k < N - W && !isLine[k + W] && !labels[k + W]) { labels[k + W] = next; stack[sp++] = k + W; }
+          }
+        }
+        const outside = labels[0];
+        // tint the area outside the mandala so it is clearly not part of the canvas
+        for (let i = 0; i < N; i++) if (labels[i] === outside) { const o = i * 4; px[o] = 248; px[o + 1] = 250; px[o + 2] = 252; }
+        ctx.putImageData(data, 0, 0);
+        mandalaCanvasState = { ctx, data, labels, outside, W, H, n };
+        canvas.addEventListener('click', (ev) => {
+          const r = canvas.getBoundingClientRect();
+          const x = Math.floor((ev.clientX - r.left) / r.width * W);
+          const y = Math.floor((ev.clientY - r.top) / r.height * H);
+          fillRichardRegion(x, y);
+        });
+      };
+      img.src = `mandala/richard-0${n}.png`;
+    }
+
+    function fillRichardRegion(x, y) {
+      const st = mandalaCanvasState;
+      if (!st || x < 0 || y < 0 || x >= st.W || y >= st.H) return;
+      let lab = st.labels[y * st.W + x];
+      // clicked on a line: snap to the nearest region within a few pixels
+      for (let rad = 1; !lab && rad <= 8; rad++) {
+        for (let dy = -rad; dy <= rad && !lab; dy++) for (let dx = -rad; dx <= rad && !lab; dx++) {
+          const xx = x + dx, yy = y + dy;
+          if (xx >= 0 && yy >= 0 && xx < st.W && yy < st.H) lab = st.labels[yy * st.W + xx];
+        }
+      }
+      if (!lab || lab === st.outside) return;
+      const hex = selectedMandalaColor.replace('#', '');
+      const R = parseInt(hex.slice(0, 2), 16), G = parseInt(hex.slice(2, 4), 16), B = parseInt(hex.slice(4, 6), 16);
+      const px = st.data.data, L = st.labels;
+      for (let i = 0; i < L.length; i++) if (L[i] === lab) { const o = i * 4; px[o] = R; px[o + 1] = G; px[o + 2] = B; }
+      st.ctx.putImageData(st.data, 0, 0);
+      playSound('pop');
+    }
+
+    // --- 榮格版：圓 + 方 + 四位一體 + 中心（原創 SVG，向榮格曼陀羅結構致敬） ---
+    function renderJungMandala(k, wrapper) {
+      mandalaCanvasState = null;
+      const MP = 'class="mandala-piece" onclick="colorMandalaSegment(this)" fill="#ffffff" stroke="#475569" stroke-width="1.3"';
+      const pt = (r, a) => { const t = (a - 90) * Math.PI / 180; return [(100 + r * Math.cos(t)).toFixed(2), (100 + r * Math.sin(t)).toFixed(2)]; };
+      const sector = (r1, r2, a0, a1) => {
+        const [x1, y1] = pt(r2, a0), [x2, y2] = pt(r2, a1), [x3, y3] = pt(r1, a1), [x4, y4] = pt(r1, a0);
+        return r1 > 0
+          ? `<path ${MP} d="M${x1} ${y1} A${r2} ${r2} 0 0 1 ${x2} ${y2} L${x3} ${y3} A${r1} ${r1} 0 0 0 ${x4} ${y4} Z"/>`
+          : `<path ${MP} d="M100 100 L${x1} ${y1} A${r2} ${r2} 0 0 1 ${x2} ${y2} Z"/>`;
+      };
+      const ring = (r1, r2, count, offset = 0) => { let o = ''; for (let i = 0; i < count; i++) o += sector(r1, r2, offset + i * 360 / count, offset + (i + 1) * 360 / count); return o; };
+      const petal = (a, rb, rt, w) => {
+        const [bx, by] = pt(rb, a), [tx, ty] = pt(rt, a), m = (rb + rt) / 2;
+        const [c1x, c1y] = pt(m, a - w), [c2x, c2y] = pt(m, a + w);
+        return `<path ${MP} d="M${bx} ${by} Q${c1x} ${c1y} ${tx} ${ty} Q${c2x} ${c2y} ${bx} ${by} Z"/>`;
+      };
+      const circle = (cx, cy, r) => `<circle ${MP} cx="${cx}" cy="${cy}" r="${r}"/>`;
+      const star = (n, ro, ri, rot = 0) => { let p = []; for (let i = 0; i < n * 2; i++) p.push(pt(i % 2 ? ri : ro, rot + i * 180 / n).join(',')); return `<polygon ${MP} points="${p.join(' ')}"/>`; };
+      let body = '';
+      if (k === 0) {
+        // 四位一體：外圓、內方、十字與中心
+        body += ring(84, 95, 16);
+        const c = [45, 135, 225, 315].map(a => pt(84, a));
+        for (let i = 0; i < 4; i++) { const [ax, ay] = c[(i + 3) % 4], [bx, by] = c[i]; body += `<path ${MP} d="M${ax} ${ay} A84 84 0 0 1 ${bx} ${by} Z"/>`; }
+        [[100, 29], [171, 100], [100, 171], [29, 100]].forEach(([x, y]) => body += circle(x, y, 8));
+        const s = 59.4, lo = (100 - s).toFixed(2), hi = (100 + s).toFixed(2);
+        body += `<polygon ${MP} points="${lo},${lo} ${hi},${lo} 100,100"/><polygon ${MP} points="${hi},${lo} ${hi},${hi} 100,100"/><polygon ${MP} points="${hi},${hi} ${lo},${hi} 100,100"/><polygon ${MP} points="${lo},${hi} ${lo},${lo} 100,100"/>`;
+        body += ring(30, 52, 8, 22.5);
+        for (let i = 0; i < 4; i++) body += petal(i * 90, 0, 30, 24);
+        for (let i = 0; i < 4; i++) body += petal(45 + i * 90, 0, 22, 20);
+        body += circle(100, 100, 8);
+      } else if (k === 1) {
+        // 金花：珠鍊外環＋兩層蓮瓣
+        body += circle(100, 100, 95) + circle(100, 100, 82);
+        for (let i = 0; i < 24; i++) { const [x, y] = pt(88.5, i * 15); body += circle(x, y, 5); }
+        for (let i = 0; i < 8; i++) body += petal(i * 45, 30, 80, 20);
+        for (let i = 0; i < 8; i++) body += petal(22.5 + i * 45, 26, 60, 22);
+        body += circle(100, 100, 30) + star(8, 28, 17, 0) + circle(100, 100, 14) + circle(100, 100, 6);
+      } else {
+        // 自性之輪：四、八、十二分的同心輪
+        body += ring(76, 95, 12) + ring(54, 76, 8, 22.5) + ring(32, 54, 4, 45);
+        body += star(4, 32, 13, 0) + star(4, 22, 9, 45);
+        body += circle(100, 100, 9);
+      }
+      wrapper.innerHTML = `<svg viewBox="0 0 200 200" class="w-full h-full cursor-pointer select-none"><circle cx="100" cy="100" r="97" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>${body}</svg>`;
+    }
+
     function colorMandalaSegment(el) {
       playSound('pop');
       el.setAttribute('fill', selectedMandalaColor);
@@ -2529,6 +2685,7 @@
 
     function resetMandala() {
       playSound('pop');
+      if (currentMandalaTemplate >= 8 && currentMandalaTemplate <= 12) { renderMandalaSvg(); return; }
       document.querySelectorAll('.mandala-piece').forEach(p => p.setAttribute('fill', '#ffffff'));
     }
 
