@@ -1325,42 +1325,95 @@
           <p class="text-xs text-slate-500">選擇畫布與顏色後，點擊曼陀羅的幾何色塊填入顏色！</p>
         </div>
 
-        <!-- 8 original geometric templates generated in code; 理查版 01–25 / 榮格版 01–30 = line art supplied by the site owner (mandala/richard-XX.png, mandala/jung-XX.png), coloured on a flood-fill canvas -->
-        <div class="flex items-center justify-center gap-2 flex-wrap pt-1">
-          <span class="text-xs font-bold text-slate-500 mr-1">原創版：</span>
-          <button type="button" onclick="switchMandalaTemplate(0)" id="mandala-tpl-0" class="px-3 py-1.5 rounded-xl text-xs font-black border-2 border-pink-500 bg-pink-50 text-pink-900 transition">🌸 經典八瓣蓮</button>
-          <button type="button" onclick="switchMandalaTemplate(1)" id="mandala-tpl-1" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">⭐ 十二芒星脈輪</button>
-          <button type="button" onclick="switchMandalaTemplate(2)" id="mandala-tpl-2" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌻 太陽放射繁花</button>
-          <button type="button" onclick="switchMandalaTemplate(3)" id="mandala-tpl-3" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">❄️ 冰晶幾何迷宮</button>
-          <button type="button" onclick="switchMandalaTemplate(4)" id="mandala-tpl-4" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌿 葉片圓舞</button>
-          <button type="button" onclick="switchMandalaTemplate(5)" id="mandala-tpl-5" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">🌊 波紋花環</button>
-          <button type="button" onclick="switchMandalaTemplate(6)" id="mandala-tpl-6" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">💎 寶石萬花筒</button>
-          <button type="button" onclick="switchMandalaTemplate(7)" id="mandala-tpl-7" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">☀️ 光芒同心圓</button>
-        </div>
-
-        <div class="flex items-center justify-center gap-1.5 flex-wrap">
-          <span class="text-xs font-bold text-amber-700 mr-1">🪷 理查版：</span>
-          <button type="button" onclick="switchMandalaTemplate(101)" id="mandala-tpl-101" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">01</button><button type="button" onclick="switchMandalaTemplate(102)" id="mandala-tpl-102" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">02</button><button type="button" onclick="switchMandalaTemplate(103)" id="mandala-tpl-103" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">03</button><button type="button" onclick="switchMandalaTemplate(104)" id="mandala-tpl-104" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">04</button><button type="button" onclick="switchMandalaTemplate(105)" id="mandala-tpl-105" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">05</button><button type="button" onclick="switchMandalaTemplate(106)" id="mandala-tpl-106" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">06</button><button type="button" onclick="switchMandalaTemplate(107)" id="mandala-tpl-107" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">07</button><button type="button" onclick="switchMandalaTemplate(108)" id="mandala-tpl-108" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">08</button><button type="button" onclick="switchMandalaTemplate(109)" id="mandala-tpl-109" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">09</button><button type="button" onclick="switchMandalaTemplate(110)" id="mandala-tpl-110" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">10</button><button type="button" onclick="switchMandalaTemplate(111)" id="mandala-tpl-111" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">11</button><button type="button" onclick="switchMandalaTemplate(112)" id="mandala-tpl-112" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">12</button><button type="button" onclick="switchMandalaTemplate(113)" id="mandala-tpl-113" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">13</button><button type="button" onclick="switchMandalaTemplate(114)" id="mandala-tpl-114" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">14</button><button type="button" onclick="switchMandalaTemplate(115)" id="mandala-tpl-115" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">15</button><button type="button" onclick="switchMandalaTemplate(116)" id="mandala-tpl-116" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">16</button><button type="button" onclick="switchMandalaTemplate(117)" id="mandala-tpl-117" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">17</button><button type="button" onclick="switchMandalaTemplate(118)" id="mandala-tpl-118" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">18</button><button type="button" onclick="switchMandalaTemplate(119)" id="mandala-tpl-119" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">19</button><button type="button" onclick="switchMandalaTemplate(120)" id="mandala-tpl-120" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">20</button><button type="button" onclick="switchMandalaTemplate(121)" id="mandala-tpl-121" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">21</button><button type="button" onclick="switchMandalaTemplate(122)" id="mandala-tpl-122" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">22</button><button type="button" onclick="switchMandalaTemplate(123)" id="mandala-tpl-123" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">23</button><button type="button" onclick="switchMandalaTemplate(124)" id="mandala-tpl-124" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">24</button><button type="button" onclick="switchMandalaTemplate(125)" id="mandala-tpl-125" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">25</button>
-        </div>
-        <div class="flex items-center justify-center gap-1.5 flex-wrap">
-          <span class="text-xs font-bold text-indigo-700 mr-1">🔷 榮格版：</span>
-          <button type="button" onclick="switchMandalaTemplate(201)" id="mandala-tpl-201" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">01</button><button type="button" onclick="switchMandalaTemplate(202)" id="mandala-tpl-202" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">02</button><button type="button" onclick="switchMandalaTemplate(203)" id="mandala-tpl-203" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">03</button><button type="button" onclick="switchMandalaTemplate(204)" id="mandala-tpl-204" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">04</button><button type="button" onclick="switchMandalaTemplate(205)" id="mandala-tpl-205" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">05</button><button type="button" onclick="switchMandalaTemplate(206)" id="mandala-tpl-206" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">06</button><button type="button" onclick="switchMandalaTemplate(207)" id="mandala-tpl-207" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">07</button><button type="button" onclick="switchMandalaTemplate(208)" id="mandala-tpl-208" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">08</button><button type="button" onclick="switchMandalaTemplate(209)" id="mandala-tpl-209" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">09</button><button type="button" onclick="switchMandalaTemplate(210)" id="mandala-tpl-210" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">10</button><button type="button" onclick="switchMandalaTemplate(211)" id="mandala-tpl-211" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">11</button><button type="button" onclick="switchMandalaTemplate(212)" id="mandala-tpl-212" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">12</button><button type="button" onclick="switchMandalaTemplate(213)" id="mandala-tpl-213" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">13</button><button type="button" onclick="switchMandalaTemplate(214)" id="mandala-tpl-214" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">14</button><button type="button" onclick="switchMandalaTemplate(215)" id="mandala-tpl-215" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">15</button><button type="button" onclick="switchMandalaTemplate(216)" id="mandala-tpl-216" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">16</button><button type="button" onclick="switchMandalaTemplate(217)" id="mandala-tpl-217" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">17</button><button type="button" onclick="switchMandalaTemplate(218)" id="mandala-tpl-218" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">18</button><button type="button" onclick="switchMandalaTemplate(219)" id="mandala-tpl-219" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">19</button><button type="button" onclick="switchMandalaTemplate(220)" id="mandala-tpl-220" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">20</button><button type="button" onclick="switchMandalaTemplate(221)" id="mandala-tpl-221" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">21</button><button type="button" onclick="switchMandalaTemplate(222)" id="mandala-tpl-222" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">22</button><button type="button" onclick="switchMandalaTemplate(223)" id="mandala-tpl-223" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">23</button><button type="button" onclick="switchMandalaTemplate(224)" id="mandala-tpl-224" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">24</button><button type="button" onclick="switchMandalaTemplate(225)" id="mandala-tpl-225" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">25</button><button type="button" onclick="switchMandalaTemplate(226)" id="mandala-tpl-226" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">26</button><button type="button" onclick="switchMandalaTemplate(227)" id="mandala-tpl-227" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">27</button><button type="button" onclick="switchMandalaTemplate(228)" id="mandala-tpl-228" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">28</button><button type="button" onclick="switchMandalaTemplate(229)" id="mandala-tpl-229" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">29</button><button type="button" onclick="switchMandalaTemplate(230)" id="mandala-tpl-230" class="w-9 py-1 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition">30</button>
-        </div>
-        <p id="mandala-series-note" class="text-[11px] text-slate-400 min-h-[1rem]"></p>
-
-        <div id="mandala-palette" class="flex items-center justify-center gap-2 flex-wrap pt-1">
-          <!-- Dynamically populated palette -->
+        <!-- 8 original geometric templates generated in code; 理查版 01–25 / 榮格版 01–30 = line art supplied by the site owner (mandala/richard-XX.png, mandala/jung-XX.png), coloured on a flood-fill canvas.
+             Choosing a canvas opens it full screen (#mandala-fs, outside #fit-stage so it is not scaled down). -->
+        <div id="mandala-controls" class="space-y-2">
+          <div class="flex items-center justify-center gap-2 flex-wrap">
+            <label for="mandala-select" class="text-sm font-bold text-slate-600">選擇畫布：</label>
+            <select id="mandala-select" onchange="switchMandalaTemplate(parseInt(this.value, 10)); openMandalaFullscreen();" style="font-size:16px;min-width:11rem" class="px-3 py-2 rounded-xl border-2 border-pink-400 bg-white text-slate-800 font-bold">
+            <optgroup label="🌸 原創版">
+              <option value="0">🌸 經典八瓣蓮</option>
+              <option value="1">⭐ 十二芒星脈輪</option>
+              <option value="2">🌻 太陽放射繁花</option>
+              <option value="3">❄️ 冰晶幾何迷宮</option>
+              <option value="4">🌿 葉片圓舞</option>
+              <option value="5">🌊 波紋花環</option>
+              <option value="6">💎 寶石萬花筒</option>
+              <option value="7">☀️ 光芒同心圓</option>
+            </optgroup>
+            <optgroup label="🪷 理查版">
+              <option value="101">理查版 01</option>
+              <option value="102">理查版 02</option>
+              <option value="103">理查版 03</option>
+              <option value="104">理查版 04</option>
+              <option value="105">理查版 05</option>
+              <option value="106">理查版 06</option>
+              <option value="107">理查版 07</option>
+              <option value="108">理查版 08</option>
+              <option value="109">理查版 09</option>
+              <option value="110">理查版 10</option>
+              <option value="111">理查版 11</option>
+              <option value="112">理查版 12</option>
+              <option value="113">理查版 13</option>
+              <option value="114">理查版 14</option>
+              <option value="115">理查版 15</option>
+              <option value="116">理查版 16</option>
+              <option value="117">理查版 17</option>
+              <option value="118">理查版 18</option>
+              <option value="119">理查版 19</option>
+              <option value="120">理查版 20</option>
+              <option value="121">理查版 21</option>
+              <option value="122">理查版 22</option>
+              <option value="123">理查版 23</option>
+              <option value="124">理查版 24</option>
+              <option value="125">理查版 25</option>
+            </optgroup>
+            <optgroup label="🔷 榮格版">
+              <option value="201">榮格版 01</option>
+              <option value="202">榮格版 02</option>
+              <option value="203">榮格版 03</option>
+              <option value="204">榮格版 04</option>
+              <option value="205">榮格版 05</option>
+              <option value="206">榮格版 06</option>
+              <option value="207">榮格版 07</option>
+              <option value="208">榮格版 08</option>
+              <option value="209">榮格版 09</option>
+              <option value="210">榮格版 10</option>
+              <option value="211">榮格版 11</option>
+              <option value="212">榮格版 12</option>
+              <option value="213">榮格版 13</option>
+              <option value="214">榮格版 14</option>
+              <option value="215">榮格版 15</option>
+              <option value="216">榮格版 16</option>
+              <option value="217">榮格版 17</option>
+              <option value="218">榮格版 18</option>
+              <option value="219">榮格版 19</option>
+              <option value="220">榮格版 20</option>
+              <option value="221">榮格版 21</option>
+              <option value="222">榮格版 22</option>
+              <option value="223">榮格版 23</option>
+              <option value="224">榮格版 24</option>
+              <option value="225">榮格版 25</option>
+              <option value="226">榮格版 26</option>
+              <option value="227">榮格版 27</option>
+              <option value="228">榮格版 28</option>
+              <option value="229">榮格版 29</option>
+              <option value="230">榮格版 30</option>
+            </optgroup>
+            </select>
+            <button type="button" id="mandala-fs-open" onclick="openMandalaFullscreen()" class="px-3 py-2 rounded-xl text-sm font-black border-2 transition border-pink-500 bg-pink-50 text-pink-900">⛶ 全螢幕著色</button>
+            <button type="button" id="mandala-fs-close" onclick="closeMandalaFullscreen()" style="display:none" class="px-3 py-2 rounded-xl text-sm font-black border-2 transition border-slate-300 bg-white text-slate-700">✕ 關閉全螢幕</button>
+            <button type="button" onclick="resetMandala()" class="px-3 py-2 rounded-xl text-sm font-black border-2 transition border-slate-200 bg-white text-slate-500 hover:text-red-500">↺ 重設</button>
+          </div>
+          <div id="mandala-palette" class="flex items-center justify-center gap-2 flex-wrap">
+            <!-- Dynamically populated palette -->
+          </div>
+          <p id="mandala-series-note" class="text-[11px] text-slate-400 min-h-[1rem]"></p>
         </div>
 
         <!-- Mandala Interactive SVG Wrapper -->
         <div id="mandala-svg-wrapper" class="w-64 h-64 sm:w-72 sm:h-72 mx-auto p-2 bg-slate-50 rounded-3xl border-2 border-slate-200 shadow-inner flex items-center justify-center">
           <!-- Dynamically populated by renderMandalaSvg() -->
-        </div>
-
-        <div>
-          <button onclick="resetMandala()" class="text-xs font-bold text-slate-500 hover:text-red-500 underline">
-            重設曼陀羅畫布
-          </button>
         </div>
       </div>
 
@@ -2373,13 +2426,8 @@
     function switchMandalaTemplate(idx) {
       playSound('pop');
       currentMandalaTemplate = idx;
-      document.querySelectorAll('[id^="mandala-tpl-"]').forEach(btn => {
-        const i = parseInt(btn.id.slice(12), 10);
-        const size = i >= 100 ? 'w-9 py-1 rounded-lg' : 'px-3 py-1.5 rounded-xl';
-        btn.className = i === idx
-          ? `${size} text-xs font-black border-2 border-pink-500 bg-pink-50 text-pink-900 transition`
-          : `${size} text-xs font-bold border-2 border-slate-200 bg-white text-slate-700 hover:border-pink-300 transition`;
-      });
+      const sel = document.getElementById('mandala-select');
+      if (sel && sel.value !== String(idx)) sel.value = String(idx);
       renderMandalaSvg();
     }
 
@@ -2388,10 +2436,7 @@
       if (!wrapper) return;
       const note = document.getElementById('mandala-series-note');
       const lineArt = getMandalaLineArt(currentMandalaTemplate);
-      // 線稿版較精細，畫布放大（用 inline style，避免依賴 Tailwind 動態產生 class）
-      wrapper.style.width = lineArt ? 'min(26rem, 100%)' : '';
-      wrapper.style.height = lineArt ? 'auto' : '';
-      wrapper.style.aspectRatio = lineArt ? '1 / 1' : '';
+      sizeMandalaWrapper();
       if (note) {
         note.textContent = lineArt
           ? `${lineArt.label}彩繪曼陀羅 ${String(lineArt.n).padStart(2, '0')}：點擊線條圍起來的任一區塊即可上色`
@@ -2626,6 +2671,60 @@
       st.ctx.putImageData(st.data, 0, 0);
       playSound('pop');
     }
+
+    // --- 全螢幕著色：把選單、調色盤與畫布搬到 #mandala-fs（不受 #fit-stage 縮放影響），畫布取可用空間的最大正方形 ---
+    let mandalaFsOpen = false;
+    let mandalaFsHome = null;
+    function sizeMandalaWrapper() {
+      const wrapper = document.getElementById('mandala-svg-wrapper');
+      if (!wrapper) return;
+      if (mandalaFsOpen) {
+        const stage = document.getElementById('mandala-fs-stage');
+        const side = Math.max(200, Math.floor(Math.min(stage.clientWidth, stage.clientHeight)));
+        wrapper.style.width = side + 'px';
+        wrapper.style.height = side + 'px';
+        wrapper.style.aspectRatio = '';
+        wrapper.style.padding = '4px';
+        wrapper.style.boxSizing = 'border-box';
+      } else {
+        const lineArt = getMandalaLineArt(currentMandalaTemplate);
+        wrapper.style.width = lineArt ? 'min(26rem, 100%)' : '';
+        wrapper.style.height = lineArt ? 'auto' : '';
+        wrapper.style.aspectRatio = lineArt ? '1 / 1' : '';
+        wrapper.style.padding = '';
+      }
+    }
+    function openMandalaFullscreen() {
+      const fs = document.getElementById('mandala-fs');
+      const controls = document.getElementById('mandala-controls');
+      const wrapper = document.getElementById('mandala-svg-wrapper');
+      if (!fs || !controls || !wrapper) return;
+      if (!mandalaFsOpen) {
+        mandalaFsHome = { controls: document.createComment('mandala-controls'), wrapper: document.createComment('mandala-wrapper') };
+        controls.before(mandalaFsHome.controls);
+        wrapper.before(mandalaFsHome.wrapper);
+        document.getElementById('mandala-fs-top').appendChild(controls);
+        document.getElementById('mandala-fs-stage').appendChild(wrapper);
+        fs.style.display = 'flex';
+        document.getElementById('mandala-fs-open').style.display = 'none';
+        document.getElementById('mandala-fs-close').style.display = '';
+        mandalaFsOpen = true;
+      }
+      sizeMandalaWrapper();
+    }
+    function closeMandalaFullscreen() {
+      if (!mandalaFsOpen || !mandalaFsHome) return;
+      mandalaFsHome.controls.replaceWith(document.getElementById('mandala-controls'));
+      mandalaFsHome.wrapper.replaceWith(document.getElementById('mandala-svg-wrapper'));
+      mandalaFsHome = null;
+      mandalaFsOpen = false;
+      document.getElementById('mandala-fs').style.display = 'none';
+      document.getElementById('mandala-fs-open').style.display = '';
+      document.getElementById('mandala-fs-close').style.display = 'none';
+      sizeMandalaWrapper();
+    }
+    window.addEventListener('resize', () => { if (mandalaFsOpen) sizeMandalaWrapper(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mandalaFsOpen) closeMandalaFullscreen(); });
 
     function colorMandalaSegment(el) {
       playSound('pop');
@@ -7165,6 +7264,11 @@ const displayRecords = selectedStudentFilter === 'ALL'
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();
 </script>
+<!-- 曼陀羅全螢幕著色層（放在 #fit-stage 外面，畫布才不會被整頁縮放縮小） -->
+<div id="mandala-fs" style="display:none;position:fixed;inset:0;z-index:2147483000;background:#ffffff;flex-direction:column;align-items:stretch;padding:8px;gap:6px;overflow:hidden;text-align:center">
+  <div id="mandala-fs-top" style="flex:0 0 auto"></div>
+  <div id="mandala-fs-stage" style="flex:1 1 auto;min-height:0;display:flex;align-items:flex-start;justify-content:center"></div>
+</div>
 </body>
 </html>
 
